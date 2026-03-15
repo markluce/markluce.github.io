@@ -2,7 +2,7 @@
 
 ## 公開網址
 
-**https://markluce.github.io/**
+**https://markluce.ai/**
 
 ## 專案總覽
 
