@@ -12,5 +12,5 @@
 | water001 | https://markluce.github.io/water001/ | GTO 撲克求解器分析視覺化 |
 | gto-lite | https://markluce.github.io/gto-lite/ | GTO 撲克求解工具 |
 | 2026claudecode | https://markluce.github.io/2026claudecode/ | Claude Code 學習專案 |
-| 2026claudecode-take2 | https://markluce.ai/ | Claude Code 第二版（自訂網域） |
+| 2026claudecode-take2 | https://markluce.github.io/2026claudecode-take2/ | Claude Code 第二版 |
 | 2026claudecode-take3 | https://markluce.github.io/2026claudecode-take3/ | Claude Code 第三版 |
