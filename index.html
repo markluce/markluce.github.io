@@ -212,7 +212,7 @@
 
     function handleLogin() {
       if (!LIFF_ID) return;
-      liff.login();
+      liff.login({ redirectUri: window.location.href });
     }
 
     async function showLoggedIn() {
