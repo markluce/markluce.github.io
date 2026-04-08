@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Admin — markluce.ai</title>
+  <meta name="robots" content="noindex, nofollow" />
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = { theme: { extend: { fontFamily: { sans: ['"Noto Sans TC"', 'Inter', 'system-ui', 'sans-serif'] } } } }
+  </script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Noto+Sans+TC:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <style>
+    .gradient-text { background: linear-gradient(135deg, #38bdf8, #06b6d4); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+    .card-hover { transition: transform 0.2s ease, box-shadow 0.2s ease; }
+    .card-hover:hover { transform: translateY(-2px); box-shadow: 0 12px 24px -8px rgba(14, 165, 233, 0.15); }
+  </style>
+</head>
+<body class="min-h-screen bg-gradient-to-br from-slate-900 via-sky-950 to-slate-900 text-white font-sans">
+
+  <nav class="max-w-4xl mx-auto px-6 py-6 flex items-center justify-between">
+    <a href="/" class="text-xl font-bold"><span class="text-sky-400">mark</span>luce <span class="text-red-400 text-sm">admin</span></a>
+    <div class="flex items-center gap-4">
+      <a href="/" class="text-slate-400 hover:text-white transition text-sm">AI PM 同學牆</a>
+      <a href="/blog.html" class="text-slate-400 hover:text-white transition text-sm">Blog</a>
+      <a href="/about.html" class="text-slate-400 hover:text-white transition text-sm">關於</a>
+    </div>
+  </nav>
+
+  <main class="max-w-4xl mx-auto px-6 pb-16">
+    <h1 class="text-3xl font-extrabold mb-2"><span class="gradient-text">Admin Dashboard</span></h1>
+    <p class="text-slate-500 text-sm mb-10">markluce.ai 服務快捷連結（皆需登入各自帳號）</p>
+
+    <!-- Database & Backend -->
+    <h2 class="text-slate-400 text-xs font-medium uppercase tracking-wider mb-4 border-b border-white/10 pb-2">資料庫 & 後端</h2>
+    <div class="grid md:grid-cols-2 gap-4 mb-10">
+      <a href="https://supabase.com/dashboard/project/dcjlekszmobaenhrdbfl/sql/new" target="_blank" class="card-hover bg-white/5 border border-white/10 rounded-xl p-5 block">
+        <div class="flex items-center gap-3 mb-2">
+          <div class="w-8 h-8 rounded-lg bg-emerald-500/20 flex items-center justify-center text-emerald-400 text-sm font-bold">S</div>
+          <div class="font-bold text-sm">Supabase SQL Editor</div>
+        </div>
+        <p class="text-slate-500 text-xs">執行 SQL、建立表格、修改資料</p>
+      </a>
+      <a href="https://supabase.com/dashboard/project/dcjlekszmobaenhrdbfl/editor" target="_blank" class="card-hover bg-white/5 border border-white/10 rounded-xl p-5 block">
+        <div class="flex items-center gap-3 mb-2">
+          <div class="w-8 h-8 rounded-lg bg-emerald-500/20 flex items-center justify-center text-emerald-400 text-sm font-bold">T</div>
+          <div class="font-bold text-sm">Supabase Table Editor</div>
+        </div>
+        <p class="text-slate-500 text-xs">瀏覽 classmates、blog_posts、visits 等表格</p>
+      </a>
+      <a href="https://supabase.com/dashboard/project/dcjlekszmobaenhrdbfl/storage" target="_blank" class="card-hover bg-white/5 border border-white/10 rounded-xl p-5 block">
+        <div class="flex items-center gap-3 mb-2">
+          <div class="w-8 h-8 rounded-lg bg-emerald-500/20 flex items-center justify-center text-emerald-400 text-sm font-bold">F</div>
+          <div class="font-bold text-sm">Supabase Storage</div>
+        </div>
+        <p class="text-slate-500 text-xs">檔案儲存（圖片等）</p>
+      </a>
+      <a href="https://supabase.com/dashboard/project/dcjlekszmobaenhrdbfl/settings/api" target="_blank" class="card-hover bg-white/5 border border-white/10 rounded-xl p-5 block">
+        <div class="flex items-center gap-3 mb-2">
+          <div class="w-8 h-8 rounded-lg bg-emerald-500/20 flex items-center justify-center text-emerald-400 text-sm font-bold">K</div>
+          <div class="font-bold text-sm">Supabase API Keys</div>
+        </div>
+        <p class="text-slate-500 text-xs">查看 publishable / secret key</p>
+      </a>
+    </div>
+
+    <!-- LINE -->
+    <h2 class="text-slate-400 text-xs font-medium uppercase tracking-wider mb-4 border-b border-white/10 pb-2">LINE</h2>
+    <div class="grid md:grid-cols-2 gap-4 mb-10">
+      <a href="https://developers.line.biz/console/" target="_blank" class="card-hover bg-white/5 border border-white/10 rounded-xl p-5 block">
+        <div class="flex items-center gap-3 mb-2">
+          <div class="w-8 h-8 rounded-lg bg-green-500/20 flex items-center justify-center text-green-400 text-sm font-bold">D</div>
+          <div class="font-bold text-sm">LINE Developers Console</div>
+        </div>
+        <p class="text-slate-500 text-xs">LIFF 設定、Callback URL、Channel 管理</p>
+      </a>
+      <a href="https://manager.line.biz/" target="_blank" class="card-hover bg-white/5 border border-white/10 rounded-xl p-5 block">
+        <div class="flex items-center gap-3 mb-2">
+          <div class="w-8 h-8 rounded-lg bg-green-500/20 flex items-center justify-center text-green-400 text-sm font-bold">M</div>
+          <div class="font-bold text-sm">LINE Official Account Manager</div>
+        </div>
+        <p class="text-slate-500 text-xs">@markluce 官方帳號、群發訊息、好友管理</p>
+      </a>
+      <a href="https://account.line.biz/" target="_blank" class="card-hover bg-white/5 border border-white/10 rounded-xl p-5 block">
+        <div class="flex items-center gap-3 mb-2">
+          <div class="w-8 h-8 rounded-lg bg-green-500/20 flex items-center justify-center text-green-400 text-sm font-bold">B</div>
+          <div class="font-bold text-sm">LINE Business Manager</div>
+        </div>
+        <p class="text-slate-500 text-xs">組織管理、帳號連結</p>
+      </a>
+    </div>
+
+    <!-- GitHub -->
+    <h2 class="text-slate-400 text-xs font-medium uppercase tracking-wider mb-4 border-b border-white/10 pb-2">GitHub</h2>
+    <div class="grid md:grid-cols-2 gap-4 mb-10">
+      <a href="https://github.com/markluce/markluce.github.io" target="_blank" class="card-hover bg-white/5 border border-white/10 rounded-xl p-5 block">
+        <div class="flex items-center gap-3 mb-2">
+          <div class="w-8 h-8 rounded-lg bg-slate-500/20 flex items-center justify-center text-slate-400 text-sm font-bold">P</div>
+          <div class="font-bold text-sm">markluce.github.io</div>
+        </div>
+        <p class="text-slate-500 text-xs">公開網站 repo（GitHub Pages 部署）</p>
+      </a>
+      <a href="https://github.com/aipmtw/markluce" target="_blank" class="card-hover bg-white/5 border border-white/10 rounded-xl p-5 block">
+        <div class="flex items-center gap-3 mb-2">
+          <div class="w-8 h-8 rounded-lg bg-slate-500/20 flex items-center justify-center text-slate-400 text-sm font-bold">🔒</div>
+          <div class="font-bold text-sm">aipmtw/markluce</div>
+        </div>
+        <p class="text-slate-500 text-xs">私有 PM repo（backlog、credentials、decisions）</p>
+      </a>
+      <a href="https://github.com/aipmtw/markluce/issues" target="_blank" class="card-hover bg-white/5 border border-white/10 rounded-xl p-5 block">
+        <div class="flex items-center gap-3 mb-2">
+          <div class="w-8 h-8 rounded-lg bg-slate-500/20 flex items-center justify-center text-slate-400 text-sm font-bold">I</div>
+          <div class="font-bold text-sm">Issues / Backlog</div>
+        </div>
+        <p class="text-slate-500 text-xs">任務追蹤、功能需求、Bug 回報</p>
+      </a>
+      <a href="https://github.com/markluce" target="_blank" class="card-hover bg-white/5 border border-white/10 rounded-xl p-5 block">
+        <div class="flex items-center gap-3 mb-2">
+          <div class="w-8 h-8 rounded-lg bg-slate-500/20 flex items-center justify-center text-slate-400 text-sm font-bold">G</div>
+          <div class="font-bold text-sm">GitHub Profile</div>
+        </div>
+        <p class="text-slate-500 text-xs">markluce GitHub 帳號總覽</p>
+      </a>
+    </div>
+
+    <!-- Site Pages -->
+    <h2 class="text-slate-400 text-xs font-medium uppercase tracking-wider mb-4 border-b border-white/10 pb-2">網站頁面</h2>
+    <div class="grid md:grid-cols-3 gap-4 mb-10">
+      <a href="/" class="card-hover bg-white/5 border border-white/10 rounded-xl p-5 block">
+        <div class="font-bold text-sm mb-1">AI PM 同學牆</div>
+        <p class="text-slate-500 text-xs">markluce.ai</p>
+      </a>
+      <a href="/ai-innovator.html" class="card-hover bg-white/5 border border-white/10 rounded-xl p-5 block">
+        <div class="font-bold text-sm mb-1">AI Innovator</div>
+        <p class="text-slate-500 text-xs">Toastmasters 會員牆</p>
+      </a>
+      <a href="/blog.html" class="card-hover bg-white/5 border border-white/10 rounded-xl p-5 block">
+        <div class="font-bold text-sm mb-1">Blog</div>
+        <p class="text-slate-500 text-xs">34 篇文章</p>
+      </a>
+      <a href="/about.html" class="card-hover bg-white/5 border border-white/10 rounded-xl p-5 block">
+        <div class="font-bold text-sm mb-1">關於</div>
+        <p class="text-slate-500 text-xs">公司 + Mark 簡介</p>
+      </a>
+      <a href="/admin.html" class="card-hover bg-white/5 border border-white/10 rounded-xl p-5 block">
+        <div class="font-bold text-sm mb-1 text-red-400">Admin</div>
+        <p class="text-slate-500 text-xs">本頁</p>
+      </a>
+    </div>
+
+    <!-- Quick Reference -->
+    <h2 class="text-slate-400 text-xs font-medium uppercase tracking-wider mb-4 border-b border-white/10 pb-2">快速參考</h2>
+    <div class="bg-white/5 border border-white/10 rounded-xl p-5 text-sm">
+      <table class="w-full">
+        <tbody class="text-slate-400">
+          <tr class="border-b border-white/5"><td class="py-2 text-slate-500">Supabase Project</td><td class="py-2 font-mono text-xs">dcjlekszmobaenhrdbfl</td></tr>
+          <tr class="border-b border-white/5"><td class="py-2 text-slate-500">LIFF ID</td><td class="py-2 font-mono text-xs">2009738746-2qigSpHh</td></tr>
+          <tr class="border-b border-white/5"><td class="py-2 text-slate-500">LINE Channel ID</td><td class="py-2 font-mono text-xs">2009738746</td></tr>
+          <tr class="border-b border-white/5"><td class="py-2 text-slate-500">LINE Official Account</td><td class="py-2">@markluce</td></tr>
+          <tr class="border-b border-white/5"><td class="py-2 text-slate-500">Domain</td><td class="py-2">markluce.ai</td></tr>
+          <tr><td class="py-2 text-slate-500">統一編號</td><td class="py-2">60670979</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </main>
+
+</body>
+</html>
