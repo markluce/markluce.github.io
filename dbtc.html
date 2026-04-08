@@ -94,7 +94,7 @@
       <span id="member-count" class="text-slate-500 text-sm"></span>
     </div>
 
-    <div id="member-grid" class="grid md:grid-cols-2 lg:grid-cols-3 gap-6"></div>
+    <div id="member-grid" class="max-w-lg mx-auto space-y-3"></div>
 
     <div id="loading" class="text-center py-12 text-slate-500">
       <div class="inline-block w-6 h-6 border-2 border-slate-600 border-t-violet-400 rounded-full animate-spin mb-3"></div>
@@ -294,16 +294,17 @@
 
       var grid = document.getElementById('member-grid');
       grid.innerHTML = result.data.map(function(m, i) {
-        return '<div class="card-hover fade-in bg-white/5 border border-white/10 rounded-2xl p-6 backdrop-blur-sm" style="animation-delay:' + (i * 80) + 'ms">' +
-          '<div class="flex items-center gap-4 mb-4">' +
-            (m.avatar_url ? '<img src="' + escHtml(m.avatar_url) + '" alt="" class="w-16 h-16 rounded-full bg-slate-700 cursor-pointer hover:ring-4 hover:ring-violet-500/30 transition flex-shrink-0" onclick="showAvatar(\'' + escHtml(m.avatar_url) + '\', \'' + escHtml(m.display_name) + '\')" onerror="this.style.display=\'none\'" />' : '<div class="w-16 h-16 rounded-full bg-gradient-to-br from-violet-500 to-purple-500 flex items-center justify-center text-xl font-bold flex-shrink-0">' + escHtml(m.display_name.charAt(0)) + '</div>') +
-            '<div>' +
-              '<div class="font-bold text-white">' + escHtml(m.display_name) + '</div>' +
-              '<div class="text-slate-600 text-xs">' + new Date(m.updated_at || m.created_at).toLocaleDateString('zh-TW') + '</div>' +
+        var msgHtml = m.message ? escHtml(m.message).replace(/\n/g, '<br/>') : '<span class="text-slate-600 italic">還沒寫留言</span>';
+        return '<div class="fade-in flex gap-3 items-start" style="animation-delay:' + (i * 60) + 'ms">' +
+          (m.avatar_url ? '<img src="' + escHtml(m.avatar_url) + '" alt="" class="w-10 h-10 rounded-full bg-slate-700 flex-shrink-0 cursor-pointer" onclick="showAvatar(\'' + escHtml(m.avatar_url) + '\', \'' + escHtml(m.display_name) + '\')" onerror="this.style.display=\'none\'" />' : '<div class="w-10 h-10 rounded-full bg-gradient-to-br from-violet-500 to-purple-500 flex items-center justify-center text-sm font-bold flex-shrink-0">' + escHtml(m.display_name.charAt(0)) + '</div>') +
+          '<div class="flex-1 min-w-0">' +
+            '<div class="flex items-baseline gap-2">' +
+              '<span class="font-medium text-white text-sm">' + escHtml(m.display_name) + '</span>' +
+              '<span class="text-slate-600 text-[10px]">' + new Date(m.updated_at || m.created_at).toLocaleDateString('zh-TW') + '</span>' +
             '</div>' +
+            '<div class="mt-1 bg-white/5 rounded-2xl rounded-tl-sm px-4 py-2.5 text-slate-300 text-sm leading-relaxed inline-block">' + msgHtml + '</div>' +
+            (canDelete(m.line_user_id) ? '<div class="mt-1"><button onclick="deleteIntro(\'' + m.line_user_id + '\', \'' + escHtml(m.display_name) + '\')" class="px-3 py-1 bg-red-500/10 border border-red-500/30 rounded-lg text-red-400 hover:bg-red-500/20 transition text-xs font-medium">刪除</button></div>' : '') +
           '</div>' +
-          (m.message ? '<p class="text-slate-300 text-sm leading-relaxed">' + escHtml(m.message) + '</p>' : '<p class="text-slate-600 text-sm italic">還沒寫留言</p>') +
-          (canDelete(m.line_user_id) ? '<div class="mt-4 text-right"><button onclick="deleteIntro(\'' + m.line_user_id + '\', \'' + escHtml(m.display_name) + '\')" class="px-4 py-1.5 bg-red-500/10 border border-red-500/30 rounded-lg text-red-400 hover:bg-red-500/20 hover:text-red-300 transition text-sm font-medium">刪除</button></div>' : '') +
         '</div>';
       }).join('');
     }
