@@ -70,8 +70,19 @@
   <!-- QR Code floating -->
   <div class="relative z-10 max-w-6xl mx-auto px-6">
     <div class="absolute right-6 top-0 hidden md:block">
-      <img src="/img/qr-markluce.svg" alt="QR Code — markluce.ai" class="w-24 h-24 bg-white rounded-lg p-1.5 opacity-80 hover:opacity-100 transition" title="掃描 QR Code 開啟 markluce.ai" />
+      <img src="/img/qr-markluce.svg" alt="QR Code — markluce.ai" class="w-24 h-24 bg-white rounded-lg p-1.5 opacity-80 hover:opacity-100 transition cursor-pointer" title="掃描 QR Code 開啟 markluce.ai" onclick="showQR()" />
       <p class="text-slate-500 text-[10px] text-center mt-1">掃描加入</p>
+    </div>
+  </div>
+
+  <!-- QR Modal -->
+  <div id="qr-modal" class="fixed inset-0 z-50 hidden items-center justify-center bg-black/70 backdrop-blur-sm" onclick="closeQR()">
+    <div class="text-center" onclick="event.stopPropagation()">
+      <div class="bg-white rounded-2xl p-6 shadow-2xl">
+        <img src="/img/qr-markluce.svg" alt="QR Code" class="w-64 h-64 mx-auto" />
+      </div>
+      <p class="text-white font-medium text-sm mt-4">markluce.ai</p>
+      <p class="text-slate-400 text-xs mt-1">掃描 QR Code 開啟網站</p>
     </div>
   </div>
 
@@ -326,6 +337,17 @@
       var d = document.createElement('div');
       d.textContent = str || '';
       return d.innerHTML;
+    }
+
+    function showQR() {
+      var modal = document.getElementById('qr-modal');
+      modal.classList.remove('hidden');
+      modal.classList.add('flex');
+    }
+    function closeQR() {
+      var modal = document.getElementById('qr-modal');
+      modal.classList.add('hidden');
+      modal.classList.remove('flex');
     }
 
     function showAvatar(url, name) {
