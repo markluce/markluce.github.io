@@ -164,6 +164,18 @@
     </div>
   </section>
 
+  <!-- Delete Confirmation Modal -->
+  <div id="delete-modal" class="fixed inset-0 z-50 hidden items-center justify-center bg-black/70 backdrop-blur-sm" onclick="closeDeleteModal()">
+    <div class="bg-slate-800 border border-white/10 rounded-2xl p-6 max-w-sm mx-4 shadow-2xl" onclick="event.stopPropagation()">
+      <h3 class="text-white font-bold text-lg mb-2">確認刪除</h3>
+      <p class="text-slate-400 text-sm mb-6">確定要刪除 <span id="delete-name" class="text-white font-medium"></span> 的自我介紹？此操作無法復原。</p>
+      <div class="flex gap-3 justify-end">
+        <button onclick="closeDeleteModal()" class="px-4 py-2 bg-white/5 border border-white/10 rounded-lg text-slate-400 text-sm hover:bg-white/10 transition">取消</button>
+        <button id="delete-confirm-btn" onclick="confirmDelete()" class="px-4 py-2 bg-red-500 hover:bg-red-600 rounded-lg text-white text-sm font-medium transition">刪除</button>
+      </div>
+    </div>
+  </div>
+
   <!-- Avatar Modal -->
   <div id="avatar-modal" class="fixed inset-0 z-50 hidden items-center justify-center bg-black/70 backdrop-blur-sm" onclick="closeAvatar()">
     <div class="text-center" onclick="event.stopPropagation()">
@@ -347,15 +359,37 @@
       return currentUser.userId === lineUserId || currentUser.userId === ADMIN_LINE_ID;
     }
 
-    async function deleteIntro(lineUserId, name) {
-      if (!confirm('確定要刪除 ' + name + ' 的自我介紹？')) return;
-      var result = await sb.from('classmates').delete().eq('line_user_id', lineUserId);
+    var pendingDeleteId = null;
+
+    function deleteIntro(lineUserId, name) {
+      pendingDeleteId = lineUserId;
+      document.getElementById('delete-name').textContent = name;
+      var modal = document.getElementById('delete-modal');
+      modal.classList.remove('hidden');
+      modal.classList.add('flex');
+    }
+
+    function closeDeleteModal() {
+      pendingDeleteId = null;
+      var modal = document.getElementById('delete-modal');
+      modal.classList.add('hidden');
+      modal.classList.remove('flex');
+    }
+
+    async function confirmDelete() {
+      if (!pendingDeleteId) return;
+      var btn = document.getElementById('delete-confirm-btn');
+      btn.textContent = '刪除中...';
+      btn.disabled = true;
+      var result = await sb.from('classmates').delete().eq('line_user_id', pendingDeleteId);
       if (result.error) {
-        alert('刪除失敗：' + result.error.message);
+        btn.textContent = '失敗';
+        setTimeout(function() { btn.textContent = '刪除'; btn.disabled = false; }, 2000);
       } else {
-        if (currentUser && currentUser.userId === lineUserId) {
+        if (currentUser && currentUser.userId === pendingDeleteId) {
           existingRecord = null;
         }
+        closeDeleteModal();
         loadClassmates();
       }
     }
