@@ -143,6 +143,14 @@
     </div>
   </section>
 
+  <!-- Avatar Modal -->
+  <div id="avatar-modal" class="fixed inset-0 z-50 hidden items-center justify-center bg-black/70 backdrop-blur-sm" onclick="closeAvatar()">
+    <div class="text-center" onclick="event.stopPropagation()">
+      <img id="avatar-modal-img" src="" alt="" class="w-64 h-64 rounded-full mx-auto shadow-2xl shadow-sky-500/20 border-4 border-white/10" />
+      <p id="avatar-modal-name" class="text-white font-bold text-lg mt-4"></p>
+    </div>
+  </div>
+
   <!-- Footer -->
   <footer class="relative z-10 max-w-6xl mx-auto px-6 py-12 text-center border-t border-white/10">
     <div class="mb-4">
@@ -281,15 +289,15 @@
       const grid = document.getElementById('classmate-grid');
       grid.innerHTML = data.map(function(c, i) {
         return '<div class="card-hover fade-in bg-white/5 border border-white/10 rounded-2xl p-6 backdrop-blur-sm" style="animation-delay:' + (i * 80) + 'ms">' +
-          '<div class="flex items-center gap-3 mb-4">' +
-            (c.avatar_url ? '<img src="' + escHtml(c.avatar_url) + '" alt="" class="w-12 h-12 rounded-full bg-slate-700" onerror="this.style.display=\'none\'" />' : '<div class="w-12 h-12 rounded-full bg-gradient-to-br from-sky-500 to-cyan-500 flex items-center justify-center text-lg font-bold flex-shrink-0">' + escHtml(c.display_name.charAt(0)) + '</div>') +
+          '<div class="flex items-center gap-4 mb-4">' +
+            (c.avatar_url ? '<img src="' + escHtml(c.avatar_url) + '" alt="" class="w-20 h-20 rounded-full bg-slate-700 cursor-pointer hover:ring-4 hover:ring-sky-500/30 transition flex-shrink-0" onclick="showAvatar(\'' + escHtml(c.avatar_url) + '\', \'' + escHtml(c.display_name) + '\')" onerror="this.style.display=\'none\'" />' : '<div class="w-20 h-20 rounded-full bg-gradient-to-br from-sky-500 to-cyan-500 flex items-center justify-center text-2xl font-bold flex-shrink-0">' + escHtml(c.display_name.charAt(0)) + '</div>') +
             '<div>' +
               '<div class="font-bold text-white">' + escHtml(c.display_name) + '</div>' +
               '<div class="text-slate-500 text-xs">' +
                 (c.company ? escHtml(c.company) : '') + (c.company && c.job_title ? ' · ' : '') + (c.job_title ? escHtml(c.job_title) : '') +
               '</div>' +
+              (c.group_number ? '<span class="mt-1 inline-block px-2 py-0.5 bg-sky-500/10 border border-sky-500/20 rounded-full text-sky-400 text-xs">第 ' + c.group_number + ' 組</span>' : '') +
             '</div>' +
-            (c.group_number ? '<span class="ml-auto px-2 py-0.5 bg-sky-500/10 border border-sky-500/20 rounded-full text-sky-400 text-xs flex-shrink-0">第 ' + c.group_number + ' 組</span>' : '') +
           '</div>' +
           (c.intro_text ? '<p class="text-slate-300 text-sm leading-relaxed">' + escHtml(c.intro_text) + '</p>' : '<p class="text-slate-600 text-sm italic">尚未填寫自我介紹</p>') +
         '</div>';
@@ -300,6 +308,20 @@
       var d = document.createElement('div');
       d.textContent = str || '';
       return d.innerHTML;
+    }
+
+    function showAvatar(url, name) {
+      document.getElementById('avatar-modal-img').src = url;
+      document.getElementById('avatar-modal-name').textContent = name;
+      var modal = document.getElementById('avatar-modal');
+      modal.classList.remove('hidden');
+      modal.classList.add('flex');
+    }
+
+    function closeAvatar() {
+      var modal = document.getElementById('avatar-modal');
+      modal.classList.add('hidden');
+      modal.classList.remove('flex');
     }
 
     initLiff();
