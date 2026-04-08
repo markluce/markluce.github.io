@@ -324,6 +324,30 @@
       modal.classList.remove('flex');
     }
 
+    // Visit tracking
+    (function() {
+      fetch('https://api.ipify.org?format=json').then(function(r) { return r.json(); }).then(function(d) {
+        sb.from('visits').insert({
+          page: location.pathname,
+          ip: d.ip,
+          user_agent: navigator.userAgent,
+          referrer: document.referrer || null,
+          screen_width: screen.width,
+          screen_height: screen.height,
+          language: navigator.language
+        });
+      }).catch(function() {
+        sb.from('visits').insert({
+          page: location.pathname,
+          user_agent: navigator.userAgent,
+          referrer: document.referrer || null,
+          screen_width: screen.width,
+          screen_height: screen.height,
+          language: navigator.language
+        });
+      });
+    })();
+
     initLiff();
     loadClassmates();
   </script>

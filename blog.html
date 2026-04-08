@@ -120,5 +120,17 @@
     </p>
   </footer>
 
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+  <script>
+    (function() {
+      var sb = supabase.createClient('https://dcjlekszmobaenhrdbfl.supabase.co', 'sb_publishable_LoGKEHFftjjIf0G1Xv3ozA_A5nZeudW');
+      fetch('https://api.ipify.org?format=json').then(function(r) { return r.json(); }).then(function(d) {
+        sb.from('visits').insert({ page: location.pathname, ip: d.ip, user_agent: navigator.userAgent, referrer: document.referrer || null, screen_width: screen.width, screen_height: screen.height, language: navigator.language });
+      }).catch(function() {
+        sb.from('visits').insert({ page: location.pathname, user_agent: navigator.userAgent, referrer: document.referrer || null, screen_width: screen.width, screen_height: screen.height, language: navigator.language });
+      });
+    })();
+  </script>
+
 </body>
 </html>
