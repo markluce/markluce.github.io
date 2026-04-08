@@ -61,6 +61,7 @@
       <div id="user-info" class="hidden flex items-center gap-2">
         <img id="user-avatar" class="w-8 h-8 rounded-full glow-ring" src="" alt="" />
         <span id="user-name" class="text-sm text-emerald-400 font-medium"></span>
+        <button onclick="handleLogout()" class="text-slate-500 hover:text-red-400 transition text-xs ml-1" title="登出">✕</button>
       </div>
     </div>
   </nav>
@@ -198,6 +199,13 @@
         console.error('LIFF init error:', e);
         document.getElementById('login-btn').classList.remove('hidden');
       }
+    }
+
+    function handleLogout() {
+      if (typeof liff !== 'undefined' && liff.isLoggedIn()) {
+        liff.logout();
+      }
+      window.location.reload();
     }
 
     function handleLogin() {
