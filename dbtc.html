@@ -280,7 +280,7 @@
     }
 
     async function loadMembers() {
-      var result = await sb.from(TABLE).select('*').order('created_at', { ascending: true });
+      var result = await sb.from(TABLE).select('*').order('updated_at', { ascending: false });
       document.getElementById('loading').classList.add('hidden');
 
       if (result.error || !result.data || result.data.length === 0) {
