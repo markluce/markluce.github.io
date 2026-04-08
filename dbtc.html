@@ -72,9 +72,11 @@
 
   <!-- Message Form -->
   <section class="relative z-10">
-    <div id="msg-form" class="hidden max-w-xl mx-auto px-4 md:px-6 mb-12 fade-in">
-      <div class="bg-white/5 border border-emerald-500/20 rounded-2xl p-6">
-        <h3 class="text-lg font-bold text-emerald-400 mb-4">留個言吧</h3>
+    <div id="msg-form" class="hidden max-w-xl mx-auto px-4 md:px-6 mb-8 fade-in">
+      <div class="text-center mb-3">
+        <button onclick="toggleForm()" id="form-toggle" class="text-emerald-400 hover:text-emerald-300 transition text-sm font-medium">編輯我的留言 ▼</button>
+      </div>
+      <div id="form-body" class="hidden bg-white/5 border border-emerald-500/20 rounded-2xl p-6">
         <div class="space-y-4">
           <div>
             <textarea id="f-message" rows="3" placeholder="想說什麼就說什麼（不洗版就好）" class="w-full bg-white/5 border border-white/20 rounded-lg px-3 py-2 text-white text-sm placeholder-slate-600 focus:outline-none focus:border-emerald-500 resize-none"></textarea>
@@ -169,6 +171,18 @@
         }
       } catch (e) {
         console.error('LIFF init error:', e);
+      }
+    }
+
+    function toggleForm() {
+      var body = document.getElementById('form-body');
+      var btn = document.getElementById('form-toggle');
+      if (body.classList.contains('hidden')) {
+        body.classList.remove('hidden');
+        btn.textContent = '收起 ▲';
+      } else {
+        body.classList.add('hidden');
+        btn.textContent = '編輯我的留言 ▼';
       }
     }
 
