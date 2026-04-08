@@ -16,9 +16,9 @@
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
   <script charset="utf-8" src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
   <style>
-    .gradient-text { background: linear-gradient(135deg, #a78bfa, #7c3aed); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+    .gradient-text { background: linear-gradient(135deg, #38bdf8, #06b6d4); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
     .card-hover { transition: transform 0.3s ease, box-shadow 0.3s ease; }
-    .card-hover:hover { transform: translateY(-4px); box-shadow: 0 20px 40px -12px rgba(139, 92, 246, 0.15); }
+    .card-hover:hover { transform: translateY(-4px); box-shadow: 0 20px 40px -12px rgba(14, 165, 233, 0.15); }
     .line-btn { background: #06C755; }
     .line-btn:hover { background: #05b64d; }
     .fade-in { animation: fadeIn 0.6s ease-out; }
@@ -26,12 +26,12 @@
     .glow-ring { box-shadow: 0 0 0 4px rgba(6, 199, 85, 0.2); }
   </style>
 </head>
-<body class="min-h-screen bg-gradient-to-br from-slate-900 via-violet-950/20 to-slate-900 text-white font-sans">
+<body class="min-h-screen bg-gradient-to-br from-slate-900 via-sky-950 to-slate-900 text-white font-sans">
 
   <div class="fixed inset-0 pointer-events-none overflow-hidden">
-    <div class="absolute -top-40 -right-40 w-96 h-96 bg-violet-500/10 rounded-full blur-3xl"></div>
-    <div class="absolute top-1/2 -left-40 w-96 h-96 bg-purple-500/10 rounded-full blur-3xl"></div>
-    <div class="absolute -bottom-40 right-1/3 w-96 h-96 bg-violet-500/10 rounded-full blur-3xl"></div>
+    <div class="absolute -top-40 -right-40 w-96 h-96 bg-sky-500/10 rounded-full blur-3xl"></div>
+    <div class="absolute top-1/2 -left-40 w-96 h-96 bg-cyan-500/10 rounded-full blur-3xl"></div>
+    <div class="absolute -bottom-40 right-1/3 w-96 h-96 bg-emerald-500/10 rounded-full blur-3xl"></div>
   </div>
 
   <!-- Nav -->
@@ -50,7 +50,7 @@
         </button>
         <div id="user-info" class="hidden flex items-center gap-2">
           <img id="user-avatar" class="w-7 h-7 md:w-8 md:h-8 rounded-full glow-ring" src="" alt="" />
-          <span id="user-name" class="text-xs md:text-sm text-violet-400 font-medium max-w-[80px] md:max-w-none truncate"></span>
+          <span id="user-name" class="text-xs md:text-sm text-emerald-400 font-medium max-w-[80px] md:max-w-none truncate"></span>
           <button id="admin-toggle" onclick="toggleAdminMode()" class="hidden text-slate-600 hover:text-red-400 transition text-xs px-1.5 py-0.5 border border-slate-700 rounded" title="切換管理模式">管理</button>
           <button onclick="handleLogout()" class="text-slate-500 hover:text-red-400 transition text-sm px-1" title="登出">登出</button>
         </div>
@@ -60,7 +60,7 @@
 
   <!-- Hero -->
   <header class="relative z-10 max-w-4xl mx-auto px-4 md:px-6 pt-8 md:pt-12 pb-6 md:pb-8 text-center">
-    <div class="inline-block mb-4 px-4 py-1.5 bg-violet-500/10 border border-violet-500/20 rounded-full text-violet-400 text-sm font-medium">
+    <div class="inline-block mb-4 px-4 py-1.5 bg-emerald-500/10 border border-emerald-500/20 rounded-full text-emerald-400 text-sm font-medium">
       Toastmasters · 會務 2025-26
     </div>
     <h1 class="text-2xl md:text-5xl font-extrabold leading-tight mb-4">
@@ -73,11 +73,11 @@
   <!-- Message Form -->
   <section class="relative z-10">
     <div id="msg-form" class="hidden max-w-xl mx-auto px-4 md:px-6 mb-12 fade-in">
-      <div class="bg-white/5 border border-violet-500/20 rounded-2xl p-6">
-        <h3 class="text-lg font-bold text-violet-400 mb-4">留個言吧</h3>
+      <div class="bg-white/5 border border-emerald-500/20 rounded-2xl p-6">
+        <h3 class="text-lg font-bold text-emerald-400 mb-4">留個言吧</h3>
         <div class="space-y-4">
           <div>
-            <textarea id="f-message" rows="3" placeholder="想說什麼就說什麼（不洗版就好）" class="w-full bg-white/5 border border-white/20 rounded-lg px-3 py-2 text-white text-sm placeholder-slate-600 focus:outline-none focus:border-violet-500 resize-none"></textarea>
+            <textarea id="f-message" rows="3" placeholder="想說什麼就說什麼（不洗版就好）" class="w-full bg-white/5 border border-white/20 rounded-lg px-3 py-2 text-white text-sm placeholder-slate-600 focus:outline-none focus:border-emerald-500 resize-none"></textarea>
           </div>
           <button onclick="submitMessage()" class="w-full line-btn text-white py-2.5 rounded-lg text-sm font-semibold transition">
             送出留言
@@ -97,7 +97,7 @@
     <div id="member-grid" class="max-w-lg mx-auto space-y-3"></div>
 
     <div id="loading" class="text-center py-12 text-slate-500">
-      <div class="inline-block w-6 h-6 border-2 border-slate-600 border-t-violet-400 rounded-full animate-spin mb-3"></div>
+      <div class="inline-block w-6 h-6 border-2 border-slate-600 border-t-sky-400 rounded-full animate-spin mb-3"></div>
       <p class="text-sm">載入留言中...</p>
     </div>
 
@@ -123,7 +123,7 @@
   <!-- Avatar Modal -->
   <div id="avatar-modal" class="fixed inset-0 z-50 hidden items-center justify-center bg-black/70 backdrop-blur-sm" onclick="closeAvatar()">
     <div class="text-center" onclick="event.stopPropagation()">
-      <img id="avatar-modal-img" src="" alt="" class="w-64 h-64 rounded-full mx-auto shadow-2xl shadow-violet-500/20 border-4 border-white/10" />
+      <img id="avatar-modal-img" src="" alt="" class="w-64 h-64 rounded-full mx-auto shadow-2xl shadow-sky-500/20 border-4 border-white/10" />
       <p id="avatar-modal-name" class="text-white font-bold text-lg mt-4"></p>
     </div>
   </div>
@@ -296,7 +296,7 @@
       grid.innerHTML = result.data.map(function(m, i) {
         var msgHtml = m.message ? escHtml(m.message).replace(/\n/g, '<br/>') : '<span class="text-slate-600 italic">還沒寫留言</span>';
         return '<div class="fade-in flex gap-3 items-start" style="animation-delay:' + (i * 60) + 'ms">' +
-          (m.avatar_url ? '<img src="' + escHtml(m.avatar_url) + '" alt="" class="w-10 h-10 rounded-full bg-slate-700 flex-shrink-0 cursor-pointer" onclick="showAvatar(\'' + escHtml(m.avatar_url) + '\', \'' + escHtml(m.display_name) + '\')" onerror="this.style.display=\'none\'" />' : '<div class="w-10 h-10 rounded-full bg-gradient-to-br from-violet-500 to-purple-500 flex items-center justify-center text-sm font-bold flex-shrink-0">' + escHtml(m.display_name.charAt(0)) + '</div>') +
+          (m.avatar_url ? '<img src="' + escHtml(m.avatar_url) + '" alt="" class="w-16 h-16 rounded-full bg-slate-700 flex-shrink-0 cursor-pointer hover:ring-4 hover:ring-sky-500/30 transition" onclick="showAvatar(\'' + escHtml(m.avatar_url) + '\', \'' + escHtml(m.display_name) + '\')" onerror="this.style.display=\'none\'" />' : '<div class="w-16 h-16 rounded-full bg-gradient-to-br from-sky-500 to-cyan-500 flex items-center justify-center text-xl font-bold flex-shrink-0">' + escHtml(m.display_name.charAt(0)) + '</div>') +
           '<div class="flex-1 min-w-0">' +
             '<div class="flex items-baseline gap-2">' +
               '<span class="font-medium text-white text-sm">' + escHtml(m.display_name) + '</span>' +
