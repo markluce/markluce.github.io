@@ -1,14 +1,35 @@
 # markluce.github.io
 
-## 公開網址
+> 馬克路思科技有限公司 — [markluce.ai](https://markluce.ai)
 
-**https://markluce.ai/**
+## Pages
 
-## 專案總覽
+| Page | URL | Description |
+|------|-----|-------------|
+| 同學牆 | [markluce.ai](https://markluce.ai) | AI PM 班第一期同學自我介紹牆 (LINE Login + Supabase) |
+| Blog | [markluce.ai/blog.html](https://markluce.ai/blog.html) | Mark 的 AI 與創業隨筆 |
+| 關於 | [markluce.ai/about.html](https://markluce.ai/about.html) | 公司介紹 + Mark 個人簡介 |
 
-| 專案 | 網址 | 說明 |
-|------|------|------|
-| 首頁作品集 | https://markluce.ai/ | 本站 - 所有專案入口 |
-| water001 | https://markluce.github.io/water001/ | GTO 撲克求解器分析視覺化 |
-| gto-lite | https://markluce.github.io/gto-lite/ | GTO 撲克求解工具 |
-| Claude Code 指令大全 | https://markluce.github.io/2026claudecode-take2/ | 繁體中文指令參考 + 新手工作坊 |
+## Tech Stack
+
+- Static HTML + Tailwind CSS (CDN)
+- Supabase (database + REST API)
+- LINE LIFF SDK (auth)
+- GitHub Pages (hosting)
+
+## Repo Structure
+
+```
+├── index.html      # 同學牆 (homepage)
+├── blog.html       # Blog
+├── about.html      # 關於
+├── img/            # Re-hosted images (FB posts, etc.)
+├── CNAME           # Custom domain → markluce.ai
+└── README.md
+```
+
+## Related
+
+- **PM repo (private):** [aipmtw/markluce](https://github.com/aipmtw/markluce) — project management, credentials, backlog
+- **Supabase:** `dcjlekszmobaenhrdbfl` (Asia-Pacific)
+- **LINE Login:** LIFF channel under 馬克路思科技 provider
