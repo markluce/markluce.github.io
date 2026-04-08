@@ -202,7 +202,8 @@
 
     function handleLogin() {
       if (!LIFF_ID) return;
-      liff.login({ redirectUri: window.location.href });
+      var base = window.location.origin + window.location.pathname;
+      liff.login({ redirectUri: base + '?v=' + Date.now() });
     }
 
     async function showLoggedIn() {

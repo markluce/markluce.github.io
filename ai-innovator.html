@@ -164,11 +164,12 @@
 
     function handleLogin() {
       if (!LIFF_ID) return;
-      var redirectUri = window.location.href;
+      var base = window.location.origin + window.location.pathname;
+      var redirectUri = base + '?v=' + Date.now();
       if (typeof liff !== 'undefined') {
         liff.login({ redirectUri: redirectUri });
       } else {
-        window.location.href = 'https://liff.line.me/' + LIFF_ID + '?redirect=' + encodeURIComponent(redirectUri);
+        window.location.href = 'https://liff.line.me/' + LIFF_ID;
       }
     }
 
