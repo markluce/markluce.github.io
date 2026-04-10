@@ -184,7 +184,7 @@
     </div>
     <div class="chatbot-messages" id="chatMessages">
       <div class="chat-msg bot">
-        <div class="chat-bubble">Hi! 我是 <strong>Arita</strong>，你的 TOEIC & 雙語學習助手 👋<br><br>我可以幫你：<br>📝 出 TOEIC 練習題（Part 5/6/7）<br>📖 教文法、背單字<br>🌏 中英翻譯 + 解釋<br>💬 商業英語對話練習<br><br>試試看（點擊即送）：<br><button class="suggest-btn" data-q="出一題 Part 5 文法題">1. 出一題 Part 5 文法題</button><br><button class="suggest-btn" data-q="教我 10 個 TOEIC 高頻商業單字">2. 教我 10 個 TOEIC 高頻單字</button><br><button class="suggest-btn" data-q="現在完成式 vs 過去簡單式的差別是什麼？">3. 現在完成式 vs 過去式</button></div>
+        <div class="chat-bubble" id="welcomeBubble">Hi! 我是 <strong>Arita</strong>，你的 TOEIC & 雙語學習助手 👋<br><br>我可以幫你：<br>📝 出 TOEIC 練習題（Part 5/6/7）<br>📖 教文法、背單字<br>🌏 中英翻譯 + 解釋<br>💬 商業英語對話練習<br><br>試試看（點擊即送）：<div id="suggestList"></div></div>
       </div>
     </div>
     <div class="voice-selector">
@@ -275,9 +275,57 @@
     var chatInput = document.getElementById('chatInput');
     var chatSend = document.getElementById('chatSend');
     var chatMessages = document.getElementById('chatMessages');
-    // Inject welcome content so AI knows what numbered options mean
-    var WELCOME_TEXT = 'Hi! 我是 Arita，你的 TOEIC & 雙語學習助手 👋\n\n我可以幫你：\n📝 出 TOEIC 練習題（Part 5/6/7）\n📖 教文法、背單字\n🌏 中英翻譯 + 解釋\n💬 商業英語對話練習\n\n試試看：\n1. 出一題 Part 5 文法題\n2. 教我 10 個 TOEIC 高頻單字\n3. 現在完成式 vs 過去式';
-    var chatHistory = [{ role: 'assistant', content: WELCOME_TEXT }];
+    // Topic pool — randomly pick some on each load
+    var ALL_TOPICS = [
+      '出一題 Part 5 文法題',
+      '出一題 Part 6 段落填空題',
+      '出一題 Part 7 閱讀理解題',
+      '教我 10 個 TOEIC 高頻商業單字',
+      '教我常見的 TOEIC 片語動詞 (phrasal verbs)',
+      '現在完成式 vs 過去簡單式的差別是什麼？',
+      '被動語態什麼時候要用？有範例嗎？',
+      '關係代名詞 who / which / that 的用法',
+      '分詞構句怎麼用？',
+      '虛擬語氣 (subjunctive mood) 是什麼？',
+      '介系詞 in / on / at 的時間用法',
+      '翻譯：這份合約需要修改',
+      '翻譯：我們可以重新安排會議嗎？',
+      '翻譯：請附上詳細報價單',
+      '商業 email 的常用開頭與結尾',
+      '如何禮貌地拒絕客戶要求？',
+      '會議中常用的英文表達',
+      'TOEIC 考試的分數級別是怎麼分的？',
+      'TOEIC Part 7 閱讀理解有哪些解題技巧？',
+      '商業簡報的常用英文句型',
+      '電話英語：轉接、留言、確認的說法',
+      '差旅英語：訂房、登機、報到',
+      '客戶服務英語：處理抱怨與道歉',
+      '簡歷 (resume) 的重點表達',
+      '面試英語：常見問題與回答'
+    ];
+
+    function pickRandomTopics(n) {
+      var shuffled = ALL_TOPICS.slice().sort(function() { return Math.random() - 0.5; });
+      return shuffled.slice(0, n);
+    }
+
+    // Render the random suggestions into the welcome bubble
+    (function() {
+      var picked = pickRandomTopics(5);
+      var html = picked.map(function(t, i) {
+        return '<button class="suggest-btn" data-q="' + t.replace(/"/g, '&quot;') + '">' + (i + 1) + '. ' + t + '</button>';
+      }).join('<br>');
+      var list = document.getElementById('suggestList');
+      if (list) list.innerHTML = html;
+
+      // Seed chat history with welcome + picked topics
+      var welcomeText = 'Hi! 我是 Arita，你的 TOEIC & 雙語學習助手。我剛剛給了用戶以下建議選項：\n' +
+        picked.map(function(t, i) { return (i + 1) + '. ' + t; }).join('\n') +
+        '\n若用戶回答數字 1-5，對應這些題目。';
+      window.WELCOME_SEED = welcomeText;
+    })();
+
+    var chatHistory = [{ role: 'assistant', content: window.WELCOME_SEED || '' }];
     var chatSending = false;
 
     chatToggle.onclick = function() { chatPanel.classList.toggle('open'); if (chatPanel.classList.contains('open')) chatInput.focus(); };
