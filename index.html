@@ -87,6 +87,22 @@
     .audio-player .seek::-moz-range-track { height: 6px; background: rgba(255,255,255,0.25); border-radius: 3px; border: none; }
     .audio-player .seek::-moz-range-thumb { width: 14px; height: 14px; background: #7dd3fc; border-radius: 50%; cursor: pointer; border: 2px solid #0f172a; }
     .audio-player .time { font-size: 0.72rem; color: #cbd5e1; font-variant-numeric: tabular-nums; min-width: 34px; white-space: nowrap; flex-shrink: 0; }
+    /* Classmates chatbot (second bot, green theme) */
+    .cm-toggle { position: fixed; bottom: 24px; left: 24px; z-index: 40; width: 56px; height: 56px; border-radius: 50%; background: linear-gradient(135deg,#10b981,#059669); border: none; color: white; font-size: 1.5rem; cursor: pointer; box-shadow: 0 4px 20px rgba(16,185,129,0.4); transition: transform 0.2s; }
+    .cm-toggle:hover { transform: scale(1.1); }
+    .cm-panel { display: none; position: fixed; bottom: 90px; left: 24px; z-index: 50; width: 380px; max-height: 520px; background: #0f172a; border: 1px solid rgba(16,185,129,0.3); border-radius: 16px; flex-direction: column; overflow: hidden; box-shadow: 0 20px 60px rgba(0,0,0,0.5); transition: all 0.3s ease; }
+    .cm-panel.open { display: flex; }
+    .cm-panel.fullscreen { top: 16px; left: 16px; right: 16px; bottom: 16px; width: auto; max-height: none; }
+    .cm-panel .chatbot-header { background: rgba(16,185,129,0.15); border-bottom-color: rgba(16,185,129,0.2); }
+    .cm-panel .chatbot-header span { color: #6ee7b7; }
+    .cm-panel .suggest-btn { background: rgba(16,185,129,0.15); border-color: rgba(16,185,129,0.35); color: #a7f3d0; }
+    .cm-panel .suggest-btn:hover { background: rgba(16,185,129,0.3); }
+    .cm-panel .chat-msg.user .chat-bubble { background: linear-gradient(135deg,#10b981,#059669); }
+    .cm-panel .chatbot-input button { background: linear-gradient(135deg,#10b981,#059669); }
+    @media (max-width: 480px) {
+      .cm-panel { width: calc(100vw - 32px); left: 16px; bottom: 88px; max-height: 70vh; }
+      .cm-toggle { bottom: 16px; left: 16px; width: 48px; height: 48px; font-size: 1.3rem; }
+    }
     @media (max-width: 480px) {
       .chatbot-panel { width: calc(100vw - 32px); right: 16px; bottom: 88px; max-height: 70vh; }
       .chatbot-toggle { bottom: 16px; right: 16px; width: 48px; height: 48px; font-size: 1.3rem; }
@@ -274,6 +290,27 @@
     <div class="chatbot-input">
       <input type="text" id="chatInput" placeholder="問問 AI 素養認證的問題..." autocomplete="off" />
       <button id="chatSend">送出</button>
+    </div>
+  </div>
+
+  <!-- Classmates Chatbot -->
+  <button class="cm-toggle" id="cmToggle" title="問 AI 關於同學的事">👥</button>
+  <div class="cm-panel chatbot-panel" id="cmPanel">
+    <div class="chatbot-header">
+      <span>🤝 AI 同學助手</span>
+      <div>
+        <button id="cmFull" title="全螢幕切換" style="margin-right:6px;">⛶</button>
+        <button id="cmClose">&times;</button>
+      </div>
+    </div>
+    <div class="chatbot-messages" id="cmMessages">
+      <div class="chat-msg bot">
+        <div class="chat-bubble">Hi! 我是 <strong>AI 同學助手</strong> 👥<br><br>我根據同學們填寫的自我介紹和留言回答問題，幫你快速認識班上同學。<br><br>試試看（點擊即送）：<div id="cmSuggestList"></div></div>
+      </div>
+    </div>
+    <div class="chatbot-input">
+      <input type="text" id="cmInput" placeholder="問問關於同學的事..." autocomplete="off" />
+      <button id="cmSend">送出</button>
     </div>
   </div>
 
@@ -881,6 +918,134 @@
         });
       }
     })();
+
+    // ====== Classmates Chatbot (second bot) ======
+    var CM_CHAT_URL = SUPABASE_URL + '/functions/v1/classmates-chat';
+    var cmToggle = document.getElementById('cmToggle');
+    var cmPanel = document.getElementById('cmPanel');
+    var cmClose = document.getElementById('cmClose');
+    var cmInput = document.getElementById('cmInput');
+    var cmSend = document.getElementById('cmSend');
+    var cmMessages = document.getElementById('cmMessages');
+
+    var CM_TOPICS = [
+      '第 1 組有哪些同學？',
+      '第 2 組有哪些同學？',
+      '第 3 組有哪些同學？',
+      '第 4 組有哪些同學？',
+      '有哪些同學來自科技業？',
+      '有哪些同學在做產品管理？',
+      '誰提到過 AI 協作開發？',
+      '誰提到過創辦人 / 創業？',
+      '講師或助教有誰？',
+      '最近誰更新了自我介紹？',
+      'Mark 是誰？',
+      'Jerry 是誰？',
+      'Jeff 是誰？',
+      '給我班上同學的簡介總覽'
+    ];
+
+    function pickCmTopics(n) {
+      var shuffled = CM_TOPICS.slice().sort(function() { return Math.random() - 0.5; });
+      return shuffled.slice(0, n);
+    }
+
+    var cmPicked = pickCmTopics(5);
+    (function() {
+      var list = document.getElementById('cmSuggestList');
+      if (list) {
+        list.innerHTML = cmPicked.map(function(t, i) {
+          return '<button class="suggest-btn" data-q="' + t.replace(/"/g, '&quot;') + '">' + (i + 1) + '. ' + t + '</button>';
+        }).join('<br>');
+      }
+    })();
+
+    var cmHistory = [{
+      role: 'assistant',
+      content: '你好！我是 AI 同學助手。我剛剛給了用戶以下建議選項：\n' +
+        cmPicked.map(function(t, i) { return (i + 1) + '. ' + t; }).join('\n') +
+        '\n若用戶回答數字 1-5，對應這些選項。'
+    }];
+    var cmSending = false;
+
+    cmToggle.onclick = function() {
+      cmPanel.classList.toggle('open');
+      if (cmPanel.classList.contains('open')) cmInput.focus();
+    };
+    cmClose.onclick = function() { cmPanel.classList.remove('open'); cmPanel.classList.remove('fullscreen'); };
+    document.getElementById('cmFull').onclick = function() { cmPanel.classList.toggle('fullscreen'); cmMessages.scrollTop = cmMessages.scrollHeight; };
+
+    cmInput.addEventListener('keydown', function(e) {
+      if (e.key === 'Enter' && !cmSending) sendCmChat();
+    });
+    cmSend.onclick = function() { if (!cmSending) sendCmChat(); };
+
+    cmMessages.addEventListener('click', function(e) {
+      var btn = e.target.closest('.suggest-btn');
+      if (!btn || cmSending) return;
+      cmInput.value = btn.dataset.q || btn.textContent;
+      sendCmChat();
+    });
+
+    async function sendCmChat() {
+      var msg = cmInput.value.trim();
+      if (!msg) return;
+
+      if (!currentUser) {
+        appendCmChat('bot', '🔒 請先用 LINE 登入才能使用 AI 同學助手！');
+        return;
+      }
+
+      cmInput.value = '';
+      cmSending = true;
+      cmSend.disabled = true;
+      appendCmChat('user', msg);
+      cmHistory.push({ role: 'user', content: msg });
+
+      var typing = document.createElement('div');
+      typing.className = 'typing-indicator';
+      typing.textContent = 'AI 思考中...';
+      cmMessages.appendChild(typing);
+      cmMessages.scrollTop = cmMessages.scrollHeight;
+
+      try {
+        var res = await fetch(CM_CHAT_URL, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + SUPABASE_KEY },
+          body: JSON.stringify({
+            message: msg,
+            history: cmHistory.slice(-10),
+            line_user_id: currentUser.userId,
+            display_name: currentUser.displayName
+          })
+        });
+        var data = await res.json();
+        typing.remove();
+        if (data.reply) {
+          appendCmChat('bot', data.reply);
+          cmHistory.push({ role: 'assistant', content: data.reply });
+        } else {
+          appendCmChat('bot', data.error || '抱歉，目前無法回應，請稍後再試。');
+        }
+      } catch (err) {
+        typing.remove();
+        appendCmChat('bot', '連線錯誤，請稍後再試。');
+      }
+      cmSending = false;
+      cmSend.disabled = false;
+    }
+
+    function appendCmChat(role, text) {
+      var div = document.createElement('div');
+      div.className = 'chat-msg ' + role;
+      if (role === 'bot') {
+        div.innerHTML = '<div class="chat-bubble md-prose">' + renderMd(text) + '</div>';
+      } else {
+        div.innerHTML = '<div class="chat-bubble">' + escHtml(text) + '</div>';
+      }
+      cmMessages.appendChild(div);
+      cmMessages.scrollTop = cmMessages.scrollHeight;
+    }
   </script>
 
 </body>
