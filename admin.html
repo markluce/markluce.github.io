@@ -178,6 +178,42 @@
       </a>
     </div>
 
+    <!-- Visit Log -->
+    <h2 class="text-slate-400 text-xs font-medium uppercase tracking-wider mb-4 border-b border-white/10 pb-2">訪客記錄</h2>
+    <div class="mb-4 flex flex-wrap items-center gap-3">
+      <select id="visit-filter-page" onchange="loadVisits()" class="bg-slate-800 border border-white/20 rounded-lg px-3 py-1.5 text-white text-xs focus:outline-none focus:border-sky-500">
+        <option value="">所有頁面</option>
+      </select>
+      <select id="visit-filter-device" onchange="loadVisits()" class="bg-slate-800 border border-white/20 rounded-lg px-3 py-1.5 text-white text-xs focus:outline-none focus:border-sky-500">
+        <option value="">所有裝置</option>
+        <option value="phone">手機</option>
+        <option value="pc">電腦</option>
+      </select>
+      <span id="visit-total" class="text-slate-500 text-xs ml-auto"></span>
+    </div>
+    <div class="bg-white/5 border border-white/10 rounded-xl overflow-hidden mb-10">
+      <div class="overflow-x-auto">
+        <table class="w-full text-xs">
+          <thead>
+            <tr class="border-b border-white/10 text-slate-400">
+              <th class="text-left px-4 py-3 font-medium">時間</th>
+              <th class="text-left px-4 py-3 font-medium">頁面</th>
+              <th class="text-left px-4 py-3 font-medium">IP</th>
+              <th class="text-left px-4 py-3 font-medium">裝置</th>
+              <th class="text-left px-4 py-3 font-medium">螢幕</th>
+              <th class="text-left px-4 py-3 font-medium">來源</th>
+            </tr>
+          </thead>
+          <tbody id="visit-tbody" class="text-slate-300"></tbody>
+        </table>
+      </div>
+      <div class="flex items-center justify-between px-4 py-3 border-t border-white/10">
+        <button id="visit-prev" onclick="visitPage(-1)" class="px-3 py-1 bg-white/5 border border-white/10 rounded text-slate-400 text-xs hover:bg-white/10 transition disabled:opacity-30" disabled>上一頁</button>
+        <span id="visit-page-info" class="text-slate-500 text-xs"></span>
+        <button id="visit-next" onclick="visitPage(1)" class="px-3 py-1 bg-white/5 border border-white/10 rounded text-slate-400 text-xs hover:bg-white/10 transition disabled:opacity-30">下一頁</button>
+      </div>
+    </div>
+
     <!-- Quick Reference -->
     <h2 class="text-slate-400 text-xs font-medium uppercase tracking-wider mb-4 border-b border-white/10 pb-2">快速參考</h2>
     <div class="bg-white/5 border border-white/10 rounded-xl p-5 text-sm">
@@ -195,6 +231,10 @@
   </main>
 
   <script>
+    var SUPABASE_URL = 'https://dcjlekszmobaenhrdbfl.supabase.co';
+    var SUPABASE_KEY = 'sb_publishable_LoGKEHFftjjIf0G1Xv3ozA_A5nZeudW';
+    var sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
     var LIFF_ID = '2009738746-2qigSpHh';
     var ADMIN_LINE_ID = 'U7d41d4b9a49052370bd3a7265c1e391b';
 
@@ -218,6 +258,8 @@
         if (profile.userId === ADMIN_LINE_ID) {
           document.getElementById('loading').classList.add('hidden');
           document.getElementById('admin-content').classList.remove('hidden');
+          loadVisitPages();
+          loadVisits();
         } else {
           showDenied(false);
         }
@@ -235,6 +277,96 @@
       } else {
         document.getElementById('denied-msg').classList.remove('hidden');
       }
+    }
+
+    // Visit log
+    var visitOffset = 0;
+    var visitLimit = 50;
+
+    function parseDevice(ua) {
+      if (!ua) return '—';
+      ua = ua.toLowerCase();
+      if (/iphone|android.*mobile|mobile.*android/.test(ua)) return '📱 手機';
+      if (/ipad|android(?!.*mobile)|tablet/.test(ua)) return '📱 平板';
+      if (/macintosh|mac os/.test(ua)) return '💻 Mac';
+      if (/windows/.test(ua)) return '💻 Windows';
+      if (/linux/.test(ua)) return '💻 Linux';
+      return '💻 其他';
+    }
+
+    function isPhone(ua) {
+      if (!ua) return false;
+      return /iphone|android.*mobile|mobile.*android|ipad|tablet/i.test(ua);
+    }
+
+    async function loadVisitPages() {
+      var result = await sb.from('visits').select('page');
+      if (!result.data) return;
+      var pages = {};
+      result.data.forEach(function(r) { if (r.page) pages[r.page] = true; });
+      var select = document.getElementById('visit-filter-page');
+      Object.keys(pages).sort().forEach(function(p) {
+        var opt = document.createElement('option');
+        opt.value = p;
+        opt.textContent = p;
+        select.appendChild(opt);
+      });
+    }
+
+    async function loadVisits() {
+      var pageFilter = document.getElementById('visit-filter-page').value;
+      var deviceFilter = document.getElementById('visit-filter-device').value;
+
+      var query = sb.from('visits').select('*', { count: 'exact' })
+        .order('created_at', { ascending: false })
+        .range(visitOffset, visitOffset + visitLimit - 1);
+
+      if (pageFilter) query = query.eq('page', pageFilter);
+
+      var result = await query;
+      if (!result.data) return;
+
+      var rows = result.data;
+      if (deviceFilter === 'phone') {
+        rows = rows.filter(function(r) { return isPhone(r.user_agent); });
+      } else if (deviceFilter === 'pc') {
+        rows = rows.filter(function(r) { return !isPhone(r.user_agent); });
+      }
+
+      var total = result.count || 0;
+      document.getElementById('visit-total').textContent = '共 ' + total + ' 筆';
+
+      var tbody = document.getElementById('visit-tbody');
+      tbody.innerHTML = rows.map(function(v) {
+        var time = new Date(v.created_at).toLocaleString('zh-TW', { timeZone: 'Asia/Taipei', month: 'numeric', day: 'numeric', hour: '2-digit', minute: '2-digit', hour12: false });
+        var ref = v.referrer ? '<span title="' + escHtml(v.referrer) + '">' + escHtml(v.referrer.replace(/https?:\/\//, '').substring(0, 25)) + '</span>' : '<span class="text-slate-600">直接</span>';
+        return '<tr class="border-b border-white/5 hover:bg-white/5">' +
+          '<td class="px-4 py-2.5 text-slate-400 whitespace-nowrap">' + time + '</td>' +
+          '<td class="px-4 py-2.5 whitespace-nowrap">' + escHtml(v.page || '/') + '</td>' +
+          '<td class="px-4 py-2.5 font-mono text-slate-400">' + escHtml(v.ip || '—') + '</td>' +
+          '<td class="px-4 py-2.5 whitespace-nowrap">' + parseDevice(v.user_agent) + '</td>' +
+          '<td class="px-4 py-2.5 text-slate-400">' + (v.screen_width && v.screen_height ? v.screen_width + '×' + v.screen_height : '—') + '</td>' +
+          '<td class="px-4 py-2.5 text-slate-400">' + ref + '</td>' +
+        '</tr>';
+      }).join('');
+
+      var page = Math.floor(visitOffset / visitLimit) + 1;
+      var totalPages = Math.ceil(total / visitLimit);
+      document.getElementById('visit-page-info').textContent = '第 ' + page + ' / ' + totalPages + ' 頁';
+      document.getElementById('visit-prev').disabled = visitOffset === 0;
+      document.getElementById('visit-next').disabled = visitOffset + visitLimit >= total;
+    }
+
+    function visitPage(dir) {
+      visitOffset += dir * visitLimit;
+      if (visitOffset < 0) visitOffset = 0;
+      loadVisits();
+    }
+
+    function escHtml(str) {
+      var d = document.createElement('div');
+      d.textContent = str || '';
+      return d.innerHTML;
     }
 
     init();
