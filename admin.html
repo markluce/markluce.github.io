@@ -205,6 +205,33 @@
       </div>
     </div>
 
+    <!-- Classmates Chat Log -->
+    <h2 class="text-slate-400 text-xs font-medium uppercase tracking-wider mb-4 border-b border-white/10 pb-2">🤝 同學助手對話記錄</h2>
+    <div class="mb-4 flex flex-wrap items-center gap-3">
+      <input id="cmlog-filter-user" oninput="loadCmLogs()" placeholder="搜尋使用者名稱..." class="bg-slate-800 border border-white/20 rounded-lg px-3 py-1.5 text-white text-xs placeholder-slate-600 focus:outline-none focus:border-emerald-500" />
+      <span id="cmlog-total" class="text-slate-500 text-xs ml-auto"></span>
+    </div>
+    <div class="bg-white/5 border border-white/10 rounded-xl overflow-hidden mb-10">
+      <div class="overflow-x-auto">
+        <table class="w-full text-xs">
+          <thead>
+            <tr class="border-b border-white/10 text-slate-400">
+              <th class="text-left px-4 py-3 font-medium whitespace-nowrap">時間</th>
+              <th class="text-left px-4 py-3 font-medium whitespace-nowrap">使用者</th>
+              <th class="text-left px-4 py-3 font-medium">問題</th>
+              <th class="text-left px-4 py-3 font-medium">回答</th>
+            </tr>
+          </thead>
+          <tbody id="cmlog-tbody" class="text-slate-300"></tbody>
+        </table>
+      </div>
+      <div class="flex items-center justify-between px-4 py-3 border-t border-white/10">
+        <button id="cmlog-prev" onclick="cmLogPage(-1)" class="px-3 py-1 bg-white/5 border border-white/10 rounded text-slate-400 text-xs hover:bg-white/10 transition disabled:opacity-30" disabled>上一頁</button>
+        <span id="cmlog-page-info" class="text-slate-500 text-xs"></span>
+        <button id="cmlog-next" onclick="cmLogPage(1)" class="px-3 py-1 bg-white/5 border border-white/10 rounded text-slate-400 text-xs hover:bg-white/10 transition disabled:opacity-30">下一頁</button>
+      </div>
+    </div>
+
     <!-- Arita Chat Log -->
     <h2 class="text-slate-400 text-xs font-medium uppercase tracking-wider mb-4 border-b border-white/10 pb-2">🎓 Arita 雙語 & TOEIC 對話記錄</h2>
     <div class="mb-4 flex flex-wrap items-center gap-3">
@@ -315,6 +342,7 @@
           loadVisitPages();
           loadVisits();
           loadChatLogs();
+          loadCmLogs();
           loadAritaLogs();
         } else {
           showDenied(false);
@@ -519,6 +547,54 @@
       aritaOffset += dir * aritaLimit;
       if (aritaOffset < 0) aritaOffset = 0;
       loadAritaLogs();
+    }
+
+    // Classmates chat log
+    var cmLogOffset = 0;
+    var cmLogLimit = 30;
+
+    async function loadCmLogs() {
+      var userFilter = document.getElementById('cmlog-filter-user').value.trim();
+      var query = sb.from('classmates_chat_logs').select('*', { count: 'exact' })
+        .order('created_at', { ascending: false })
+        .range(cmLogOffset, cmLogOffset + cmLogLimit - 1);
+
+      if (userFilter) query = query.ilike('display_name', '%' + userFilter + '%');
+
+      var result = await query;
+      if (result.error) { console.error(result.error); return; }
+
+      var total = result.count || 0;
+      document.getElementById('cmlog-total').textContent = '共 ' + total + ' 筆';
+
+      var tbody = document.getElementById('cmlog-tbody');
+      var rows = result.data || [];
+      if (rows.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="4" class="px-4 py-6 text-center text-slate-500">尚無對話記錄</td></tr>';
+      } else {
+        tbody.innerHTML = rows.map(function(c) {
+          var time = new Date(c.created_at).toLocaleString('zh-TW', { timeZone: 'Asia/Taipei', month: 'numeric', day: 'numeric', hour: '2-digit', minute: '2-digit', hour12: false });
+          var truncReply = c.reply ? (c.reply.length > 150 ? c.reply.substring(0, 150) + '...' : c.reply) : '—';
+          return '<tr class="border-b border-white/5 hover:bg-white/5 align-top">' +
+            '<td class="px-4 py-2.5 text-slate-400 whitespace-nowrap">' + time + '</td>' +
+            '<td class="px-4 py-2.5 whitespace-nowrap">' + escHtml(c.display_name || '匿名') + '</td>' +
+            '<td class="px-4 py-2.5 max-w-xs">' + escHtml(c.message || '') + '</td>' +
+            '<td class="px-4 py-2.5 text-slate-400 max-w-md">' + escHtml(truncReply) + '</td>' +
+          '</tr>';
+        }).join('');
+      }
+
+      var page = Math.floor(cmLogOffset / cmLogLimit) + 1;
+      var totalPages = Math.max(1, Math.ceil(total / cmLogLimit));
+      document.getElementById('cmlog-page-info').textContent = '第 ' + page + ' / ' + totalPages + ' 頁';
+      document.getElementById('cmlog-prev').disabled = cmLogOffset === 0;
+      document.getElementById('cmlog-next').disabled = cmLogOffset + cmLogLimit >= total;
+    }
+
+    function cmLogPage(dir) {
+      cmLogOffset += dir * cmLogLimit;
+      if (cmLogOffset < 0) cmLogOffset = 0;
+      loadCmLogs();
     }
 
     init();
