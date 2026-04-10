@@ -6,6 +6,26 @@ const corsHeaders = {
   "Access-Control-Allow-Methods": "POST, OPTIONS",
 };
 
+// Config cache (60s TTL)
+let configCache: { prompt: string | null; ts: number } | null = null;
+const CONFIG_TTL_MS = 60 * 1000;
+
+async function getCustomPrompt(sb: any): Promise<string | null> {
+  const now = Date.now();
+  if (configCache && (now - configCache.ts) < CONFIG_TTL_MS) {
+    return configCache.prompt;
+  }
+  try {
+    const { data } = await sb.from('bot_configs').select('system_prompt').eq('bot_name', 'classmates').maybeSingle();
+    const prompt = (data?.system_prompt && data.system_prompt.trim()) ? data.system_prompt : null;
+    configCache = { prompt, ts: now };
+    return prompt;
+  } catch (e) {
+    console.error('getCustomPrompt error:', e);
+    return null;
+  }
+}
+
 Deno.serve(async (req: Request) => {
   if (req.method === "OPTIONS") {
     return new Response("ok", { headers: corsHeaders });
@@ -102,16 +122,14 @@ Deno.serve(async (req: Request) => {
       .map(([name, msgs]) => `【給 ${name} 的留言】\n${msgs.join("\n")}`)
       .join("\n\n");
 
-    const systemPrompt = `# 角色
+    // Default instructions template — uses {DATA_BLOCK} placeholder
+    const DEFAULT_TEMPLATE = `# 角色
 你是「台灣人工智慧學校 經理人 AI PM 班第一期」的 AI 同學助手。你的工作是幫助同學們更快認識彼此。
 
 # 你的知識庫
 下方是從資料庫即時取得的同學資料與留言內容，這些是你要回答問題的唯一事實來源。
 
-=== 同學資料（共 ${classmates.length} 位）===
-${classmatesText || "（目前還沒有同學填寫自我介紹）"}
-
-${messagesText ? `\n=== 同學牆留言 ===\n${messagesText}\n` : ""}
+{DATA_BLOCK}
 
 # 回答方式
 1. 主動、積極地根據上述資料回答問題
@@ -133,11 +151,22 @@ ${messagesText ? `\n=== 同學牆留言 ===\n${messagesText}\n` : ""}
 4. 不要把「AI 相關」「產品管理」等其他主題混進搜尋結果
 
 # 範例互動
-- Q: 「有哪些人做 AI 相關？」→ 列出自介中含 "AI" 的同學
 - Q: 「第 4 組有誰？」→ 只列 group_number=4 的同學
 - Q: 「Mark 是誰？」→ 提供 Mark 的公司、職稱、自介重點
-- Q: 「姓名或公司有智的同學」→ 逐一檢查每位同學的 display_name 和 company，只回報實際包含「智」字的人；若沒有就回答「目前沒有同學的姓名或公司包含『智』字」
-- Q: 「找公司包含馬克的」→ 找 company 含「馬克」的，回答 Mark陳炳陵（馬克路思科技）`;
+- Q: 「姓名或公司有智的同學」→ 只回報實際包含「智」字的人；若沒有就回答「目前沒有」`;
+
+    // Build data block from live DB
+    const dataBlock = `=== 同學資料（共 ${classmates.length} 位）===
+${classmatesText || "（目前還沒有同學填寫自我介紹）"}
+
+${messagesText ? `\n=== 同學牆留言 ===\n${messagesText}\n` : ""}`;
+
+    // Use custom template from DB if set, else default; inject data
+    const customTemplate = await getCustomPrompt(sb);
+    const template = customTemplate || DEFAULT_TEMPLATE;
+    const systemPrompt = template.includes('{DATA_BLOCK}')
+      ? template.replace('{DATA_BLOCK}', dataBlock)
+      : template + '\n\n' + dataBlock;
 
     const safeHistory = history
       .filter((h: any) => h.role === "user" || h.role === "assistant")

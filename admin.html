@@ -61,6 +61,12 @@
     <h1 class="text-3xl font-extrabold mb-2"><span class="gradient-text">Admin Dashboard</span></h1>
     <p class="text-slate-500 text-sm mb-10">markluce.ai 服務快捷連結（皆需登入各自帳號）</p>
 
+    <!-- Bot Config -->
+    <h2 class="text-slate-400 text-xs font-medium uppercase tracking-wider mb-4 border-b border-white/10 pb-2">🧠 Bot 設定（系統提示詞 + 建議題目方法）</h2>
+    <div class="space-y-4 mb-10" id="bot-config-container">
+      <!-- Populated by JS -->
+    </div>
+
     <!-- Database & Backend -->
     <h2 class="text-slate-400 text-xs font-medium uppercase tracking-wider mb-4 border-b border-white/10 pb-2">資料庫 & 後端</h2>
     <div class="grid md:grid-cols-2 gap-4 mb-10">
@@ -344,6 +350,7 @@
           loadChatLogs();
           loadCmLogs();
           loadAritaLogs();
+          renderBotConfigs();
         } else {
           showDenied(false);
         }
@@ -595,6 +602,102 @@
       cmLogOffset += dir * cmLogLimit;
       if (cmLogOffset < 0) cmLogOffset = 0;
       loadCmLogs();
+    }
+
+    // ====== Bot Config Admin ======
+    var BOT_LIST = [
+      { key: 'aiatcl', name: '🤖 AIATCL 考前助手', color: 'sky', methods: ['manual', 'ai_generated', 'popular'] },
+      { key: 'classmates', name: '🤝 同學助手', color: 'emerald', methods: ['manual', 'db_dynamic', 'ai_generated', 'popular'], note: 'classmates 模板可使用 {DATA_BLOCK} 佔位符，會在執行時注入即時同學資料' },
+      { key: 'arita', name: '🎓 Arita 雙語 & TOEIC', color: 'purple', methods: ['manual', 'ai_generated', 'popular'] }
+    ];
+    var METHOD_LABELS = {
+      'manual': '📝 手動編輯清單',
+      'db_dynamic': '🔄 資料庫動態產生（只適用同學助手）',
+      'ai_generated': '🤖 AI 自動產生（呼叫 GPT）',
+      'popular': '🔥 熱門問題（來自 chat_logs）'
+    };
+
+    async function renderBotConfigs() {
+      var container = document.getElementById('bot-config-container');
+      container.innerHTML = '<div class="text-slate-500 text-sm">載入設定中...</div>';
+
+      var { data: configs } = await sb.from('bot_configs').select('*');
+      var configMap = {};
+      (configs || []).forEach(function(c) { configMap[c.bot_name] = c; });
+
+      container.innerHTML = BOT_LIST.map(function(bot) {
+        var cfg = configMap[bot.key] || {};
+        var hasCustom = !!(cfg.system_prompt && cfg.system_prompt.trim());
+        var method = cfg.suggestion_method || 'manual';
+        var topicsText = (cfg.manual_topics && cfg.manual_topics.length) ? cfg.manual_topics.join('\n') : '';
+
+        var methodsHtml = bot.methods.map(function(m) {
+          return '<label class="inline-flex items-center gap-1 mr-3 text-xs"><input type="radio" name="method-' + bot.key + '" value="' + m + '"' + (method === m ? ' checked' : '') + ' class="accent-sky-500"> ' + METHOD_LABELS[m] + '</label>';
+        }).join('');
+
+        return '<div class="bg-white/5 border border-white/10 rounded-xl p-5">' +
+          '<div class="flex items-center justify-between mb-3">' +
+            '<div class="font-bold text-sm">' + bot.name + '</div>' +
+            '<span class="text-xs ' + (hasCustom ? 'text-amber-400' : 'text-slate-500') + '">' + (hasCustom ? '✏️ 自訂中' : '✓ 使用預設') + '</span>' +
+          '</div>' +
+          (bot.note ? '<p class="text-slate-500 text-xs mb-2">💡 ' + bot.note + '</p>' : '') +
+          '<label class="text-slate-400 text-xs block mb-1">系統提示詞 (留空使用預設)</label>' +
+          '<textarea id="prompt-' + bot.key + '" rows="8" class="w-full bg-slate-800 border border-white/10 rounded px-3 py-2 text-white text-xs font-mono focus:outline-none focus:border-sky-500 mb-3" placeholder="留空則使用 Edge Function 內建的預設提示詞">' + escHtml(cfg.system_prompt || '') + '</textarea>' +
+          '<label class="text-slate-400 text-xs block mb-1">建議題目產生方法</label>' +
+          '<div class="mb-3">' + methodsHtml + '</div>' +
+          '<label class="text-slate-400 text-xs block mb-1">手動題目清單（每行一題，只在「手動編輯」模式使用）</label>' +
+          '<textarea id="topics-' + bot.key + '" rows="5" class="w-full bg-slate-800 border border-white/10 rounded px-3 py-2 text-white text-xs focus:outline-none focus:border-sky-500 mb-3" placeholder="例：&#10;第 1 組有哪些同學？&#10;誰提到過 AI？">' + escHtml(topicsText) + '</textarea>' +
+          '<div class="flex gap-2">' +
+            '<button onclick="saveBotConfig(\'' + bot.key + '\')" class="px-4 py-1.5 bg-sky-500 hover:bg-sky-600 rounded text-white text-xs font-medium">💾 儲存</button>' +
+            '<button onclick="resetBotConfig(\'' + bot.key + '\')" class="px-4 py-1.5 bg-red-500/10 border border-red-500/30 rounded text-red-400 text-xs hover:bg-red-500/20">♻️ 重置為預設</button>' +
+            '<span id="msg-' + bot.key + '" class="ml-auto text-xs self-center"></span>' +
+          '</div>' +
+        '</div>';
+      }).join('');
+    }
+
+    async function saveBotConfig(botKey) {
+      var prompt = document.getElementById('prompt-' + botKey).value;
+      var topicsText = document.getElementById('topics-' + botKey).value;
+      var method = document.querySelector('input[name="method-' + botKey + '"]:checked').value;
+      var topics = topicsText.split('\n').map(function(s) { return s.trim(); }).filter(Boolean);
+
+      var msgEl = document.getElementById('msg-' + botKey);
+      msgEl.textContent = '儲存中...';
+      msgEl.className = 'ml-auto text-xs self-center text-slate-400';
+
+      var result = await sb.from('bot_configs').upsert({
+        bot_name: botKey,
+        system_prompt: prompt || null,
+        suggestion_method: method,
+        manual_topics: topics,
+        updated_at: new Date().toISOString()
+      }, { onConflict: 'bot_name' });
+
+      if (result.error) {
+        msgEl.textContent = '❌ 失敗: ' + result.error.message;
+        msgEl.className = 'ml-auto text-xs self-center text-red-400';
+      } else {
+        msgEl.textContent = '✅ 已儲存（edge function 快取 60 秒後生效）';
+        msgEl.className = 'ml-auto text-xs self-center text-emerald-400';
+        setTimeout(function() { msgEl.textContent = ''; }, 4000);
+        renderBotConfigs();
+      }
+    }
+
+    async function resetBotConfig(botKey) {
+      if (!confirm('確定要重置 ' + botKey + ' 為預設值？將刪除所有自訂設定。')) return;
+      var msgEl = document.getElementById('msg-' + botKey);
+      var result = await sb.from('bot_configs').delete().eq('bot_name', botKey);
+      if (result.error) {
+        msgEl.textContent = '❌ 失敗: ' + result.error.message;
+        msgEl.className = 'ml-auto text-xs self-center text-red-400';
+      } else {
+        msgEl.textContent = '✅ 已重置';
+        msgEl.className = 'ml-auto text-xs self-center text-emerald-400';
+        setTimeout(function() { msgEl.textContent = ''; }, 3000);
+        renderBotConfigs();
+      }
     }
 
     init();

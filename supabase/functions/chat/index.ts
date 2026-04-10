@@ -18,7 +18,27 @@ function buildKnowledgeText(): string {
 
 const KNOWLEDGE_TEXT = buildKnowledgeText();
 
-const SYSTEM_PROMPT = `# 角色
+// Config cache (60s TTL to reduce DB queries)
+let configCache: { prompt: string; ts: number } | null = null;
+const CONFIG_TTL_MS = 60 * 1000;
+
+async function getSystemPrompt(sb: any): Promise<string> {
+  const now = Date.now();
+  if (configCache && (now - configCache.ts) < CONFIG_TTL_MS) {
+    return configCache.prompt;
+  }
+  try {
+    const { data } = await sb.from('bot_configs').select('system_prompt').eq('bot_name', 'aiatcl').maybeSingle();
+    const prompt = (data?.system_prompt && data.system_prompt.trim()) ? data.system_prompt : DEFAULT_SYSTEM_PROMPT;
+    configCache = { prompt, ts: now };
+    return prompt;
+  } catch (e) {
+    console.error('getSystemPrompt error:', e);
+    return DEFAULT_SYSTEM_PROMPT;
+  }
+}
+
+const DEFAULT_SYSTEM_PROMPT = `# 角色
 你是「台灣人工智慧學校 AI 素養認證 (AIATCL) 考前助手」，你的工作是幫 AI PM 班同學準備 AIATCL 素養級認證考試。
 
 # 你的知識庫
@@ -124,6 +144,14 @@ Deno.serve(async (req: Request) => {
       });
     }
 
+    // Create Supabase client for config + logging
+    const supabaseUrl = Deno.env.get("SUPABASE_URL")!;
+    const supabaseKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
+    const sb = createClient(supabaseUrl, supabaseKey);
+
+    // Get system prompt (cached, fallback to default)
+    const systemPrompt = await getSystemPrompt(sb);
+
     // Sanitize history
     const safeHistory = history
       .filter((h: any) => h.role === "user" || h.role === "assistant")
@@ -131,7 +159,7 @@ Deno.serve(async (req: Request) => {
       .slice(-10);
 
     const aiMessages = [
-      { role: "system", content: SYSTEM_PROMPT },
+      { role: "system", content: systemPrompt },
       ...safeHistory,
       { role: "user", content: message },
     ];
@@ -168,9 +196,6 @@ Deno.serve(async (req: Request) => {
 
     // Log to chat_logs (fire-and-forget, don't block response)
     try {
-      const supabaseUrl = Deno.env.get("SUPABASE_URL")!;
-      const supabaseKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
-      const sb = createClient(supabaseUrl, supabaseKey);
       await sb.from("chat_logs").insert({
         line_user_id,
         display_name: display_name || null,

@@ -6,7 +6,27 @@ const corsHeaders = {
   "Access-Control-Allow-Methods": "POST, OPTIONS",
 };
 
-const SYSTEM_PROMPT = `# 角色
+// Config cache
+let configCache: { prompt: string; ts: number } | null = null;
+const CONFIG_TTL_MS = 60 * 1000;
+
+async function getSystemPrompt(sb: any): Promise<string> {
+  const now = Date.now();
+  if (configCache && (now - configCache.ts) < CONFIG_TTL_MS) {
+    return configCache.prompt;
+  }
+  try {
+    const { data } = await sb.from('bot_configs').select('system_prompt').eq('bot_name', 'arita').maybeSingle();
+    const prompt = (data?.system_prompt && data.system_prompt.trim()) ? data.system_prompt : DEFAULT_SYSTEM_PROMPT;
+    configCache = { prompt, ts: now };
+    return prompt;
+  } catch (e) {
+    console.error('getSystemPrompt error:', e);
+    return DEFAULT_SYSTEM_PROMPT;
+  }
+}
+
+const DEFAULT_SYSTEM_PROMPT = `# 角色
 你是「Arita 雙語 & TOEIC 學習助手」，一位友善、耐心、專業的英語學習教練。你的任務是幫助台灣學習者提升英語能力並準備 TOEIC 考試。
 
 # TOEIC 測驗最新資訊（2024 年驗證）
@@ -127,13 +147,20 @@ Deno.serve(async (req: Request) => {
       });
     }
 
+    // Supabase client
+    const supabaseUrl = Deno.env.get("SUPABASE_URL")!;
+    const supabaseKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
+    const sb = createClient(supabaseUrl, supabaseKey);
+
+    const systemPrompt = await getSystemPrompt(sb);
+
     const safeHistory = history
       .filter((h: any) => h.role === "user" || h.role === "assistant")
       .map((h: any) => ({ role: h.role, content: String(h.content).slice(0, 1000) }))
       .slice(-10);
 
     const aiMessages = [
-      { role: "system", content: SYSTEM_PROMPT },
+      { role: "system", content: systemPrompt },
       ...safeHistory,
       { role: "user", content: message },
     ];
@@ -170,9 +197,6 @@ Deno.serve(async (req: Request) => {
 
     // Log to arita_chat_logs
     try {
-      const supabaseUrl = Deno.env.get("SUPABASE_URL")!;
-      const supabaseKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
-      const sb = createClient(supabaseUrl, supabaseKey);
       await sb.from("arita_chat_logs").insert({
         line_user_id,
         display_name: display_name || null,
