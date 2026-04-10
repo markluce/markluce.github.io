@@ -178,6 +178,33 @@
       </a>
     </div>
 
+    <!-- Chat Log -->
+    <h2 class="text-slate-400 text-xs font-medium uppercase tracking-wider mb-4 border-b border-white/10 pb-2">🤖 AI 助手對話記錄</h2>
+    <div class="mb-4 flex flex-wrap items-center gap-3">
+      <input id="chat-filter-user" oninput="loadChatLogs()" placeholder="搜尋使用者名稱..." class="bg-slate-800 border border-white/20 rounded-lg px-3 py-1.5 text-white text-xs placeholder-slate-600 focus:outline-none focus:border-sky-500" />
+      <span id="chat-total" class="text-slate-500 text-xs ml-auto"></span>
+    </div>
+    <div class="bg-white/5 border border-white/10 rounded-xl overflow-hidden mb-10">
+      <div class="overflow-x-auto">
+        <table class="w-full text-xs">
+          <thead>
+            <tr class="border-b border-white/10 text-slate-400">
+              <th class="text-left px-4 py-3 font-medium whitespace-nowrap">時間</th>
+              <th class="text-left px-4 py-3 font-medium whitespace-nowrap">使用者</th>
+              <th class="text-left px-4 py-3 font-medium">問題</th>
+              <th class="text-left px-4 py-3 font-medium">回答</th>
+            </tr>
+          </thead>
+          <tbody id="chat-tbody" class="text-slate-300"></tbody>
+        </table>
+      </div>
+      <div class="flex items-center justify-between px-4 py-3 border-t border-white/10">
+        <button id="chat-prev" onclick="chatPage(-1)" class="px-3 py-1 bg-white/5 border border-white/10 rounded text-slate-400 text-xs hover:bg-white/10 transition disabled:opacity-30" disabled>上一頁</button>
+        <span id="chat-page-info" class="text-slate-500 text-xs"></span>
+        <button id="chat-next" onclick="chatPage(1)" class="px-3 py-1 bg-white/5 border border-white/10 rounded text-slate-400 text-xs hover:bg-white/10 transition disabled:opacity-30">下一頁</button>
+      </div>
+    </div>
+
     <!-- Visit Log -->
     <h2 class="text-slate-400 text-xs font-medium uppercase tracking-wider mb-4 border-b border-white/10 pb-2">訪客記錄</h2>
     <div class="mb-4 flex flex-wrap items-center gap-3">
@@ -260,6 +287,7 @@
           document.getElementById('admin-content').classList.remove('hidden');
           loadVisitPages();
           loadVisits();
+          loadChatLogs();
         } else {
           showDenied(false);
         }
@@ -367,6 +395,54 @@
       var d = document.createElement('div');
       d.textContent = str || '';
       return d.innerHTML;
+    }
+
+    // Chat log
+    var chatOffset = 0;
+    var chatLimit = 30;
+
+    async function loadChatLogs() {
+      var userFilter = document.getElementById('chat-filter-user').value.trim();
+      var query = sb.from('chat_logs').select('*', { count: 'exact' })
+        .order('created_at', { ascending: false })
+        .range(chatOffset, chatOffset + chatLimit - 1);
+
+      if (userFilter) query = query.ilike('display_name', '%' + userFilter + '%');
+
+      var result = await query;
+      if (result.error) { console.error(result.error); return; }
+
+      var total = result.count || 0;
+      document.getElementById('chat-total').textContent = '共 ' + total + ' 筆';
+
+      var tbody = document.getElementById('chat-tbody');
+      var rows = result.data || [];
+      if (rows.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="4" class="px-4 py-6 text-center text-slate-500">尚無對話記錄</td></tr>';
+      } else {
+        tbody.innerHTML = rows.map(function(c) {
+          var time = new Date(c.created_at).toLocaleString('zh-TW', { timeZone: 'Asia/Taipei', month: 'numeric', day: 'numeric', hour: '2-digit', minute: '2-digit', hour12: false });
+          var truncReply = c.reply ? (c.reply.length > 150 ? c.reply.substring(0, 150) + '...' : c.reply) : '—';
+          return '<tr class="border-b border-white/5 hover:bg-white/5 align-top">' +
+            '<td class="px-4 py-2.5 text-slate-400 whitespace-nowrap">' + time + '</td>' +
+            '<td class="px-4 py-2.5 whitespace-nowrap">' + escHtml(c.display_name || '匿名') + '</td>' +
+            '<td class="px-4 py-2.5 max-w-xs">' + escHtml(c.message || '') + '</td>' +
+            '<td class="px-4 py-2.5 text-slate-400 max-w-md">' + escHtml(truncReply) + '</td>' +
+          '</tr>';
+        }).join('');
+      }
+
+      var page = Math.floor(chatOffset / chatLimit) + 1;
+      var totalPages = Math.max(1, Math.ceil(total / chatLimit));
+      document.getElementById('chat-page-info').textContent = '第 ' + page + ' / ' + totalPages + ' 頁';
+      document.getElementById('chat-prev').disabled = chatOffset === 0;
+      document.getElementById('chat-next').disabled = chatOffset + chatLimit >= total;
+    }
+
+    function chatPage(dir) {
+      chatOffset += dir * chatLimit;
+      if (chatOffset < 0) chatOffset = 0;
+      loadChatLogs();
     }
 
     init();
