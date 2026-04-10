@@ -26,6 +26,85 @@ async function getCustomPrompt(sb: any): Promise<string | null> {
   }
 }
 
+// Schedule cache (5 min TTL)
+let scheduleCache: { text: string; ts: number } | null = null;
+const SCHEDULE_TTL_MS = 5 * 60 * 1000;
+const SCHEDULE_URL = "https://markluce.ai/schedule.json";
+
+async function getScheduleText(): Promise<string> {
+  const now = Date.now();
+  if (scheduleCache && (now - scheduleCache.ts) < SCHEDULE_TTL_MS) {
+    return scheduleCache.text;
+  }
+  try {
+    const res = await fetch(SCHEDULE_URL, { cache: "no-store" });
+    if (!res.ok) throw new Error("Failed to fetch schedule.json: " + res.status);
+    const data = await res.json();
+    const text = formatSchedule(data);
+    scheduleCache = { text, ts: now };
+    return text;
+  } catch (e) {
+    console.error("getScheduleText error:", e);
+    return "（課程表載入失敗）";
+  }
+}
+
+function formatSchedule(data: any): string {
+  const lines: string[] = [];
+  lines.push(`=== 課程基本資訊 ===`);
+  lines.push(`- 課程：${data.meta.name}`);
+  lines.push(`- 主辦：${data.meta.org}`);
+  lines.push(`- 期間：${data.meta.startDate} ~ ${data.meta.endDate}（每週六 09:00-17:30）`);
+  lines.push(`- 地點：${data.meta.location}`);
+  lines.push(`- 地址：${data.meta.address}`);
+  lines.push("");
+
+  lines.push(`=== 8 週課程表（結構化資料 · 從 ${data.meta.source} 同步）===`);
+  const slotMap: Record<string, any> = {};
+  (data.timeSlots || []).forEach((s: any) => { slotMap[s.id] = s; });
+
+  for (let w = 1; w <= 8; w++) {
+    const date = data.dates[String(w)];
+    const cells = data.cells[String(w)] || {};
+    lines.push(`\n【第 ${w} 週 ${date}】`);
+    (data.timeSlots || []).forEach((slot: any) => {
+      if (slot.kind !== 'class') return; // skip break/video
+      const cell = cells[slot.id];
+      if (!cell) return;
+      const parts = [`${slot.label} [${slot.period}]`];
+      if (cell.main) parts.push(cell.main);
+      if (cell.sub) parts.push(`(${cell.sub})`);
+      if (cell.teacher) parts.push(`— ${cell.teacher}`);
+      if (cell.org) parts.push(`· ${cell.org}`);
+      lines.push(`  ${parts.join(' ')}`);
+    });
+  }
+
+  // Also build a markdown table for the bot to copy verbatim
+  lines.push(`\n=== 預製 Markdown 表格（用戶問「8 週課表 用 table 呈現」時直接輸出）===`);
+  lines.push("| 週 | 日期 | 上午 | 下午 | 小組時段 | 講師 |");
+  lines.push("|---|---|---|---|---|---|");
+  for (let w = 1; w <= 8; w++) {
+    const date = data.dates[String(w)];
+    const cells = data.cells[String(w)] || {};
+    const m1 = cells.m1;
+    const m2 = cells.m2;
+    const a1 = cells.a1;
+    const g1 = cells.g1;
+    const morning = [m1, m2].filter(Boolean).map((c: any) =>
+      c.main + (c.sub ? `（${c.sub.substring(0, 25)}${c.sub.length > 25 ? '…' : ''}）` : '')
+    ).join(' / ');
+    const afternoon = a1 ? (a1.main + (a1.sub ? `（${a1.sub}）` : '')) : '—';
+    const group = g1 ? (g1.main + (g1.sub ? `：${g1.sub}` : '')) : '—';
+    const teachers = new Set<string>();
+    [m1, m2, a1, g1].forEach((c: any) => { if (c && c.teacher) teachers.add(c.teacher); });
+    const teacherList = Array.from(teachers).join('、');
+    lines.push(`| W${w} | ${date} | ${morning} | ${afternoon} | ${group} | ${teacherList} |`);
+  }
+
+  return lines.join("\n");
+}
+
 Deno.serve(async (req: Request) => {
   if (req.method === "OPTIONS") {
     return new Response("ok", { headers: corsHeaders });
@@ -131,13 +210,8 @@ Deno.serve(async (req: Request) => {
 
 {DATA_BLOCK}
 
-=== 課程基本資訊 ===
-- 課程名稱：經理人 AI PM 班（第一期）AM151
-- 主辦：台灣人工智慧學校
-- 期間：2026/04/11 ~ 2026/05/30（共 8 週，每週六）
-- 上課時間：09:00-17:00（08:30 開始報到）
-- 地點：新光板橋傑仕堡 A棟 2樓・國際會議廳
-- 地址：新北市板橋區文化路一段 188 巷 51 號
+{SCHEDULE_BLOCK}
+
 - 聯絡：hi@aiacademy.tw
 - 課程經理：Rebecca
 
@@ -147,68 +221,9 @@ Deno.serve(async (req: Request) => {
 - 名片（下午分組交流）
 - 環保杯、環保餐具
 
-=== 8 週課程表（官方預製 Markdown 表格 · 權威版本）===
-⚠️ 當用戶問「8 週課表」「全部課程」「用 table 呈現」「概述課表」等全局問題時，**直接一字不改地輸出下方這個預製 markdown 表格**。不要重排、不要合併欄位、不要刪減內容、不要包在 code fence 裡面。
-
-| 週 | 日期 | 上午 (09:00-12:00) | 下午 (13:30-15:30) | 小組時段 (16:00-17:00) | 講師 |
-|---|---|---|---|---|---|
-| W1 | 04/11 (六) | 始業式・校務長演講 + AI Agent 專題演講（從 AI Agent 到虛擬員工）| 主題演講 | 學員分組相見歡、課務須知、競賽說明、AIATCL 考前閱讀 | 蔡明順、GIGA、李國財 (BEJO)、吳振和 (Cacafly) |
-| W2 | 04/18 (六) | 提示工程與 Gemini 多模態實戰：AI 溝通術 | PM 實務：產品開發企劃 | 小組專題討論、班代選舉 | 蔡政霖、GIGA |
-| W3 | 04/25 (六) | 檢索增強生成 (RAG) 與 NotebookLM 應用 | PM 實務：範疇 / 時間 / 人力 / 品質控管 | **專題演講：你是否在公司救了一個專案？**（王淳恆 · 圖策科技 AI 研發處長）| 蔡政霖、GIGA、**王淳恆** |
-| W4 | 05/02 (六) | Google Workspace 工具 AI 實戰 | PM 實務：成本管理 / 採購管理 | 小組專題討論 + AIATCL 測驗說明 | 李福裕、GIGA |
-| W5 | 05/09 (六) | 業務流程自動化：對話式 AI 工作夥伴 | PM 實務：溝通管理 / 風險管理 | 小組專題討論 | 李福裕、GIGA |
-| W6 | 05/16 (六) | Vibe Coding：用說的做原型開發 | PM 實務：產品架構、高效打造 DEMO | **專題演講：AI 時代，專案經理不再管理專案？**（孫弘岳 · 國立臺灣師範大學教授）| 劉又綺、GIGA、**孫弘岳** |
-| W7 | 05/23 (六) | Vibe Coding：實戰部署 | PM 實務：產品介面與整合、快速打造 MVP | 小組專題討論 | 劉又綺、GIGA |
-| W8 | 05/30 (六) | 主題演講（陳伶志）+ AIATCL 認證考試 (50 min) | 小組成果發表 Demo Day | 結業式 | 陳伶志、全體學員 |
-
-=== 單週詳細時間表（供「第 N 週詳細」問題使用）===
-【第 1 週 04/11 (六)】
-- 09:00-10:20 始業式・校務長演講 + AI PM 課程導覽（蔡明順校務長 & GIGA）
-- 10:35-12:00 專題演講：從 AI Agent 到虛擬員工 — AI 在產品的開發、管理（李國財 · BEJO · FIKAYARD）
-- 13:30-15:30 主題演講（吳振和 · Cacafly 技術副總）
-- 16:00-17:00 小組專題時間：學員分組相見歡（全體學員）
-- 17:00-17:30 課務須知、競賽說明、課程問卷、AIATCL 考前閱讀
-
-【第 2 週 04/18 (六) Gemini 多模態】
-- 09:00-12:00 提示工程與 Gemini 多模態實戰：AI 溝通術（蔡政霖）
-- 13:30-15:30 PM 實務：產品開發企劃（GIGA · Nautilus AI 執行長）
-- 16:00-17:00 小組專題時間：專題討論（全體學員）
-
-【第 3 週 04/25 (六) RAG / NotebookLM】
-- 09:00-12:00 檢索增強生成 (RAG) 與 NotebookLM 應用（蔡政霖）
-- 13:30-15:30 PM 實務：範疇 / 時間 / 人力 / 品質控管（GIGA）
-- 16:00-17:00 專題演講：你是否在公司救了一個專案？— 深談 AI PM 與工具實踐（王淳恆 · 圖策科技 AI 研發處長）
-
-【第 4 週 05/02 (六) Google Workspace】
-- 09:00-12:00 Google Workspace 工具 AI 實戰應用：簡報效率倍增（李福裕）
-- 13:30-15:30 PM 實務：成本管理 / 採購管理（GIGA）
-- 16:00-17:00 小組專題討論
-- 17:00-17:30 AI 素養級認證 (AIATCL™) 測驗說明
-
-【第 5 週 05/09 (六) 業務自動化】
-- 09:00-12:00 業務流程自動化：透過對話式 AI 建立專屬自動化工作夥伴（李福裕）
-- 13:30-15:30 PM 實務：溝通管理 / 風險管理（GIGA）
-- 16:00-17:00 小組專題討論
-
-【第 6 週 05/16 (六) Vibe Coding 原型】
-- 09:00-12:00 Vibe Coding：用說的做原型開發（AI 會議摘要器 + 用 BOM 表產生報價系統）（劉又綺）
-- 13:30-15:30 PM 實務：產品架構、高效打造 DEMO（GIGA）
-- 16:00-17:00 專題演講：AI 時代，專案經理不再管理專案？（孫弘岳 · 國立臺灣師範大學教授）
-
-【第 7 週 05/23 (六) Vibe Coding 部署】
-- 09:00-12:00 Vibe Coding：實戰部署（訂單追蹤儀表板 + 專案看板 Kanban / 驗收 / 驗證）（劉又綺）
-- 13:30-15:30 PM 實務：產品介面與整合、快速打造 MVP（GIGA）
-- 16:00-17:00 小組專題討論
-
-【第 8 週 05/30 (六) 結業】
-- 09:00-10:20 主題演講（陳伶志 · 台灣人工智慧學校執行長）
-- 10:35-12:00 AI 素養級認證考試 AIATCL（50 分鐘，全體學員）
-- 13:30-15:30 小組成果發表 Demo Day（全體學員）
-- 16:00-17:00 結業式（全體學員）
-
 # ⚠️ 課程資訊回答規則（最高優先級）
-1. 被問「8 週課表」「概述」「用 table 呈現」→ **直接輸出上方預製 markdown 表格**，一字不改
-2. 被問「第 N 週詳細」「W3 有哪些講師」→ 從「單週詳細時間表」對應週次逐條列出
+1. 被問「8 週課表」「概述」「用 table 呈現」→ **直接輸出上方「預製 Markdown 表格」一字不改**
+2. 被問「第 N 週詳細」「W3 有哪些講師」→ 從上方「8 週課程表」對應週次逐條列出
 3. **絕對不要杜撰講師姓名或職稱**。若資料沒寫誰帶，寫「全體學員」或留空
 4. **絕對不要把 markdown 表格包在 \`\`\` code fence 裡面**
 5. 正確性優先於簡潔
@@ -301,12 +316,23 @@ ${classmatesText || "（目前還沒有同學填寫自我介紹）"}
 
 ${messagesText ? `\n=== 同學牆留言 ===\n${messagesText}\n` : ""}`;
 
-    // Use custom template from DB if set, else default; inject data
+    // Build schedule block from /schedule.json (cached 5 min)
+    const scheduleBlock = await getScheduleText();
+
+    // Use custom template from DB if set, else default; inject data + schedule
     const customTemplate = await getCustomPrompt(sb);
-    const template = customTemplate || DEFAULT_TEMPLATE;
-    const systemPrompt = template.includes('{DATA_BLOCK}')
-      ? template.replace('{DATA_BLOCK}', dataBlock)
-      : template + '\n\n' + dataBlock;
+    let template = customTemplate || DEFAULT_TEMPLATE;
+    if (template.includes('{DATA_BLOCK}')) {
+      template = template.replace('{DATA_BLOCK}', dataBlock);
+    } else {
+      template = template + '\n\n' + dataBlock;
+    }
+    if (template.includes('{SCHEDULE_BLOCK}')) {
+      template = template.replace('{SCHEDULE_BLOCK}', scheduleBlock);
+    } else {
+      template = template + '\n\n' + scheduleBlock;
+    }
+    const systemPrompt = template;
 
     const safeHistory = history
       .filter((h: any) => h.role === "user" || h.role === "assistant")
