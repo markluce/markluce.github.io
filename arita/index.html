@@ -71,12 +71,14 @@
     .tts-btn { background: rgba(168,85,247,0.15); border: 1px solid rgba(168,85,247,0.3); color: #c084fc; padding: 3px 10px; border-radius: 999px; font-size: 0.7rem; cursor: pointer; margin: 4px 0; display: inline-flex; align-items: center; gap: 4px; }
     .tts-btn:hover { background: rgba(168,85,247,0.25); }
     .tts-btn.loading { opacity: 0.6; cursor: wait; }
-    .audio-player { display: flex; align-items: center; gap: 8px; margin: 6px 0; padding: 6px 10px; background: rgba(168,85,247,0.08); border: 1px solid rgba(168,85,247,0.2); border-radius: 10px; }
-    .audio-player .pp-btn { background: linear-gradient(135deg,#a855f7,#ec4899); border: none; color: white; width: 28px; height: 28px; border-radius: 50%; cursor: pointer; font-size: 0.75rem; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
-    .audio-player .seek { flex: 1; -webkit-appearance: none; appearance: none; height: 4px; background: rgba(255,255,255,0.2); border-radius: 2px; outline: none; cursor: pointer; }
-    .audio-player .seek::-webkit-slider-thumb { -webkit-appearance: none; appearance: none; width: 12px; height: 12px; background: #c084fc; border-radius: 50%; cursor: pointer; }
-    .audio-player .seek::-moz-range-thumb { width: 12px; height: 12px; background: #c084fc; border-radius: 50%; cursor: pointer; border: none; }
-    .audio-player .time { font-size: 0.7rem; color: #cbd5e1; font-variant-numeric: tabular-nums; min-width: 32px; }
+    .audio-player { display: flex; align-items: center; gap: 10px; margin: 6px 0; padding: 8px 12px; background: rgba(168,85,247,0.1); border: 1px solid rgba(168,85,247,0.3); border-radius: 10px; width: 100%; box-sizing: border-box; }
+    .audio-player .pp-btn { background: linear-gradient(135deg,#a855f7,#ec4899); border: none; color: white; width: 30px; height: 30px; border-radius: 50%; cursor: pointer; font-size: 0.8rem; display: flex; align-items: center; justify-content: center; flex-shrink: 0; padding: 0; }
+    .audio-player .seek { flex: 1 1 auto; min-width: 50px; -webkit-appearance: none; -moz-appearance: none; appearance: none; height: 6px; background: rgba(255,255,255,0.25); border-radius: 3px; outline: none; cursor: pointer; padding: 0; margin: 0; }
+    .audio-player .seek::-webkit-slider-runnable-track { height: 6px; background: rgba(255,255,255,0.25); border-radius: 3px; }
+    .audio-player .seek::-webkit-slider-thumb { -webkit-appearance: none; appearance: none; width: 14px; height: 14px; background: #c084fc; border-radius: 50%; cursor: pointer; margin-top: -4px; border: 2px solid #1e1b4b; }
+    .audio-player .seek::-moz-range-track { height: 6px; background: rgba(255,255,255,0.25); border-radius: 3px; border: none; }
+    .audio-player .seek::-moz-range-thumb { width: 14px; height: 14px; background: #c084fc; border-radius: 50%; cursor: pointer; border: 2px solid #1e1b4b; }
+    .audio-player .time { font-size: 0.72rem; color: #cbd5e1; font-variant-numeric: tabular-nums; min-width: 34px; white-space: nowrap; flex-shrink: 0; }
     @media (max-width: 480px) {
       .chatbot-panel { width: calc(100vw - 24px); right: 12px; bottom: 88px; max-height: 75vh; }
       .chatbot-toggle { bottom: 16px; right: 16px; width: 52px; height: 52px; font-size: 1.4rem; }
