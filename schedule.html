@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'><rect width='64' height='64' rx='12' fill='%230EA5E9'/><text x='32' y='28' font-family='Arial,sans-serif' font-size='16' font-weight='bold' fill='white' text-anchor='middle'>MARK</text><text x='32' y='48' font-family='Arial,sans-serif' font-size='14' font-weight='bold' fill='%2322D3EE' text-anchor='middle'>LUCE</text></svg>" />
+  <title>經理人 AI PM 班 — 課程表</title>
+  <meta name="robots" content="noindex, nofollow" />
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = { theme: { extend: { fontFamily: { sans: ['"Noto Sans TC"', 'Inter', 'system-ui', 'sans-serif'] } } } }
+  </script>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Noto+Sans+TC:wght@400;500;600;700;900&display=swap" rel="stylesheet" />
+  <script charset="utf-8" src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
+  <style>
+    .gradient-text { background: linear-gradient(135deg, #38bdf8, #06b6d4); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+    .line-btn { background: #06C755; }
+    .line-btn:hover { background: #05b64d; }
+    .fade-in { animation: fadeIn 0.6s ease-out; }
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(16px); } to { opacity: 1; transform: translateY(0); } }
+    .glow-ring { box-shadow: 0 0 0 4px rgba(6, 199, 85, 0.2); }
+    .week-card { transition: transform 0.2s, box-shadow 0.2s; }
+    .week-card:hover { transform: translateY(-2px); box-shadow: 0 12px 28px -8px rgba(14, 165, 233, 0.2); }
+  </style>
+</head>
+<body class="min-h-screen bg-gradient-to-br from-slate-900 via-sky-950 to-slate-900 text-white font-sans">
+
+  <div class="fixed inset-0 pointer-events-none overflow-hidden">
+    <div class="absolute -top-40 -right-40 w-96 h-96 bg-sky-500/10 rounded-full blur-3xl"></div>
+    <div class="absolute top-1/2 -left-40 w-96 h-96 bg-cyan-500/10 rounded-full blur-3xl"></div>
+  </div>
+
+  <!-- Nav -->
+  <nav class="relative z-10 max-w-5xl mx-auto px-4 md:px-6 py-4 md:py-6">
+    <div class="flex items-center justify-between">
+      <a href="/" class="text-lg md:text-xl font-bold tracking-tight">
+        <span class="text-sky-400">mark</span>luce
+      </a>
+      <div class="flex items-center gap-3 md:gap-4">
+        <a href="/" class="text-slate-400 hover:text-white transition text-xs md:text-sm">AI PM 同學牆</a>
+        <a href="/more.html" class="text-slate-400 hover:text-white transition text-xs md:text-sm">更多</a>
+        <div id="user-info" class="hidden flex items-center gap-2">
+          <img id="user-avatar" class="w-7 h-7 md:w-8 md:h-8 rounded-full glow-ring" src="" alt="" />
+          <span id="user-name" class="text-xs md:text-sm text-emerald-400 font-medium max-w-[80px] md:max-w-none truncate"></span>
+          <button onclick="handleLogout()" class="text-slate-500 hover:text-red-400 transition text-sm px-1" title="登出">登出</button>
+        </div>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Loading -->
+  <div id="loading" class="relative z-10 text-center pt-32 text-slate-500">
+    <div class="inline-block w-6 h-6 border-2 border-slate-600 border-t-sky-400 rounded-full animate-spin mb-3"></div>
+    <p class="text-sm">驗證身份中...</p>
+  </div>
+
+  <!-- Login required -->
+  <div id="login-required" class="hidden relative z-10 max-w-md mx-auto px-6 pt-20 text-center fade-in">
+    <div class="bg-white/5 border border-white/10 rounded-2xl p-10 backdrop-blur-sm">
+      <div class="text-6xl mb-6">🔒</div>
+      <h2 class="text-xl font-bold text-white mb-3">需要登入</h2>
+      <p class="text-slate-400 text-sm mb-6 leading-relaxed">課程表僅提供給登入的同學查看。<br/>請先用 LINE 登入。</p>
+      <button onclick="handleLogin()" class="line-btn text-white px-6 py-2.5 rounded-lg text-sm font-semibold transition inline-flex items-center gap-2">
+        <svg class="w-5 h-5" viewBox="0 0 24 24" fill="currentColor"><path d="M19.365 9.863c.349 0 .63.285.63.631 0 .345-.281.63-.63.63H17.61v1.125h1.755c.349 0 .63.283.63.63 0 .344-.281.629-.63.629h-2.386c-.345 0-.627-.285-.627-.629V8.108c0-.345.282-.63.63-.63h2.386c.346 0 .627.285.627.63 0 .349-.281.63-.63.63H17.61v1.125h1.755zm-3.855 3.016c0 .27-.174.51-.432.596-.064.021-.133.031-.199.031-.211 0-.391-.09-.51-.25l-2.443-3.317v2.94c0 .344-.279.629-.631.629-.346 0-.626-.285-.626-.629V8.108c0-.27.173-.51.43-.595.06-.023.136-.033.194-.033.195 0 .375.104.495.254l2.462 3.33V8.108c0-.345.282-.63.63-.63.345 0 .63.285.63.63v4.771zm-5.741 0c0 .344-.282.629-.631.629-.345 0-.627-.285-.627-.629V8.108c0-.345.282-.63.63-.63.346 0 .628.285.628.63v4.771zm-2.466.629H4.917c-.345 0-.63-.285-.63-.629V8.108c0-.345.285-.63.63-.63.348 0 .63.285.63.63v4.141h1.756c.348 0 .629.283.629.63 0 .344-.282.629-.629.629M24 10.314C24 4.943 18.615.572 12 .572S0 4.943 0 10.314c0 4.811 4.27 8.842 10.035 9.608.391.082.923.258 1.058.59.12.301.079.766.038 1.08l-.164 1.02c-.045.301-.24 1.186 1.049.645 1.291-.539 6.916-4.078 9.436-6.975C23.176 14.393 24 12.458 24 10.314"/></svg>
+        LINE 登入
+      </button>
+      <a href="/" class="block mt-4 text-slate-500 hover:text-white transition text-sm">&larr; 回到同學牆</a>
+    </div>
+  </div>
+
+  <!-- Schedule Content -->
+  <main id="schedule-content" class="hidden relative z-10 max-w-5xl mx-auto px-4 md:px-6 pb-16 fade-in">
+    <header class="text-center pt-6 pb-10">
+      <div class="inline-block mb-3 px-4 py-1.5 bg-emerald-500/10 border border-emerald-500/20 rounded-full text-emerald-400 text-sm font-medium">
+        台灣人工智慧學校 · 經理人 AI PM 班 第一期
+      </div>
+      <h1 class="text-3xl md:text-4xl font-extrabold leading-tight mb-3">
+        <span class="gradient-text">AM151 課程表</span>
+      </h1>
+      <p class="text-slate-400 text-sm">2026/04/11 ~ 2026/05/30 · 每週六 09:00-17:00（08:30 報到）</p>
+      <p class="text-slate-500 text-xs mt-2">📍 新光板橋傑仕堡 A棟 2樓 · 國際會議廳</p>
+    </header>
+
+    <!-- Week Cards -->
+    <div id="weeks" class="space-y-4"></div>
+
+    <!-- Key dates -->
+    <div class="mt-10 bg-white/5 border border-white/10 rounded-xl p-5">
+      <h3 class="font-bold text-sky-400 text-sm mb-3">📌 重要資訊</h3>
+      <ul class="text-slate-300 text-xs space-y-1.5">
+        <li>• <strong>報到時間：</strong>每週六 08:30 開始</li>
+        <li>• <strong>結業條件：</strong>創新競賽（小組專題） + AIATCL 素養級認證通過</li>
+        <li>• <strong>AIATCL 考試：</strong>05/30（W8）上午 10:35-11:25</li>
+        <li>• <strong>Demo Day：</strong>05/30（W8）下午 13:30-15:30</li>
+        <li>• <strong>小組討論：</strong>每次課程 16:00-17:00（開課首日選組長）</li>
+        <li>• <strong>班代選舉：</strong>04/18（W2）投票，4/16 12:00 前投件至 hi@aiacademy.tw</li>
+        <li>• <strong>開課日必備：</strong>有照片之身分證件、筆電、名片、環保杯餐具</li>
+      </ul>
+    </div>
+
+    <div class="mt-6 text-center text-slate-600 text-xs">
+      📄 資料來源：<a href="http://mgr.aiacademy.tw/" target="_blank" class="text-sky-500 hover:text-sky-400">學員專區</a>（帳密請參考開課通知信）
+    </div>
+  </main>
+
+  <footer class="relative z-10 max-w-6xl mx-auto px-6 py-12 text-center border-t border-white/10">
+    <p class="text-slate-600 text-xs">
+      <a href="/" class="text-sky-400/60 hover:text-sky-400">同學牆</a> &middot;
+      <a href="/more.html" class="text-sky-400/60 hover:text-sky-400">更多</a>
+    </p>
+  </footer>
+
+  <script>
+    var LIFF_ID = '2009738746-2qigSpHh';
+    var currentUser = null;
+
+    // Course schedule data — no sensitive info
+    var WEEKS = [
+      {
+        num: 1, date: '04/11 (六)', tag: '始業',
+        morning: [
+          { title: '始業式・校務長演講', sub: 'AI PM 課程導覽', teacher: '蔡明順校務長 & GIGA', time: '09:00-10:20' },
+          { title: '專題演講：從 AI Agent 到虛擬員工', sub: 'AI 在產品的開發、管理', teacher: '李國財 (BEJO) · FIKAYARD', time: '10:35-12:00' }
+        ],
+        afternoon: { title: '主題演講', sub: '', teacher: '吳振和 · Cacafly 技術副總' },
+        evening: { title: '學員分組相見歡', sub: '課務須知 / 競賽說明 / AIATCL 考前閱讀' }
+      },
+      {
+        num: 2, date: '04/18 (六)', tag: 'Gemini',
+        morning: [
+          { title: '提示工程與 Gemini 多模態實戰', sub: 'AI 溝通術：用提示指令高效產出企劃內容', teacher: '蔡政霖', time: '09:00-12:00' }
+        ],
+        afternoon: { title: 'PM 實務：產品開發企劃', sub: '', teacher: 'GIGA · Nautilus AI 執行長' },
+        evening: { title: '小組專題討論', sub: '班代選舉投票' }
+      },
+      {
+        num: 3, date: '04/25 (六)', tag: 'RAG',
+        morning: [
+          { title: '檢索增強生成 (RAG) 與 NotebookLM 應用', sub: '個人知識庫的 AI 應用：快速從資料中找到洞察與摘要', teacher: '蔡政霖', time: '09:00-12:00' }
+        ],
+        afternoon: { title: 'PM 實務：範疇 / 時間 / 人力 / 品質控管', sub: '', teacher: 'GIGA · Nautilus AI 執行長' },
+        evening: { title: '專題演講：你是否在公司救了一個專案？', sub: '深談 AI PM 與工具實踐', teacher: '王淳恆 · 圖策科技 AI 研發處長' }
+      },
+      {
+        num: 4, date: '05/02 (六)', tag: 'Workspace',
+        morning: [
+          { title: 'Google Workspace 工具 AI 實戰應用', sub: '簡報效率倍增：AI 自動優化日常文件、簡報與影音製作', teacher: '李福裕', time: '09:00-12:00' }
+        ],
+        afternoon: { title: 'PM 實務：成本管理 / 採購管理', sub: '', teacher: 'GIGA · Nautilus AI 執行長' },
+        evening: { title: '小組專題討論 + AIATCL 測驗說明', sub: '' }
+      },
+      {
+        num: 5, date: '05/09 (六)', tag: '自動化',
+        morning: [
+          { title: '業務流程自動化', sub: '透過對話式 AI 建立專屬自動化工作夥伴（影片分鏡 + 市場趨勢週報）', teacher: '李福裕', time: '09:00-12:00' }
+        ],
+        afternoon: { title: 'PM 實務：溝通管理 / 風險管理', sub: '', teacher: 'GIGA · Nautilus AI 執行長' },
+        evening: { title: '小組專題討論', sub: '' }
+      },
+      {
+        num: 6, date: '05/16 (六)', tag: 'Vibe Coding',
+        morning: [
+          { title: 'Vibe Coding：用說的做原型開發', sub: 'AI 會議摘要器 + 用 BOM 表產生報價系統', teacher: '劉又綺', time: '09:00-12:00' }
+        ],
+        afternoon: { title: 'PM 實務：產品架構、高效打造 DEMO', sub: '', teacher: 'GIGA · Nautilus AI 執行長' },
+        evening: { title: '專題演講：AI 時代，專案經理不再管理專案？', sub: '', teacher: '孫弘岳 · 國立臺灣師範大學教授' }
+      },
+      {
+        num: 7, date: '05/23 (六)', tag: '部署',
+        morning: [
+          { title: 'Vibe Coding：實戰部署', sub: '訂單追蹤儀表板 + 專案看板 Kanban / 驗收 / 驗證', teacher: '劉又綺', time: '09:00-12:00' }
+        ],
+        afternoon: { title: 'PM 實務：產品介面與整合、快速打造 MVP', sub: '', teacher: 'GIGA · Nautilus AI 執行長' },
+        evening: { title: '小組專題討論', sub: '' }
+      },
+      {
+        num: 8, date: '05/30 (六)', tag: '結業',
+        morning: [
+          { title: '主題演講', sub: '', teacher: '陳伶志 · 台灣人工智慧學校執行長', time: '09:00-10:20' },
+          { title: 'AI 素養級認證考試 (AIATCL)', sub: '50 分鐘', teacher: '全體學員', time: '10:35-12:00' }
+        ],
+        afternoon: { title: '小組成果發表 Demo Day', sub: '', teacher: '全體學員' },
+        evening: { title: '結業式', sub: '' }
+      }
+    ];
+
+    async function initLiff() {
+      if (!LIFF_ID || typeof liff === 'undefined') {
+        showLoginRequired();
+        return;
+      }
+      try {
+        await liff.init({ liffId: LIFF_ID });
+        if (!liff.isLoggedIn()) {
+          showLoginRequired();
+          return;
+        }
+        var profile = await liff.getProfile();
+        currentUser = { userId: profile.userId, displayName: profile.displayName, pictureUrl: profile.pictureUrl || '' };
+        showSchedule();
+      } catch (e) {
+        console.error('LIFF init error:', e);
+        showLoginRequired();
+      }
+    }
+
+    function handleLogin() {
+      var base = window.location.origin + window.location.pathname;
+      liff.login({ redirectUri: base + '?v=' + Date.now() });
+    }
+
+    function handleLogout() {
+      if (typeof liff !== 'undefined' && liff.isLoggedIn()) liff.logout();
+      window.location.reload();
+    }
+
+    function showLoginRequired() {
+      document.getElementById('loading').classList.add('hidden');
+      document.getElementById('login-required').classList.remove('hidden');
+    }
+
+    function showSchedule() {
+      document.getElementById('loading').classList.add('hidden');
+      document.getElementById('user-info').classList.remove('hidden');
+      document.getElementById('user-avatar').src = currentUser.pictureUrl;
+      document.getElementById('user-name').textContent = currentUser.displayName;
+      document.getElementById('schedule-content').classList.remove('hidden');
+      renderWeeks();
+    }
+
+    function esc(s) {
+      var d = document.createElement('div');
+      d.textContent = s || '';
+      return d.innerHTML;
+    }
+
+    function renderWeeks() {
+      var container = document.getElementById('weeks');
+      container.innerHTML = WEEKS.map(function(w) {
+        var morningHtml = w.morning.map(function(m) {
+          return '<div class="mb-2">' +
+            (m.time ? '<span class="text-[10px] text-slate-500 font-mono">' + m.time + '</span> ' : '') +
+            '<span class="font-semibold text-white text-sm">' + esc(m.title) + '</span>' +
+            (m.sub ? '<div class="text-slate-400 text-xs ml-0.5">' + esc(m.sub) + '</div>' : '') +
+            (m.teacher ? '<div class="text-slate-500 text-xs ml-0.5">👨‍🏫 ' + esc(m.teacher) + '</div>' : '') +
+            '</div>';
+        }).join('');
+
+        var afternoonHtml = '<div>' +
+          '<span class="font-semibold text-white text-sm">' + esc(w.afternoon.title) + '</span>' +
+          (w.afternoon.sub ? '<div class="text-slate-400 text-xs">' + esc(w.afternoon.sub) + '</div>' : '') +
+          (w.afternoon.teacher ? '<div class="text-slate-500 text-xs">👨‍🏫 ' + esc(w.afternoon.teacher) + '</div>' : '') +
+          '</div>';
+
+        var eveningHtml = '<div>' +
+          '<span class="font-semibold text-white text-sm">' + esc(w.evening.title) + '</span>' +
+          (w.evening.sub ? '<div class="text-slate-400 text-xs">' + esc(w.evening.sub) + '</div>' : '') +
+          (w.evening.teacher ? '<div class="text-slate-500 text-xs">👨‍🏫 ' + esc(w.evening.teacher) + '</div>' : '') +
+          '</div>';
+
+        return '<div class="week-card bg-white/5 border border-white/10 rounded-xl p-5 backdrop-blur-sm">' +
+          '<div class="flex items-center gap-3 mb-4 pb-3 border-b border-white/10">' +
+            '<div class="w-10 h-10 rounded-full bg-gradient-to-br from-sky-500 to-cyan-500 flex items-center justify-center text-white font-bold text-sm flex-shrink-0">W' + w.num + '</div>' +
+            '<div>' +
+              '<div class="text-white font-bold">' + esc(w.date) + '</div>' +
+              '<div class="text-slate-500 text-xs">' + esc(w.tag) + '</div>' +
+            '</div>' +
+          '</div>' +
+          '<div class="grid md:grid-cols-3 gap-4">' +
+            '<div>' +
+              '<div class="text-[10px] font-bold text-sky-400 mb-1.5">☀️ 上午 09:00-12:00</div>' +
+              morningHtml +
+            '</div>' +
+            '<div>' +
+              '<div class="text-[10px] font-bold text-amber-400 mb-1.5">🍱 下午 13:30-15:30</div>' +
+              afternoonHtml +
+            '</div>' +
+            '<div>' +
+              '<div class="text-[10px] font-bold text-emerald-400 mb-1.5">💬 小組 16:00-17:00</div>' +
+              eveningHtml +
+            '</div>' +
+          '</div>' +
+        '</div>';
+      }).join('');
+    }
+
+    initLiff();
+  </script>
+</body>
+</html>
