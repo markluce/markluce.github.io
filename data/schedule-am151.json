@@ -1,0 +1,92 @@
+{
+  "meta": {
+    "name": "經理人 AI PM 班 第一期 (AM151)",
+    "org": "台灣人工智慧學校",
+    "startDate": "2026-04-11",
+    "endDate": "2026-05-30",
+    "dayOfWeek": "Saturday",
+    "location": "新光板橋傑仕堡 A棟 2樓 · 國際會議廳",
+    "address": "新北市板橋區文化路一段 188 巷 51 號",
+    "source": "https://mgr.aiacademy.tw/calendar-am151/",
+    "lastVerified": "2026-04-10"
+  },
+  "dates": {
+    "1": "04/11 (六)",
+    "2": "04/18 (六)",
+    "3": "04/25 (六)",
+    "4": "05/02 (六)",
+    "5": "05/09 (六)",
+    "6": "05/16 (六)",
+    "7": "05/23 (六)",
+    "8": "05/30 (六)"
+  },
+  "timeSlots": [
+    { "id": "m1", "label": "09:00 - 10:20", "kind": "class", "period": "上午" },
+    { "id": "b1", "label": "10:20 - 10:35", "kind": "break", "period": "休息" },
+    { "id": "m2", "label": "10:35 - 12:00", "kind": "class", "period": "上午" },
+    { "id": "lunch", "label": "12:00 - 13:30", "kind": "break", "period": "休息" },
+    { "id": "a1", "label": "13:30 - 15:30", "kind": "class", "period": "下午" },
+    { "id": "b2", "label": "15:30 - 16:00", "kind": "break", "period": "休息" },
+    { "id": "g1", "label": "16:00 - 17:00", "kind": "class", "period": "小組" },
+    { "id": "ops", "label": "17:00 - 17:30", "kind": "class", "period": "課務" },
+    { "id": "video", "label": "17:30 -", "kind": "video", "period": "影片" }
+  ],
+  "cells": {
+    "1": {
+      "m1": { "main": "始業式‧校務長演講", "sub": "AI PM課程導覽", "teacher": "蔡明順校務長 & GIGA", "org": "台灣人工智慧學校" },
+      "m2": { "main": "專題演講", "sub": "從AI Agent到虛擬員工 - AI在產品的開發、管理", "teacher": "李國財(BEJO)", "org": "FIKAYARD" },
+      "a1": { "main": "主題演講", "sub": "", "teacher": "吳振和", "org": "Cacafly 技術副總" },
+      "g1": { "main": "小組專題時間", "sub": "學員分組相見歡", "teacher": "全體學員", "org": "" },
+      "ops": { "main": "課務須知", "sub": "", "teacher": "", "org": "" }
+    },
+    "2": {
+      "m1": { "main": "提示工程與 Gemini 多模態實戰", "sub": "AI 溝通術：用提示指令高效產出企劃內容", "teacher": "蔡政霖", "org": "台灣人工智慧學校" },
+      "m2": { "main": "提示工程與 Gemini 多模態實戰", "sub": "AI 溝通術：用提示指令高效產出企劃內容", "teacher": "蔡政霖", "org": "台灣人工智慧學校" },
+      "a1": { "main": "PM 實務", "sub": "產品開發企劃", "teacher": "GIGA", "org": "Nautilus AI 執行長" },
+      "g1": { "main": "小組專題時間", "sub": "專題討論 + 班代選舉投票", "teacher": "全體學員", "org": "" },
+      "ops": { "main": "競賽說明", "sub": "", "teacher": "", "org": "" }
+    },
+    "3": {
+      "m1": { "main": "檢索增強生成(RAG) 與 NotebookLM 應用", "sub": "個人知識庫的 AI 應用：快速從資料中找到洞察與摘要 (RAG)", "teacher": "蔡政霖", "org": "台灣人工智慧學校" },
+      "m2": { "main": "檢索增強生成(RAG) 與 NotebookLM 應用", "sub": "個人知識庫的 AI 應用：快速從資料中找到洞察與摘要 (RAG)", "teacher": "蔡政霖", "org": "台灣人工智慧學校" },
+      "a1": { "main": "PM 實務", "sub": "範疇 / 時間 / 人力 / 品質控管", "teacher": "GIGA", "org": "Nautilus AI 執行長" },
+      "g1": { "main": "專題演講", "sub": "你是否在公司救了一個專案？ --深談 AI PM 與工具實踐", "teacher": "王淳恆", "org": "圖策科技 AI研發處長" },
+      "ops": { "main": "課程問卷", "sub": "", "teacher": "", "org": "" }
+    },
+    "4": {
+      "m1": { "main": "Google Workspace 工具 AI 實戰應用", "sub": "簡報效率倍增：運用 AI 自動優化日常文件、簡報與影音製作 (Workspace)", "teacher": "李福裕", "org": "台灣人工智慧學校" },
+      "m2": { "main": "Google Workspace 工具 AI 實戰應用", "sub": "簡報效率倍增：運用 AI 自動優化日常文件、簡報與影音製作 (Workspace)", "teacher": "李福裕", "org": "台灣人工智慧學校" },
+      "a1": { "main": "PM 實務", "sub": "成本管理 / 採購管理", "teacher": "GIGA", "org": "Nautilus AI 執行長" },
+      "g1": { "main": "小組專題時間", "sub": "專題討論", "teacher": "全體學員", "org": "" },
+      "ops": { "main": "AI素養級認證(AIATCL™)考前閱讀", "sub": "AI 素養級認證 (AIATCL™) 測驗說明", "teacher": "", "org": "" }
+    },
+    "5": {
+      "m1": { "main": "產品介紹影片分鏡 (Storyboard)", "sub": "業務流程自動化：透過對話式 AI 輕鬆建立專屬的自動化工作夥伴", "teacher": "李福裕", "org": "台灣人工智慧學校" },
+      "m2": { "main": "市場趨勢週報", "sub": "業務流程自動化：透過對話式 AI 輕鬆建立專屬的自動化工作夥伴", "teacher": "李福裕", "org": "台灣人工智慧學校" },
+      "a1": { "main": "PM 實務", "sub": "溝通管理 / 風險管理", "teacher": "GIGA", "org": "Nautilus AI 執行長" },
+      "g1": { "main": "小組專題時間", "sub": "專題討論", "teacher": "全體學員", "org": "" },
+      "ops": { "main": "課程問卷", "sub": "", "teacher": "", "org": "" }
+    },
+    "6": {
+      "m1": { "main": "AI 會議摘要器", "sub": "Vibe Coding：用說的做原型開發", "teacher": "劉又綺", "org": "台灣人工智慧學校" },
+      "m2": { "main": "用 BOM表 產生報價系統", "sub": "Vibe Coding：用說的做原型開發", "teacher": "劉又綺", "org": "台灣人工智慧學校" },
+      "a1": { "main": "PM 實務", "sub": "產品架構、高效打造 DEMO", "teacher": "GIGA", "org": "Nautilus AI 執行長" },
+      "g1": { "main": "專題演講", "sub": "AI 時代，專案經理不再管理專案？", "teacher": "孫弘岳", "org": "國立臺灣師範大學 教授" },
+      "ops": { "main": "課程問卷", "sub": "", "teacher": "", "org": "" }
+    },
+    "7": {
+      "m1": { "main": "訂單追蹤儀表板", "sub": "Vibe Coding：實戰部署", "teacher": "劉又綺", "org": "台灣人工智慧學校" },
+      "m2": { "main": "專案看板 (Kanban) / 驗收 / 驗證", "sub": "Vibe Coding：實戰部署", "teacher": "劉又綺", "org": "台灣人工智慧學校" },
+      "a1": { "main": "PM 實務", "sub": "產品介面與整合、快速打造 MVP", "teacher": "GIGA", "org": "Nautilus AI 執行長" },
+      "g1": { "main": "小組專題時間", "sub": "專題討論", "teacher": "全體學員", "org": "" },
+      "ops": { "main": "課程問卷", "sub": "", "teacher": "", "org": "" }
+    },
+    "8": {
+      "m1": { "main": "主題演講", "sub": "", "teacher": "陳伶志", "org": "台灣人工智慧學校執行長" },
+      "m2": { "main": "AI素養級認證考試 (50min)", "sub": "AIATCL認證", "teacher": "全體學員", "org": "" },
+      "a1": { "main": "簡報模板下載", "sub": "小組成果發表 Demo Day", "teacher": "全體學員", "org": "" },
+      "g1": { "main": "結業式", "sub": "", "teacher": "全體學員", "org": "台灣人工智慧學校" },
+      "ops": { "main": "課程問卷", "sub": "", "teacher": "", "org": "" }
+    }
+  }
+}

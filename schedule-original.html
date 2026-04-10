@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'><rect width='64' height='64' rx='12' fill='%230EA5E9'/><text x='32' y='28' font-family='Arial,sans-serif' font-size='16' font-weight='bold' fill='white' text-anchor='middle'>MARK</text><text x='32' y='48' font-family='Arial,sans-serif' font-size='14' font-weight='bold' fill='%2322D3EE' text-anchor='middle'>LUCE</text></svg>" />
+  <title>AM151 課程表 — 原始格式</title>
+  <meta name="robots" content="noindex, nofollow" />
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = { theme: { extend: { fontFamily: { sans: ['"Noto Sans TC"', 'Inter', 'system-ui', 'sans-serif'] } } } }
+  </script>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Noto+Sans+TC:wght@400;500;600;700;900&display=swap" rel="stylesheet" />
+  <script charset="utf-8" src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
+  <style>
+    body { background: #ffffff; color: #333; }
+    .wrap { max-width: 1100px; margin: 0 auto; padding: 20px; }
+
+    /* Portal-style table */
+    table.wkcrs {
+      border-collapse: collapse;
+      width: 100%;
+      font-size: 0.85rem;
+      background: #fff;
+      margin-bottom: 30px;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+    }
+    table.wkcrs thead th {
+      background: #2c5c8a;
+      color: #ffffff;
+      padding: 10px 12px;
+      border: 1px solid #1a3a5c;
+      font-weight: 700;
+      text-align: center;
+      white-space: nowrap;
+    }
+    table.wkcrs thead th.hdr-time { background: #1a3a5c; min-width: 110px; }
+    table.wkcrs tbody td {
+      border: 1px solid #c0c0c0;
+      padding: 10px 12px;
+      vertical-align: top;
+      line-height: 1.55;
+    }
+    table.wkcrs tbody td.time-cell {
+      background: #f0f4f8;
+      color: #1a3a5c;
+      font-weight: 600;
+      white-space: nowrap;
+      text-align: center;
+      font-family: ui-monospace, monospace;
+      font-size: 0.82rem;
+    }
+    table.wkcrs tbody td.break-cell {
+      background: #f7f7f4;
+      color: #888;
+      text-align: center;
+      font-style: italic;
+    }
+    table.wkcrs tbody td.video-cell {
+      background: #f0e9f7;
+      color: #5b3a8e;
+      text-align: center;
+      font-style: italic;
+    }
+
+    .wkcourse { font-weight: 700; color: #1a1a1a; margin-bottom: 4px; }
+    .wksubcourse { color: #555; font-size: 0.8rem; margin-bottom: 8px; line-height: 1.45; }
+    .wkplace { color: #2c5c8a; font-size: 0.8rem; font-weight: 500; border-top: 1px dashed #d4d4d4; padding-top: 6px; }
+    .wkplace .company { color: #888; font-size: 0.72rem; margin-top: 2px; }
+
+    h1 { color: #1a3a5c; font-size: 1.8rem; font-weight: 800; margin-bottom: 8px; }
+    h2 { color: #2c5c8a; font-size: 1.15rem; font-weight: 700; margin: 28px 0 12px; padding-bottom: 6px; border-bottom: 2px solid #2c5c8a; }
+    .subtitle { color: #6b7280; font-size: 0.85rem; margin-bottom: 16px; }
+    .meta { color: #6b7280; font-size: 0.75rem; }
+
+    nav.topnav { background: #1a3a5c; color: #fff; padding: 10px 20px; margin-bottom: 24px; }
+    nav.topnav .inner { max-width: 1100px; margin: 0 auto; display: flex; align-items: center; justify-content: space-between; font-size: 0.85rem; }
+    nav.topnav a { color: #bcd1e3; text-decoration: none; margin-left: 16px; }
+    nav.topnav a:hover { color: #fff; }
+    nav.topnav a.active { color: #ffd700; font-weight: 600; }
+
+    .loading { text-align: center; color: #888; padding: 60px 0; }
+    .login-wall { max-width: 400px; margin: 100px auto; background: #f9f9f9; border: 1px solid #ddd; padding: 40px; text-align: center; border-radius: 4px; }
+    .login-wall .icon { font-size: 3rem; margin-bottom: 12px; }
+    .line-btn { background: #06C755; color: white; padding: 10px 20px; border: none; border-radius: 4px; font-weight: 600; cursor: pointer; font-size: 0.9rem; }
+    .line-btn:hover { background: #05b64d; }
+  </style>
+</head>
+<body>
+
+  <nav class="topnav">
+    <div class="inner">
+      <strong>markluce</strong>
+      <div>
+        <a href="/">AI PM 同學牆</a>
+        <a href="/schedule.html">8 週課表（篩選）</a>
+        <a href="/schedule-original.html" class="active">原始格式</a>
+        <a href="/schedule.json" target="_blank">JSON</a>
+        <a href="/more.html">更多</a>
+      </div>
+    </div>
+  </nav>
+
+  <div id="loading" class="loading">載入中...</div>
+
+  <div id="login-wall" class="login-wall" style="display:none;">
+    <div class="icon">🔒</div>
+    <h3 style="font-weight:700;margin-bottom:8px;">需要登入</h3>
+    <p style="color:#666;font-size:0.85rem;margin-bottom:20px;">課程表僅提供給登入的同學查看。</p>
+    <button class="line-btn" onclick="handleLogin()">LINE 登入</button>
+    <p style="margin-top:16px;"><a href="/" style="color:#888;font-size:0.8rem;">← 回到同學牆</a></p>
+  </div>
+
+  <main id="content" class="wrap" style="display:none;">
+    <h1>經理人 AI PM 班│第一期 (AM151) 課程表</h1>
+    <p class="subtitle">📍 新光板橋傑仕堡 A棟 2樓・國際會議廳 · 每週六 09:00-17:30</p>
+
+    <!-- Week groups -->
+    <h2>2026/04/11 ~ 2026/05/02</h2>
+    <table class="wkcrs" id="tbl-1"></table>
+
+    <h2>2026/05/09 ~ 2026/05/30</h2>
+    <table class="wkcrs" id="tbl-2"></table>
+
+    <p class="meta" style="text-align:center;margin-top:30px;">
+      📄 資料來源：<a href="http://mgr.aiacademy.tw/" target="_blank" style="color:#2c5c8a;">AIA 學員專區</a>
+      ・ JSON：<a href="/schedule.json" target="_blank" style="color:#2c5c8a;">schedule.json</a>
+    </p>
+  </main>
+
+  <script>
+    var LIFF_ID = '2009738746-2qigSpHh';
+    var currentUser = null;
+    var DATA = null;
+
+    function esc(s) {
+      var d = document.createElement('div');
+      d.textContent = s || '';
+      return d.innerHTML;
+    }
+
+    async function initLiff() {
+      if (!LIFF_ID || typeof liff === 'undefined') {
+        showLoginWall();
+        return;
+      }
+      try {
+        await liff.init({ liffId: LIFF_ID });
+        if (!liff.isLoggedIn()) {
+          showLoginWall();
+          return;
+        }
+        var profile = await liff.getProfile();
+        currentUser = { userId: profile.userId, displayName: profile.displayName };
+        await loadData();
+        showContent();
+      } catch (e) {
+        console.error('LIFF init error:', e);
+        showLoginWall();
+      }
+    }
+
+    function handleLogin() {
+      var base = window.location.origin + window.location.pathname;
+      liff.login({ redirectUri: base + '?v=' + Date.now() });
+    }
+
+    function showLoginWall() {
+      document.getElementById('loading').style.display = 'none';
+      document.getElementById('login-wall').style.display = 'block';
+    }
+
+    async function loadData() {
+      var res = await fetch('/schedule.json');
+      DATA = await res.json();
+    }
+
+    function showContent() {
+      document.getElementById('loading').style.display = 'none';
+      document.getElementById('content').style.display = 'block';
+      render();
+    }
+
+    function render() {
+      renderTable('tbl-1', [1, 2, 3, 4]);
+      renderTable('tbl-2', [5, 6, 7, 8]);
+    }
+
+    function renderCell(cell) {
+      if (!cell) return '';
+      var html = '';
+      if (cell.main) html += '<div class="wkcourse">' + esc(cell.main) + '</div>';
+      if (cell.sub) html += '<div class="wksubcourse">' + esc(cell.sub) + '</div>';
+      if (cell.teacher) {
+        html += '<div class="wkplace">' + esc(cell.teacher);
+        if (cell.org) html += '<div class="company">' + esc(cell.org) + '</div>';
+        html += '</div>';
+      }
+      return html;
+    }
+
+    function renderTable(tblId, weeks) {
+      var tbl = document.getElementById(tblId);
+      // Header
+      var thead = '<thead><tr><th class="hdr-time">日期</th>';
+      weeks.forEach(function(w) {
+        thead += '<th>' + esc(DATA.dates[w]) + '</th>';
+      });
+      thead += '</tr></thead>';
+
+      // Body — iterate through timeSlots
+      var tbody = '<tbody>';
+      DATA.timeSlots.forEach(function(slot) {
+        tbody += '<tr>';
+        tbody += '<td class="time-cell">' + esc(slot.label) + '</td>';
+        weeks.forEach(function(w) {
+          var cells = DATA.cells[w] || {};
+          var cell = cells[slot.id];
+          if (slot.kind === 'break') {
+            tbody += '<td class="break-cell">' + (slot.id === 'lunch' ? '🍱 午餐' : '☕ 休息') + '</td>';
+          } else if (slot.kind === 'video') {
+            tbody += '<td class="video-cell">📹 課程影片<div style="font-size:0.72rem;margin-top:4px;">新光板橋傑仕堡 A棟 2樓</div></td>';
+          } else if (cell) {
+            tbody += '<td>' + renderCell(cell) + '</td>';
+          } else {
+            tbody += '<td style="color:#ccc;text-align:center;">—</td>';
+          }
+        });
+        tbody += '</tr>';
+      });
+      tbody += '</tbody>';
+
+      tbl.innerHTML = thead + tbody;
+    }
+
+    initLiff();
+  </script>
+</body>
+</html>
