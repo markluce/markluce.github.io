@@ -160,12 +160,12 @@
   </section>
 
   <!-- Classmate Cards -->
-  <section class="relative z-10 max-w-6xl mx-auto px-6 pb-16">
+  <section class="relative z-10 max-w-screen-2xl mx-auto px-6 pb-16">
     <div class="text-center mb-6">
       <span id="classmate-count" class="text-slate-500 text-sm"></span>
     </div>
 
-    <div id="classmate-grid" class="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+    <div id="classmate-grid" class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
     </div>
 
     <div id="loading" class="text-center py-12 text-slate-500">
@@ -377,20 +377,20 @@
       const grid = document.getElementById('classmate-grid');
       grid.innerHTML = data.map(function(c, i) {
         var count = msgCounts[c.line_user_id] || 0;
-        var badge = count > 0 ? '<span class="ml-2 inline-flex items-center gap-1 px-2 py-0.5 bg-sky-500/10 border border-sky-500/20 rounded-full text-sky-400 text-xs font-medium">\uD83D\uDCAC ' + count + '</span>' : '';
-        return '<a href="/member.html?id=' + encodeURIComponent(c.line_user_id) + '" class="block card-hover fade-in bg-white/5 border border-white/10 rounded-2xl p-6 backdrop-blur-sm cursor-pointer" style="animation-delay:' + (i * 80) + 'ms">' +
-          '<div class="flex items-center gap-4 mb-4">' +
-            (c.avatar_url ? '<img src="' + escHtml(c.avatar_url) + '" alt="" class="w-20 h-20 rounded-full bg-slate-700 hover:ring-4 hover:ring-sky-500/30 transition flex-shrink-0" onclick="event.preventDefault();showAvatar(\'' + escHtml(c.avatar_url) + '\', \'' + escHtml(c.display_name) + '\')" onerror="this.style.display=\'none\'" />' : '<div class="w-20 h-20 rounded-full bg-gradient-to-br from-sky-500 to-cyan-500 flex items-center justify-center text-2xl font-bold flex-shrink-0">' + escHtml(c.display_name.charAt(0)) + '</div>') +
-            '<div>' +
-              '<div class="font-bold text-white">' + escHtml(c.display_name) + badge + '</div>' +
-              '<div class="text-slate-500 text-xs">' +
-                (c.company ? escHtml(c.company) : '') + (c.company && c.job_title ? ' · ' : '') + (c.job_title ? escHtml(c.job_title) : '') +
-              '</div>' +
-              (c.group_number == 0 ? '<span class="mt-1 inline-block px-2 py-0.5 bg-amber-500/10 border border-amber-500/20 rounded-full text-amber-400 text-xs">講師 / 助教</span>' : c.group_number == 99 ? '<span class="mt-1 inline-block px-2 py-0.5 bg-slate-500/10 border border-slate-500/20 rounded-full text-slate-400 text-xs">測試帳號</span>' : c.group_number ? '<span class="mt-1 inline-block px-2 py-0.5 bg-sky-500/10 border border-sky-500/20 rounded-full text-sky-400 text-xs">第 ' + c.group_number + ' 組</span>' : '') +
-            '</div>' +
+        var badge = count > 0 ? '<span class="inline-flex items-center gap-0.5 px-1.5 py-0.5 bg-sky-500/10 border border-sky-500/20 rounded-full text-sky-400 text-[10px] font-medium">\uD83D\uDCAC ' + count + '</span>' : '';
+        var introPreview = c.intro_text ? '<p class="text-slate-400 text-xs leading-relaxed line-clamp-2 mt-2">' + escHtml(c.intro_text.replace(/[#*\-_>`]/g, '').substring(0, 80)) + '</p>' : '';
+        return '<a href="/member.html?id=' + encodeURIComponent(c.line_user_id) + '" class="block card-hover fade-in bg-white/5 border border-white/10 rounded-xl p-4 backdrop-blur-sm cursor-pointer text-center" style="animation-delay:' + (i * 40) + 'ms">' +
+          (c.avatar_url ? '<img src="' + escHtml(c.avatar_url) + '" alt="" class="w-14 h-14 rounded-full bg-slate-700 mx-auto mb-2" />' : '<div class="w-14 h-14 rounded-full bg-gradient-to-br from-sky-500 to-cyan-500 flex items-center justify-center text-lg font-bold mx-auto mb-2">' + escHtml(c.display_name.charAt(0)) + '</div>') +
+          '<div class="font-semibold text-white text-sm truncate">' + escHtml(c.display_name) + '</div>' +
+          '<div class="text-slate-500 text-[11px] truncate mt-0.5">' +
+            (c.company ? escHtml(c.company) : '') + (c.company && c.job_title ? ' · ' : '') + (c.job_title ? escHtml(c.job_title) : '') +
           '</div>' +
-          (c.intro_text ? '<div class="text-slate-300 text-sm leading-relaxed md-prose">' + renderMd(c.intro_text) + '</div>' : '<p class="text-slate-600 text-sm italic">尚未填寫自我介紹</p>') +
-          (canDelete(c.line_user_id) ? '<div class="mt-4 text-right"><button onclick="event.preventDefault();deleteIntro(\'' + c.line_user_id + '\', \'' + escHtml(c.display_name) + '\')" class="px-4 py-1.5 bg-red-500/10 border border-red-500/30 rounded-lg text-red-400 hover:bg-red-500/20 hover:text-red-300 transition text-sm font-medium">刪除</button></div>' : '') +
+          '<div class="flex items-center justify-center gap-1.5 mt-1.5">' +
+            (c.group_number == 0 ? '<span class="px-1.5 py-0.5 bg-amber-500/10 border border-amber-500/20 rounded-full text-amber-400 text-[10px]">講師</span>' : c.group_number == 99 ? '<span class="px-1.5 py-0.5 bg-slate-500/10 border border-slate-500/20 rounded-full text-slate-400 text-[10px]">測試</span>' : c.group_number ? '<span class="px-1.5 py-0.5 bg-sky-500/10 border border-sky-500/20 rounded-full text-sky-400 text-[10px]">第' + c.group_number + '組</span>' : '') +
+            badge +
+          '</div>' +
+          introPreview +
+          (canDelete(c.line_user_id) ? '<div class="mt-2"><button onclick="event.preventDefault();deleteIntro(\'' + c.line_user_id + '\', \'' + escHtml(c.display_name) + '\')" class="px-3 py-1 bg-red-500/10 border border-red-500/30 rounded-lg text-red-400 text-xs">刪除</button></div>' : '') +
         '</a>';
       }).join('');
     }
