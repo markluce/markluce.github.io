@@ -120,12 +120,13 @@
 
   <main id="content" class="wrap" style="display:none;">
     <h1>經理人 AI PM 班│第一期 (AM151) 課程表</h1>
-    <p class="subtitle">📍 新光板橋傑仕堡 A棟 2樓・國際會議廳 · 每週六 09:00-17:30</p>
-
-    <div style="margin-bottom:16px;padding:10px 14px;background:#f0f4f8;border:1px solid #d4e0ea;border-radius:4px;font-size:0.82rem;">
-      <strong style="color:#1a3a5c;">顯示選項：</strong>
-      <label style="margin-left:12px;cursor:pointer;"><input type="checkbox" id="opt-breaks" checked onchange="render()" /> ☕ 顯示休息 / 午餐</label>
-      <label style="margin-left:12px;cursor:pointer;"><input type="checkbox" id="opt-video" checked onchange="render()" /> 📹 顯示課程影片</label>
+    <div style="display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:12px;margin-bottom:16px;">
+      <p class="subtitle" style="margin:0;">📍 新光板橋傑仕堡 A棟 2樓・國際會議廳 · 每週六 09:00-17:30</p>
+      <div style="padding:6px 12px;background:#f0f4f8;border:1px solid #d4e0ea;border-radius:4px;font-size:0.78rem;white-space:nowrap;">
+        <strong style="color:#1a3a5c;">顯示：</strong>
+        <label style="margin-left:8px;cursor:pointer;"><input type="checkbox" id="opt-breaks" checked onchange="render()" /> ☕ 休息</label>
+        <label style="margin-left:8px;cursor:pointer;"><input type="checkbox" id="opt-video" checked onchange="render()" /> 📹 影片</label>
+      </div>
     </div>
 
     <!-- Week groups -->
