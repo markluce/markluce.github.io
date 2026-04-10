@@ -15,96 +15,119 @@
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Noto+Sans+TC:wght@400;500;600;700;900&display=swap" rel="stylesheet" />
   <script charset="utf-8" src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
   <style>
-    .gradient-text { background: linear-gradient(135deg, #38bdf8, #06b6d4); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+    /* Light theme — traditional old-school */
+    body { background: #f5f5f0; color: #1a1a1a; }
     .line-btn { background: #06C755; }
     .line-btn:hover { background: #05b64d; }
-    .fade-in { animation: fadeIn 0.6s ease-out; }
-    @keyframes fadeIn { from { opacity: 0; transform: translateY(16px); } to { opacity: 1; transform: translateY(0); } }
-    .glow-ring { box-shadow: 0 0 0 4px rgba(6, 199, 85, 0.2); }
-    table.sched { border-collapse: collapse; width: 100%; font-size: 0.85rem; }
-    table.sched th, table.sched td { border: 1px solid rgba(255,255,255,0.12); padding: 8px 10px; text-align: left; vertical-align: top; }
-    table.sched thead th { background: rgba(14,165,233,0.15); color: #bae6fd; font-weight: 600; }
+    .glow-ring { box-shadow: 0 0 0 3px rgba(6, 199, 85, 0.25); }
+    .fade-in { animation: fadeIn 0.4s ease-out; }
+    @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+
+    .card { background: #ffffff; border: 1px solid #d4d4d4; }
+    .card-inset { background: #fafafa; border: 1px solid #e5e5e5; }
+
+    table.sched { border-collapse: collapse; width: 100%; font-size: 0.85rem; background: #ffffff; }
+    table.sched th, table.sched td { border: 1px solid #c0c0c0; padding: 8px 10px; text-align: left; vertical-align: top; }
+    table.sched thead th { background: #e8eef2; color: #1a1a1a; font-weight: 700; }
     table.sched tbody tr { transition: background 0.15s; }
-    table.sched tbody tr:nth-child(even) { background: rgba(255,255,255,0.02); }
-    table.sched tbody tr:hover { background: rgba(14,165,233,0.08); }
-    .period-tag { display: inline-block; padding: 1px 6px; border-radius: 999px; font-size: 0.7rem; font-weight: 600; white-space: nowrap; }
-    .period-morning { background: rgba(251,191,36,0.15); color: #fbbf24; border: 1px solid rgba(251,191,36,0.3); }
-    .period-afternoon { background: rgba(14,165,233,0.15); color: #38bdf8; border: 1px solid rgba(14,165,233,0.3); }
-    .period-group { background: rgba(16,185,129,0.15); color: #34d399; border: 1px solid rgba(16,185,129,0.3); }
-    .period-ops { background: rgba(148,163,184,0.15); color: #94a3b8; border: 1px solid rgba(148,163,184,0.3); }
-    .period-break { background: rgba(100,116,139,0.1); color: #64748b; border: 1px solid rgba(100,116,139,0.25); }
-    .period-video { background: rgba(139,92,246,0.12); color: #a78bfa; border: 1px solid rgba(139,92,246,0.3); }
-    tr.row-dim { opacity: 0.65; }
+    table.sched tbody tr:nth-child(even) { background: #f7f7f4; }
+    table.sched tbody tr:hover { background: #fff8e1; }
+
+    .period-tag { display: inline-block; padding: 1px 7px; border-radius: 3px; font-size: 0.72rem; font-weight: 600; white-space: nowrap; }
+    .period-morning { background: #fff3cd; color: #856404; border: 1px solid #ffe08a; }
+    .period-afternoon { background: #cfe8f7; color: #0c5a80; border: 1px solid #8ac6e0; }
+    .period-group { background: #d4edda; color: #155724; border: 1px solid #a3d9b1; }
+    .period-ops { background: #e2e3e5; color: #383d41; border: 1px solid #c6c8ca; }
+    .period-break { background: #f0f0ec; color: #6c6c65; border: 1px solid #d4d4cc; }
+    .period-video { background: #e8dff5; color: #4b2e7a; border: 1px solid #c7b8e6; }
+    tr.row-dim { color: #6c6c65; background: #fafaf6 !important; }
+    tr.row-dim td { font-style: italic; }
+
+    input[type="text"], select {
+      background: #ffffff;
+      border: 1px solid #c0c0c0;
+      color: #1a1a1a;
+    }
+    input[type="text"]:focus, select:focus { border-color: #4a90e2; outline: 1px solid #4a90e2; }
+
+    .filter-label { color: #6c6c65; font-size: 10px; text-transform: uppercase; letter-spacing: 0.05em; }
+    .btn-reset { background: #4a4a4a; color: white; }
+    .btn-reset:hover { background: #2a2a2a; }
+
+    .title-text { color: #1a1a1a; font-weight: 800; }
+    .title-accent { color: #0c5a80; }
+    .meta-text { color: #555; }
+
+    /* Nav */
+    nav.topnav { background: #1a1a1a; color: #f5f5f0; border-bottom: 3px solid #0c5a80; }
+    nav.topnav a { color: #d4d4d4; }
+    nav.topnav a:hover, nav.topnav a.active { color: #ffffff; }
+    nav.topnav a.active { color: #fff8e1; }
   </style>
 </head>
-<body class="min-h-screen bg-gradient-to-br from-slate-900 via-sky-950 to-slate-900 text-white font-sans">
-
-  <div class="fixed inset-0 pointer-events-none overflow-hidden">
-    <div class="absolute -top-40 -right-40 w-96 h-96 bg-sky-500/10 rounded-full blur-3xl"></div>
-    <div class="absolute top-1/2 -left-40 w-96 h-96 bg-cyan-500/10 rounded-full blur-3xl"></div>
-  </div>
+<body class="min-h-screen font-sans">
 
   <!-- Nav -->
-  <nav class="relative z-10 max-w-6xl mx-auto px-4 md:px-6 py-4 md:py-6">
-    <div class="flex items-center justify-between">
-      <a href="/" class="text-lg md:text-xl font-bold tracking-tight">
-        <span class="text-sky-400">mark</span>luce
+  <nav class="topnav relative z-10">
+    <div class="max-w-6xl mx-auto px-4 md:px-6 py-3 md:py-4 flex items-center justify-between">
+      <a href="/" class="text-lg md:text-xl font-bold tracking-tight text-white">
+        markluce
       </a>
-      <div class="flex items-center gap-3 md:gap-4">
-        <a href="/" class="text-slate-400 hover:text-white transition text-xs md:text-sm">AI PM 同學牆</a>
-        <a href="/schedule.html" class="text-white text-xs md:text-sm font-medium">8 週完整課表</a>
-        <a href="/more.html" class="text-slate-400 hover:text-white transition text-xs md:text-sm">更多</a>
+      <div class="flex items-center gap-3 md:gap-5 text-xs md:text-sm">
+        <a href="/" class="hover:text-white transition">AI PM 同學牆</a>
+        <a href="/schedule.html" class="active font-medium">8 週完整課表</a>
+        <a href="/more.html" class="hover:text-white transition">更多</a>
         <div id="user-info" class="hidden flex items-center gap-2">
           <img id="user-avatar" class="w-7 h-7 md:w-8 md:h-8 rounded-full glow-ring" src="" alt="" />
-          <span id="user-name" class="text-xs md:text-sm text-emerald-400 font-medium max-w-[80px] md:max-w-none truncate"></span>
-          <button onclick="handleLogout()" class="text-slate-500 hover:text-red-400 transition text-sm px-1" title="登出">登出</button>
+          <span id="user-name" class="text-xs md:text-sm text-emerald-300 font-medium max-w-[80px] md:max-w-none truncate"></span>
+          <button onclick="handleLogout()" class="text-slate-400 hover:text-white transition text-sm px-1" title="登出">登出</button>
         </div>
       </div>
     </div>
   </nav>
 
   <!-- Loading -->
-  <div id="loading" class="relative z-10 text-center pt-32 text-slate-500">
-    <div class="inline-block w-6 h-6 border-2 border-slate-600 border-t-sky-400 rounded-full animate-spin mb-3"></div>
+  <div id="loading" class="text-center pt-32" style="color: #6c6c65;">
+    <div class="inline-block w-6 h-6 border-2 border-gray-300 border-t-gray-700 rounded-full animate-spin mb-3"></div>
     <p class="text-sm">驗證身份中...</p>
   </div>
 
   <!-- Login required -->
-  <div id="login-required" class="hidden relative z-10 max-w-md mx-auto px-6 pt-20 text-center fade-in">
-    <div class="bg-white/5 border border-white/10 rounded-2xl p-10 backdrop-blur-sm">
+  <div id="login-required" class="hidden max-w-md mx-auto px-6 pt-20 text-center fade-in">
+    <div class="card rounded-lg p-10">
       <div class="text-6xl mb-6">🔒</div>
-      <h2 class="text-xl font-bold text-white mb-3">需要登入</h2>
-      <p class="text-slate-400 text-sm mb-6 leading-relaxed">課程表僅提供給登入的同學查看。<br/>請先用 LINE 登入。</p>
-      <button onclick="handleLogin()" class="line-btn text-white px-6 py-2.5 rounded-lg text-sm font-semibold transition inline-flex items-center gap-2">
+      <h2 class="text-xl font-bold mb-3">需要登入</h2>
+      <p class="meta-text text-sm mb-6 leading-relaxed">課程表僅提供給登入的同學查看。<br/>請先用 LINE 登入。</p>
+      <button onclick="handleLogin()" class="line-btn text-white px-6 py-2.5 rounded text-sm font-semibold transition inline-flex items-center gap-2">
         <svg class="w-5 h-5" viewBox="0 0 24 24" fill="currentColor"><path d="M19.365 9.863c.349 0 .63.285.63.631 0 .345-.281.63-.63.63H17.61v1.125h1.755c.349 0 .63.283.63.63 0 .344-.281.629-.63.629h-2.386c-.345 0-.627-.285-.627-.629V8.108c0-.345.282-.63.63-.63h2.386c.346 0 .627.285.627.63 0 .349-.281.63-.63.63H17.61v1.125h1.755zm-3.855 3.016c0 .27-.174.51-.432.596-.064.021-.133.031-.199.031-.211 0-.391-.09-.51-.25l-2.443-3.317v2.94c0 .344-.279.629-.631.629-.346 0-.626-.285-.626-.629V8.108c0-.27.173-.51.43-.595.06-.023.136-.033.194-.033.195 0 .375.104.495.254l2.462 3.33V8.108c0-.345.282-.63.63-.63.345 0 .63.285.63.63v4.771zm-5.741 0c0 .344-.282.629-.631.629-.345 0-.627-.285-.627-.629V8.108c0-.345.282-.63.63-.63.346 0 .628.285.628.63v4.771zm-2.466.629H4.917c-.345 0-.63-.285-.63-.629V8.108c0-.345.285-.63.63-.63.348 0 .63.285.63.63v4.141h1.756c.348 0 .629.283.629.63 0 .344-.282.629-.629.629M24 10.314C24 4.943 18.615.572 12 .572S0 4.943 0 10.314c0 4.811 4.27 8.842 10.035 9.608.391.082.923.258 1.058.59.12.301.079.766.038 1.08l-.164 1.02c-.045.301-.24 1.186 1.049.645 1.291-.539 6.916-4.078 9.436-6.975C23.176 14.393 24 12.458 24 10.314"/></svg>
         LINE 登入
       </button>
-      <a href="/" class="block mt-4 text-slate-500 hover:text-white transition text-sm">&larr; 回到同學牆</a>
+      <a href="/" class="block mt-4 meta-text hover:underline text-sm">&larr; 回到同學牆</a>
     </div>
   </div>
 
   <!-- Schedule Content -->
-  <main id="schedule-content" class="hidden relative z-10 max-w-7xl mx-auto px-4 md:px-6 pb-16 fade-in">
-    <header class="text-center pt-4 pb-6">
-      <div class="inline-block mb-3 px-4 py-1.5 bg-emerald-500/10 border border-emerald-500/20 rounded-full text-emerald-400 text-sm font-medium">
+  <main id="schedule-content" class="hidden max-w-7xl mx-auto px-4 md:px-6 pb-16 fade-in">
+    <header class="text-center pt-6 pb-6">
+      <div class="inline-block mb-3 px-3 py-1 bg-yellow-100 border border-yellow-300 rounded text-yellow-900 text-xs font-semibold tracking-wide">
         台灣人工智慧學校 · 經理人 AI PM 班 第一期 (AM151)
       </div>
-      <h1 class="text-2xl md:text-3xl font-extrabold leading-tight mb-2">
-        <span class="gradient-text">8 週完整課程表</span>
+      <h1 class="title-text text-2xl md:text-3xl leading-tight mb-2">
+        <span class="title-accent">8 週完整課程表</span>
       </h1>
-      <p class="text-slate-400 text-xs">2026/04/11 ~ 2026/05/30 · 每週六 09:00-17:30 · 📍 新光板橋傑仕堡 A棟 2樓 · 國際會議廳</p>
+      <p class="meta-text text-xs">2026/04/11 ~ 2026/05/30 · 每週六 09:00-17:30 · 📍 新光板橋傑仕堡 A棟 2樓 · 國際會議廳</p>
     </header>
 
     <!-- Filters -->
-    <div class="bg-white/5 border border-white/10 rounded-xl p-4 mb-4 backdrop-blur-sm">
+    <div class="card rounded p-4 mb-4">
       <div class="grid grid-cols-2 md:grid-cols-5 gap-3">
         <div>
-          <label class="text-slate-500 text-[10px] uppercase tracking-wider block mb-1">搜尋</label>
-          <input id="f-search" type="text" oninput="render()" placeholder="關鍵字、講師、主題..." class="w-full bg-slate-800 border border-white/15 rounded px-2 py-1.5 text-white text-xs focus:outline-none focus:border-sky-500" />
+          <label class="filter-label block mb-1">搜尋</label>
+          <input id="f-search" type="text" oninput="render()" placeholder="關鍵字、講師、主題..." class="w-full rounded px-2 py-1.5 text-xs" />
         </div>
         <div>
-          <label class="text-slate-500 text-[10px] uppercase tracking-wider block mb-1">週次</label>
-          <select id="f-week" onchange="render()" class="w-full bg-slate-800 border border-white/15 rounded px-2 py-1.5 text-white text-xs focus:outline-none focus:border-sky-500">
+          <label class="filter-label block mb-1">週次</label>
+          <select id="f-week" onchange="render()" class="w-full rounded px-2 py-1.5 text-xs">
             <option value="">全部 (1-8)</option>
             <option value="1">W1 · 04/11</option>
             <option value="2">W2 · 04/18</option>
@@ -117,8 +140,8 @@
           </select>
         </div>
         <div>
-          <label class="text-slate-500 text-[10px] uppercase tracking-wider block mb-1">時段</label>
-          <select id="f-period" onchange="render()" class="w-full bg-slate-800 border border-white/15 rounded px-2 py-1.5 text-white text-xs focus:outline-none focus:border-sky-500">
+          <label class="filter-label block mb-1">時段</label>
+          <select id="f-period" onchange="render()" class="w-full rounded px-2 py-1.5 text-xs">
             <option value="">全部時段</option>
             <option value="上午">上午</option>
             <option value="下午">下午</option>
@@ -129,21 +152,21 @@
           </select>
         </div>
         <div>
-          <label class="text-slate-500 text-[10px] uppercase tracking-wider block mb-1">講師</label>
-          <select id="f-teacher" onchange="render()" class="w-full bg-slate-800 border border-white/15 rounded px-2 py-1.5 text-white text-xs focus:outline-none focus:border-sky-500">
+          <label class="filter-label block mb-1">講師</label>
+          <select id="f-teacher" onchange="render()" class="w-full rounded px-2 py-1.5 text-xs">
             <option value="">全部講師</option>
           </select>
         </div>
         <div>
-          <label class="text-slate-500 text-[10px] uppercase tracking-wider block mb-1">&nbsp;</label>
-          <button onclick="resetFilters()" class="w-full bg-slate-700 hover:bg-slate-600 rounded px-2 py-1.5 text-white text-xs font-medium transition">重置篩選</button>
+          <label class="filter-label block mb-1">&nbsp;</label>
+          <button onclick="resetFilters()" class="btn-reset w-full rounded px-2 py-1.5 text-xs font-medium transition">重置篩選</button>
         </div>
       </div>
-      <div class="flex items-center justify-between mt-3 pt-3 border-t border-white/10 flex-wrap gap-2">
+      <div class="flex items-center justify-between mt-3 pt-3 border-t border-gray-300 flex-wrap gap-2">
         <div class="flex items-center gap-3">
-          <span id="count" class="text-slate-400 text-xs"></span>
-          <label class="inline-flex items-center gap-1.5 text-slate-400 text-xs cursor-pointer">
-            <input type="checkbox" id="f-breaks" onchange="render()" checked class="accent-sky-500" />
+          <span id="count" class="meta-text text-xs font-medium"></span>
+          <label class="inline-flex items-center gap-1.5 meta-text text-xs cursor-pointer">
+            <input type="checkbox" id="f-breaks" onchange="render()" checked />
             顯示休息 / 午餐 / 影片
           </label>
         </div>
@@ -159,7 +182,7 @@
     </div>
 
     <!-- Table -->
-    <div class="bg-white/5 border border-white/10 rounded-xl overflow-hidden backdrop-blur-sm">
+    <div class="card rounded overflow-hidden">
       <div class="overflow-x-auto">
         <table class="sched">
           <thead>
@@ -178,16 +201,16 @@
       </div>
     </div>
 
-    <p class="text-center text-slate-600 text-[10px] mt-4">
-      📄 資料來源：<a href="http://mgr.aiacademy.tw/" target="_blank" class="text-sky-500 hover:text-sky-400">AIA 學員專區</a>
+    <p class="text-center meta-text text-[10px] mt-4">
+      📄 資料來源：<a href="http://mgr.aiacademy.tw/" target="_blank" class="text-blue-700 hover:underline">AIA 學員專區</a>
     </p>
   </main>
 
-  <footer class="relative z-10 max-w-6xl mx-auto px-6 py-12 text-center border-t border-white/10">
-    <p class="text-slate-600 text-xs">
-      <a href="/" class="text-sky-400/60 hover:text-sky-400">同學牆</a> &middot;
-      <a href="/schedule.html" class="text-sky-400/60 hover:text-sky-400">8 週課表</a> &middot;
-      <a href="/more.html" class="text-sky-400/60 hover:text-sky-400">更多</a>
+  <footer class="max-w-6xl mx-auto px-6 py-8 text-center border-t border-gray-300 mt-8">
+    <p class="meta-text text-xs">
+      <a href="/" class="text-blue-700 hover:underline">同學牆</a> &middot;
+      <a href="/schedule.html" class="text-blue-700 hover:underline">8 週課表</a> &middot;
+      <a href="/more.html" class="text-blue-700 hover:underline">更多</a>
     </p>
   </footer>
 
@@ -382,13 +405,13 @@
         tbody.innerHTML = filtered.map(function(r) {
           var dim = (r.period === '休息' || r.period === '影片') ? ' row-dim' : '';
           return '<tr class="' + dim + '">' +
-            '<td class="whitespace-nowrap font-mono text-sky-400">W' + r.w + '</td>' +
-            '<td class="whitespace-nowrap text-slate-300">' + esc(r.date) + '</td>' +
+            '<td class="whitespace-nowrap font-mono font-bold" style="color:#0c5a80">W' + r.w + '</td>' +
+            '<td class="whitespace-nowrap" style="color:#333">' + esc(r.date) + '</td>' +
             '<td class="whitespace-nowrap"><span class="period-tag ' + periodClass(r.period) + '">' + r.period + '</span></td>' +
-            '<td class="whitespace-nowrap font-mono text-[11px] text-slate-400">' + esc(r.time) + '</td>' +
-            '<td class="text-white">' + esc(r.title) + '</td>' +
-            '<td class="whitespace-nowrap text-emerald-300">' + esc(r.teacher) + '</td>' +
-            '<td class="whitespace-nowrap text-slate-400 text-[11px]">' + esc(r.org) + '</td>' +
+            '<td class="whitespace-nowrap font-mono text-[11px]" style="color:#555">' + esc(r.time) + '</td>' +
+            '<td style="color:#1a1a1a">' + esc(r.title) + '</td>' +
+            '<td class="whitespace-nowrap font-medium" style="color:#0c5a80">' + esc(r.teacher) + '</td>' +
+            '<td class="whitespace-nowrap text-[11px]" style="color:#555">' + esc(r.org) + '</td>' +
           '</tr>';
         }).join('');
       }
