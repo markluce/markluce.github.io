@@ -22,6 +22,8 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Noto+Sans+TC:wght@400;500;600;700;900&display=swap" rel="stylesheet" />
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/dompurify/dist/purify.min.js"></script>
   <script charset="utf-8" src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
   <style>
     .gradient-text { background: linear-gradient(135deg, #38bdf8, #06b6d4); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
@@ -32,6 +34,14 @@
     .fade-in { animation: fadeIn 0.6s ease-out; }
     @keyframes fadeIn { from { opacity: 0; transform: translateY(16px); } to { opacity: 1; transform: translateY(0); } }
     .glow-ring { box-shadow: 0 0 0 4px rgba(6, 199, 85, 0.2); }
+    .md-prose p { margin-bottom: 0.5em; }
+    .md-prose ul, .md-prose ol { margin-left: 1.25em; margin-bottom: 0.5em; }
+    .md-prose ul { list-style: disc; }
+    .md-prose ol { list-style: decimal; }
+    .md-prose a { color: #38bdf8; text-decoration: underline; }
+    .md-prose code { background: rgba(255,255,255,0.1); padding: 0.1em 0.3em; border-radius: 0.25em; font-size: 0.85em; }
+    .md-prose blockquote { border-left: 3px solid rgba(255,255,255,0.2); padding-left: 0.75em; margin-left: 0; color: #94a3b8; }
+    .md-prose h1, .md-prose h2, .md-prose h3 { font-weight: 600; margin-bottom: 0.25em; }
   </style>
 </head>
 <body class="min-h-screen bg-gradient-to-br from-slate-900 via-sky-950 to-slate-900 text-white font-sans">
@@ -136,7 +146,7 @@
           </div>
           <div>
             <label class="text-slate-400 text-xs mb-1 block">自我介紹</label>
-            <textarea id="f-intro" rows="4" placeholder="跟大家打個招呼吧！你是做什麼的？對 AI 有什麼期待？" class="w-full bg-white/5 border border-white/20 rounded-lg px-3 py-2 text-white text-sm placeholder-slate-600 focus:outline-none focus:border-emerald-500 resize-none"></textarea>
+            <textarea id="f-intro" rows="8" placeholder="跟大家打個招呼吧！你是做什麼的？對 AI 有什麼期待？" class="w-full bg-white/5 border border-white/20 rounded-lg px-3 py-2 text-white text-sm placeholder-slate-600 focus:outline-none focus:border-emerald-500 resize-none"></textarea>
           </div>
           <button onclick="submitIntro()" class="w-full line-btn text-white py-2.5 rounded-lg text-sm font-semibold transition">
             送出自我介紹
@@ -330,11 +340,27 @@
       setTimeout(() => msg.classList.add('hidden'), 3000);
     }
 
+    function renderMd(str) {
+      if (!str) return '';
+      return DOMPurify.sanitize(marked.parse(str));
+    }
+
     async function loadClassmates() {
-      const { data, error } = await sb
-        .from('classmates')
-        .select('*')
-        .order('created_at', { ascending: true });
+      const [classmatesResult, msgResult] = await Promise.all([
+        sb.from('classmates').select('*').order('created_at', { ascending: true }),
+        sb.from('member_messages').select('to_member_id')
+      ]);
+
+      const data = classmatesResult.data;
+      const error = classmatesResult.error;
+
+      // Build message count map
+      var msgCounts = {};
+      if (msgResult.data) {
+        msgResult.data.forEach(function(m) {
+          msgCounts[m.to_member_id] = (msgCounts[m.to_member_id] || 0) + 1;
+        });
+      }
 
       document.getElementById('loading').classList.add('hidden');
 
@@ -349,20 +375,22 @@
 
       const grid = document.getElementById('classmate-grid');
       grid.innerHTML = data.map(function(c, i) {
-        return '<div class="card-hover fade-in bg-white/5 border border-white/10 rounded-2xl p-6 backdrop-blur-sm" style="animation-delay:' + (i * 80) + 'ms">' +
+        var count = msgCounts[c.line_user_id] || 0;
+        var badge = count > 0 ? '<span class="ml-2 inline-flex items-center gap-1 px-2 py-0.5 bg-sky-500/10 border border-sky-500/20 rounded-full text-sky-400 text-xs font-medium">\uD83D\uDCAC ' + count + '</span>' : '';
+        return '<a href="/member.html?id=' + encodeURIComponent(c.line_user_id) + '" class="block card-hover fade-in bg-white/5 border border-white/10 rounded-2xl p-6 backdrop-blur-sm cursor-pointer" style="animation-delay:' + (i * 80) + 'ms">' +
           '<div class="flex items-center gap-4 mb-4">' +
-            (c.avatar_url ? '<img src="' + escHtml(c.avatar_url) + '" alt="" class="w-20 h-20 rounded-full bg-slate-700 cursor-pointer hover:ring-4 hover:ring-sky-500/30 transition flex-shrink-0" onclick="showAvatar(\'' + escHtml(c.avatar_url) + '\', \'' + escHtml(c.display_name) + '\')" onerror="this.style.display=\'none\'" />' : '<div class="w-20 h-20 rounded-full bg-gradient-to-br from-sky-500 to-cyan-500 flex items-center justify-center text-2xl font-bold flex-shrink-0">' + escHtml(c.display_name.charAt(0)) + '</div>') +
+            (c.avatar_url ? '<img src="' + escHtml(c.avatar_url) + '" alt="" class="w-20 h-20 rounded-full bg-slate-700 hover:ring-4 hover:ring-sky-500/30 transition flex-shrink-0" onclick="event.preventDefault();showAvatar(\'' + escHtml(c.avatar_url) + '\', \'' + escHtml(c.display_name) + '\')" onerror="this.style.display=\'none\'" />' : '<div class="w-20 h-20 rounded-full bg-gradient-to-br from-sky-500 to-cyan-500 flex items-center justify-center text-2xl font-bold flex-shrink-0">' + escHtml(c.display_name.charAt(0)) + '</div>') +
             '<div>' +
-              '<div class="font-bold text-white">' + escHtml(c.display_name) + '</div>' +
+              '<div class="font-bold text-white">' + escHtml(c.display_name) + badge + '</div>' +
               '<div class="text-slate-500 text-xs">' +
                 (c.company ? escHtml(c.company) : '') + (c.company && c.job_title ? ' · ' : '') + (c.job_title ? escHtml(c.job_title) : '') +
               '</div>' +
               (c.group_number == 0 ? '<span class="mt-1 inline-block px-2 py-0.5 bg-amber-500/10 border border-amber-500/20 rounded-full text-amber-400 text-xs">講師 / 助教</span>' : c.group_number == 99 ? '<span class="mt-1 inline-block px-2 py-0.5 bg-slate-500/10 border border-slate-500/20 rounded-full text-slate-400 text-xs">測試帳號</span>' : c.group_number ? '<span class="mt-1 inline-block px-2 py-0.5 bg-sky-500/10 border border-sky-500/20 rounded-full text-sky-400 text-xs">第 ' + c.group_number + ' 組</span>' : '') +
             '</div>' +
           '</div>' +
-          (c.intro_text ? '<p class="text-slate-300 text-sm leading-relaxed">' + escHtml(c.intro_text) + '</p>' : '<p class="text-slate-600 text-sm italic">尚未填寫自我介紹</p>') +
-          (canDelete(c.line_user_id) ? '<div class="mt-4 text-right"><button onclick="deleteIntro(\'' + c.line_user_id + '\', \'' + escHtml(c.display_name) + '\')" class="px-4 py-1.5 bg-red-500/10 border border-red-500/30 rounded-lg text-red-400 hover:bg-red-500/20 hover:text-red-300 transition text-sm font-medium">刪除</button></div>' : '') +
-        '</div>';
+          (c.intro_text ? '<div class="text-slate-300 text-sm leading-relaxed md-prose">' + renderMd(c.intro_text) + '</div>' : '<p class="text-slate-600 text-sm italic">尚未填寫自我介紹</p>') +
+          (canDelete(c.line_user_id) ? '<div class="mt-4 text-right"><button onclick="event.preventDefault();deleteIntro(\'' + c.line_user_id + '\', \'' + escHtml(c.display_name) + '\')" class="px-4 py-1.5 bg-red-500/10 border border-red-500/30 rounded-lg text-red-400 hover:bg-red-500/20 hover:text-red-300 transition text-sm font-medium">刪除</button></div>' : '') +
+        '</a>';
       }).join('');
     }
 
