@@ -318,7 +318,7 @@
       var deviceFilter = document.getElementById('visit-filter-device').value;
 
       var query = sb.from('visits').select('*', { count: 'exact' })
-        .order('created_at', { ascending: false })
+        .order('visited_at', { ascending: false })
         .range(visitOffset, visitOffset + visitLimit - 1);
 
       if (pageFilter) query = query.eq('page', pageFilter);
@@ -338,7 +338,7 @@
 
       var tbody = document.getElementById('visit-tbody');
       tbody.innerHTML = rows.map(function(v) {
-        var time = new Date(v.created_at).toLocaleString('zh-TW', { timeZone: 'Asia/Taipei', month: 'numeric', day: 'numeric', hour: '2-digit', minute: '2-digit', hour12: false });
+        var time = new Date(v.visited_at).toLocaleString('zh-TW', { timeZone: 'Asia/Taipei', month: 'numeric', day: 'numeric', hour: '2-digit', minute: '2-digit', hour12: false });
         var ref = v.referrer ? '<span title="' + escHtml(v.referrer) + '">' + escHtml(v.referrer.replace(/https?:\/\//, '').substring(0, 25)) + '</span>' : '<span class="text-slate-600">直接</span>';
         return '<tr class="border-b border-white/5 hover:bg-white/5">' +
           '<td class="px-4 py-2.5 text-slate-400 whitespace-nowrap">' + time + '</td>' +
