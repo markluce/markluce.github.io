@@ -10,24 +10,54 @@
     tailwind.config = { theme: { extend: { fontFamily: { sans: ['"Noto Sans TC"', 'Inter', 'system-ui', 'sans-serif'] } } } }
   </script>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Noto+Sans+TC:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+  <script charset="utf-8" src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
   <style>
     .gradient-text { background: linear-gradient(135deg, #38bdf8, #06b6d4); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
     .card-hover { transition: transform 0.2s ease, box-shadow 0.2s ease; }
     .card-hover:hover { transform: translateY(-2px); box-shadow: 0 12px 24px -8px rgba(14, 165, 233, 0.15); }
+    .fade-in { animation: fadeIn 0.6s ease-out; }
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(16px); } to { opacity: 1; transform: translateY(0); } }
   </style>
 </head>
 <body class="min-h-screen bg-gradient-to-br from-slate-900 via-sky-950 to-slate-900 text-white font-sans">
 
-  <nav class="max-w-4xl mx-auto px-6 py-6 flex items-center justify-between">
+  <div class="fixed inset-0 pointer-events-none overflow-hidden">
+    <div class="absolute -top-40 -right-40 w-96 h-96 bg-sky-500/10 rounded-full blur-3xl"></div>
+    <div class="absolute top-1/2 -left-40 w-96 h-96 bg-cyan-500/10 rounded-full blur-3xl"></div>
+  </div>
+
+  <nav class="relative z-10 max-w-4xl mx-auto px-6 py-6 flex items-center justify-between">
     <a href="/" class="text-xl font-bold"><span class="text-sky-400">mark</span>luce <span class="text-red-400 text-sm">admin</span></a>
     <div class="flex items-center gap-4">
       <a href="/" class="text-slate-400 hover:text-white transition text-sm">AI PM 同學牆</a>
-      <a href="/blog.html" class="text-slate-400 hover:text-white transition text-sm">Blog</a>
-      <a href="/about.html" class="text-slate-400 hover:text-white transition text-sm">關於</a>
+      <a href="/more.html" class="text-slate-400 hover:text-white transition text-sm">更多</a>
     </div>
   </nav>
 
-  <main class="max-w-4xl mx-auto px-6 pb-16">
+  <!-- Access Denied -->
+  <div id="access-denied" class="hidden relative z-10 max-w-md mx-auto px-6 pt-20 text-center fade-in">
+    <div class="bg-white/5 border border-white/10 rounded-2xl p-10 backdrop-blur-sm">
+      <div class="text-6xl mb-6">🔒</div>
+      <h2 class="text-xl font-bold text-white mb-3">需要管理員權限</h2>
+      <p class="text-slate-400 text-sm mb-6 leading-relaxed">此頁面僅限管理員存取。<br/>如果你是管理員，請先用 LINE 登入。</p>
+      <button id="login-btn" onclick="handleLogin()" class="hidden bg-[#06C755] hover:bg-[#05b64d] text-white px-6 py-2.5 rounded-lg text-sm font-semibold transition inline-flex items-center gap-2">
+        <svg class="w-5 h-5" viewBox="0 0 24 24" fill="currentColor"><path d="M19.365 9.863c.349 0 .63.285.63.631 0 .345-.281.63-.63.63H17.61v1.125h1.755c.349 0 .63.283.63.63 0 .344-.281.629-.63.629h-2.386c-.345 0-.627-.285-.627-.629V8.108c0-.345.282-.63.63-.63h2.386c.346 0 .627.285.627.63 0 .349-.281.63-.63.63H17.61v1.125h1.755zm-3.855 3.016c0 .27-.174.51-.432.596-.064.021-.133.031-.199.031-.211 0-.391-.09-.51-.25l-2.443-3.317v2.94c0 .344-.279.629-.631.629-.346 0-.626-.285-.626-.629V8.108c0-.27.173-.51.43-.595.06-.023.136-.033.194-.033.195 0 .375.104.495.254l2.462 3.33V8.108c0-.345.282-.63.63-.63.345 0 .63.285.63.63v4.771zm-5.741 0c0 .344-.282.629-.631.629-.345 0-.627-.285-.627-.629V8.108c0-.345.282-.63.63-.63.346 0 .628.285.628.63v4.771zm-2.466.629H4.917c-.345 0-.63-.285-.63-.629V8.108c0-.345.285-.63.63-.63.348 0 .63.285.63.63v4.141h1.756c.348 0 .629.283.629.63 0 .344-.282.629-.629.629M24 10.314C24 4.943 18.615.572 12 .572S0 4.943 0 10.314c0 4.811 4.27 8.842 10.035 9.608.391.082.923.258 1.058.59.12.301.079.766.038 1.08l-.164 1.02c-.045.301-.24 1.186 1.049.645 1.291-.539 6.916-4.078 9.436-6.975C23.176 14.393 24 12.458 24 10.314"/></svg>
+        LINE 登入
+      </button>
+      <p id="denied-msg" class="hidden text-red-400 text-sm">你的帳號沒有管理員權限。</p>
+      <a href="/" class="inline-block mt-4 text-slate-500 hover:text-white transition text-sm">&larr; 回到同學牆</a>
+    </div>
+  </div>
+
+  <!-- Loading -->
+  <div id="loading" class="relative z-10 text-center pt-32 text-slate-500">
+    <div class="inline-block w-6 h-6 border-2 border-slate-600 border-t-sky-400 rounded-full animate-spin mb-3"></div>
+    <p class="text-sm">驗證身份中...</p>
+  </div>
+
+  <!-- Admin Content (hidden by default) -->
+  <main id="admin-content" class="hidden relative z-10 max-w-4xl mx-auto px-6 pb-16 fade-in">
     <h1 class="text-3xl font-extrabold mb-2"><span class="gradient-text">Admin Dashboard</span></h1>
     <p class="text-slate-500 text-sm mb-10">markluce.ai 服務快捷連結（皆需登入各自帳號）</p>
 
@@ -163,6 +193,52 @@
       </table>
     </div>
   </main>
+
+  <script>
+    var LIFF_ID = '2009738746-2qigSpHh';
+    var ADMIN_LINE_ID = 'U7d41d4b9a49052370bd3a7265c1e391b';
+
+    function handleLogin() {
+      if (!LIFF_ID || typeof liff === 'undefined') return;
+      liff.login({ redirectUri: window.location.origin + '/admin.html?v=' + Date.now() });
+    }
+
+    async function init() {
+      if (!LIFF_ID || typeof liff === 'undefined') {
+        showDenied(true);
+        return;
+      }
+      try {
+        await liff.init({ liffId: LIFF_ID });
+        if (!liff.isLoggedIn()) {
+          showDenied(true);
+          return;
+        }
+        var profile = await liff.getProfile();
+        if (profile.userId === ADMIN_LINE_ID) {
+          document.getElementById('loading').classList.add('hidden');
+          document.getElementById('admin-content').classList.remove('hidden');
+        } else {
+          showDenied(false);
+        }
+      } catch (e) {
+        console.error('LIFF init error:', e);
+        showDenied(true);
+      }
+    }
+
+    function showDenied(showLoginBtn) {
+      document.getElementById('loading').classList.add('hidden');
+      document.getElementById('access-denied').classList.remove('hidden');
+      if (showLoginBtn) {
+        document.getElementById('login-btn').classList.remove('hidden');
+      } else {
+        document.getElementById('denied-msg').classList.remove('hidden');
+      }
+    }
+
+    init();
+  </script>
 
 </body>
 </html>
