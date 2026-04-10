@@ -27,12 +27,14 @@
     table.sched tbody tr { transition: background 0.15s; }
     table.sched tbody tr:nth-child(even) { background: rgba(255,255,255,0.02); }
     table.sched tbody tr:hover { background: rgba(14,165,233,0.08); }
-    table.sched tbody tr.highlight { background: rgba(245,158,11,0.08); }
     .period-tag { display: inline-block; padding: 1px 6px; border-radius: 999px; font-size: 0.7rem; font-weight: 600; white-space: nowrap; }
     .period-morning { background: rgba(251,191,36,0.15); color: #fbbf24; border: 1px solid rgba(251,191,36,0.3); }
     .period-afternoon { background: rgba(14,165,233,0.15); color: #38bdf8; border: 1px solid rgba(14,165,233,0.3); }
     .period-group { background: rgba(16,185,129,0.15); color: #34d399; border: 1px solid rgba(16,185,129,0.3); }
     .period-ops { background: rgba(148,163,184,0.15); color: #94a3b8; border: 1px solid rgba(148,163,184,0.3); }
+    .period-break { background: rgba(100,116,139,0.1); color: #64748b; border: 1px solid rgba(100,116,139,0.25); }
+    .period-video { background: rgba(139,92,246,0.12); color: #a78bfa; border: 1px solid rgba(139,92,246,0.3); }
+    tr.row-dim { opacity: 0.65; }
   </style>
 </head>
 <body class="min-h-screen bg-gradient-to-br from-slate-900 via-sky-950 to-slate-900 text-white font-sans">
@@ -50,6 +52,7 @@
       </a>
       <div class="flex items-center gap-3 md:gap-4">
         <a href="/" class="text-slate-400 hover:text-white transition text-xs md:text-sm">AI PM 同學牆</a>
+        <a href="/schedule.html" class="text-white text-xs md:text-sm font-medium">8 週完整課表</a>
         <a href="/more.html" class="text-slate-400 hover:text-white transition text-xs md:text-sm">更多</a>
         <div id="user-info" class="hidden flex items-center gap-2">
           <img id="user-avatar" class="w-7 h-7 md:w-8 md:h-8 rounded-full glow-ring" src="" alt="" />
@@ -117,10 +120,12 @@
           <label class="text-slate-500 text-[10px] uppercase tracking-wider block mb-1">時段</label>
           <select id="f-period" onchange="render()" class="w-full bg-slate-800 border border-white/15 rounded px-2 py-1.5 text-white text-xs focus:outline-none focus:border-sky-500">
             <option value="">全部時段</option>
-            <option value="上午">上午 09:00-12:00</option>
-            <option value="下午">下午 13:30-15:30</option>
-            <option value="小組">小組 16:00-17:00</option>
-            <option value="課務">課務 17:00-17:30</option>
+            <option value="上午">上午</option>
+            <option value="下午">下午</option>
+            <option value="小組">小組</option>
+            <option value="課務">課務</option>
+            <option value="休息">休息 / 午餐</option>
+            <option value="影片">課程影片</option>
           </select>
         </div>
         <div>
@@ -134,20 +139,28 @@
           <button onclick="resetFilters()" class="w-full bg-slate-700 hover:bg-slate-600 rounded px-2 py-1.5 text-white text-xs font-medium transition">重置篩選</button>
         </div>
       </div>
-      <div class="flex items-center justify-between mt-3 pt-3 border-t border-white/10">
-        <span id="count" class="text-slate-400 text-xs"></span>
-        <div class="flex gap-3 text-[10px]">
+      <div class="flex items-center justify-between mt-3 pt-3 border-t border-white/10 flex-wrap gap-2">
+        <div class="flex items-center gap-3">
+          <span id="count" class="text-slate-400 text-xs"></span>
+          <label class="inline-flex items-center gap-1.5 text-slate-400 text-xs cursor-pointer">
+            <input type="checkbox" id="f-breaks" onchange="render()" checked class="accent-sky-500" />
+            顯示休息 / 午餐 / 影片
+          </label>
+        </div>
+        <div class="flex gap-2 text-[10px] flex-wrap">
           <span class="period-tag period-morning">上午</span>
           <span class="period-tag period-afternoon">下午</span>
           <span class="period-tag period-group">小組</span>
           <span class="period-tag period-ops">課務</span>
+          <span class="period-tag period-break">休息</span>
+          <span class="period-tag period-video">影片</span>
         </div>
       </div>
     </div>
 
     <!-- Table -->
     <div class="bg-white/5 border border-white/10 rounded-xl overflow-hidden backdrop-blur-sm">
-      <div class="overflow-x-auto max-h-[70vh]">
+      <div class="overflow-x-auto max-h-[75vh]">
         <table class="sched">
           <thead>
             <tr>
@@ -173,6 +186,7 @@
   <footer class="relative z-10 max-w-6xl mx-auto px-6 py-12 text-center border-t border-white/10">
     <p class="text-slate-600 text-xs">
       <a href="/" class="text-sky-400/60 hover:text-sky-400">同學牆</a> &middot;
+      <a href="/schedule.html" class="text-sky-400/60 hover:text-sky-400">8 週課表</a> &middot;
       <a href="/more.html" class="text-sky-400/60 hover:text-sky-400">更多</a>
     </p>
   </footer>
@@ -181,52 +195,88 @@
     var LIFF_ID = '2009738746-2qigSpHh';
     var currentUser = null;
 
-    // Schedule data — pre-parsed, one row per time slot
-    var ROWS = [
-      // W1 04/11
-      { w:1, date:'04/11 (六)', period:'上午', time:'09:00-10:20', title:'始業式・校務長演講 + AI PM 課程導覽', teacher:'蔡明順 & GIGA', org:'AIA 校務長 / Nautilus AI' },
-      { w:1, date:'04/11 (六)', period:'上午', time:'10:35-12:00', title:'專題演講：從 AI Agent 到虛擬員工 — AI 在產品的開發、管理', teacher:'李國財 (BEJO)', org:'FIKAYARD' },
-      { w:1, date:'04/11 (六)', period:'下午', time:'13:30-15:30', title:'主題演講', teacher:'吳振和', org:'Cacafly 技術副總' },
-      { w:1, date:'04/11 (六)', period:'小組', time:'16:00-17:00', title:'小組專題時間：學員分組相見歡', teacher:'全體學員', org:'—' },
-      { w:1, date:'04/11 (六)', period:'課務', time:'17:00-17:30', title:'課務須知、競賽說明、課程問卷、AIATCL 考前閱讀', teacher:'校務團隊', org:'AIA' },
+    // === Complete day agenda (Toastmaster-style) ===
+    var DATES = { 1:'04/11 (六)', 2:'04/18 (六)', 3:'04/25 (六)', 4:'05/02 (六)', 5:'05/09 (六)', 6:'05/16 (六)', 7:'05/23 (六)', 8:'05/30 (六)' };
 
-      // W2 04/18
-      { w:2, date:'04/18 (六)', period:'上午', time:'09:00-12:00', title:'提示工程與 Gemini 多模態實戰：AI 溝通術 — 用提示指令高效產出企劃內容', teacher:'蔡政霖', org:'AIA' },
-      { w:2, date:'04/18 (六)', period:'下午', time:'13:30-15:30', title:'PM 實務：產品開發企劃', teacher:'GIGA', org:'Nautilus AI 執行長' },
-      { w:2, date:'04/18 (六)', period:'小組', time:'16:00-17:00', title:'小組專題時間：專題討論 + 班代選舉投票', teacher:'全體學員', org:'—' },
+    // Content slots per week
+    var CONTENT = {
+      1: [
+        { period:'上午', time:'09:00-10:20', title:'始業式・校務長演講 + AI PM 課程導覽', teacher:'蔡明順 & GIGA', org:'AIA 校務長 / Nautilus AI' },
+        { period:'上午', time:'10:35-12:00', title:'專題演講：從 AI Agent 到虛擬員工 — AI 在產品的開發、管理', teacher:'李國財 (BEJO)', org:'FIKAYARD' },
+        { period:'下午', time:'13:30-15:30', title:'主題演講', teacher:'吳振和', org:'Cacafly 技術副總' },
+        { period:'小組', time:'16:00-17:00', title:'小組專題時間：學員分組相見歡', teacher:'全體學員', org:'—' },
+        { period:'課務', time:'17:00-17:30', title:'課務須知、競賽說明、課程問卷、AIATCL 考前閱讀', teacher:'校務團隊', org:'AIA' }
+      ],
+      2: [
+        { period:'上午', time:'09:00-10:20', title:'提示工程與 Gemini 多模態實戰：AI 溝通術', teacher:'蔡政霖', org:'AIA' },
+        { period:'上午', time:'10:35-12:00', title:'提示工程與 Gemini 多模態實戰（續）', teacher:'蔡政霖', org:'AIA' },
+        { period:'下午', time:'13:30-15:30', title:'PM 實務：產品開發企劃', teacher:'GIGA', org:'Nautilus AI 執行長' },
+        { period:'小組', time:'16:00-17:00', title:'小組專題時間：專題討論 + 班代選舉投票', teacher:'全體學員', org:'—' }
+      ],
+      3: [
+        { period:'上午', time:'09:00-10:20', title:'檢索增強生成 (RAG) 與 NotebookLM 應用', teacher:'蔡政霖', org:'AIA' },
+        { period:'上午', time:'10:35-12:00', title:'RAG / NotebookLM 實戰（續）', teacher:'蔡政霖', org:'AIA' },
+        { period:'下午', time:'13:30-15:30', title:'PM 實務：範疇 / 時間 / 人力 / 品質控管', teacher:'GIGA', org:'Nautilus AI 執行長' },
+        { period:'小組', time:'16:00-17:00', title:'專題演講：你是否在公司救了一個專案？— 深談 AI PM 與工具實踐', teacher:'王淳恆', org:'圖策科技 AI 研發處長' }
+      ],
+      4: [
+        { period:'上午', time:'09:00-10:20', title:'Google Workspace 工具 AI 實戰應用：簡報效率倍增', teacher:'李福裕', org:'AIA' },
+        { period:'上午', time:'10:35-12:00', title:'Google Workspace AI 實戰（續）', teacher:'李福裕', org:'AIA' },
+        { period:'下午', time:'13:30-15:30', title:'PM 實務：成本管理 / 採購管理', teacher:'GIGA', org:'Nautilus AI 執行長' },
+        { period:'小組', time:'16:00-17:00', title:'小組專題時間：專題討論', teacher:'全體學員', org:'—' },
+        { period:'課務', time:'17:00-17:30', title:'AI 素養級認證 (AIATCL™) 測驗說明', teacher:'校務團隊', org:'AIA' }
+      ],
+      5: [
+        { period:'上午', time:'09:00-10:20', title:'業務流程自動化：產品介紹影片分鏡 (Storyboard)', teacher:'李福裕', org:'AIA' },
+        { period:'上午', time:'10:35-12:00', title:'業務流程自動化：市場趨勢週報', teacher:'李福裕', org:'AIA' },
+        { period:'下午', time:'13:30-15:30', title:'PM 實務：溝通管理 / 風險管理', teacher:'GIGA', org:'Nautilus AI 執行長' },
+        { period:'小組', time:'16:00-17:00', title:'小組專題時間：專題討論', teacher:'全體學員', org:'—' }
+      ],
+      6: [
+        { period:'上午', time:'09:00-10:20', title:'Vibe Coding：用說的做原型開發 — AI 會議摘要器', teacher:'劉又綺', org:'AIA' },
+        { period:'上午', time:'10:35-12:00', title:'Vibe Coding：用 BOM 表產生報價系統', teacher:'劉又綺', org:'AIA' },
+        { period:'下午', time:'13:30-15:30', title:'PM 實務：產品架構、高效打造 DEMO', teacher:'GIGA', org:'Nautilus AI 執行長' },
+        { period:'小組', time:'16:00-17:00', title:'專題演講：AI 時代，專案經理不再管理專案？', teacher:'孫弘岳', org:'國立臺灣師範大學教授' }
+      ],
+      7: [
+        { period:'上午', time:'09:00-10:20', title:'Vibe Coding：實戰部署 — 訂單追蹤儀表板', teacher:'劉又綺', org:'AIA' },
+        { period:'上午', time:'10:35-12:00', title:'Vibe Coding：專案看板 Kanban / 驗收 / 驗證', teacher:'劉又綺', org:'AIA' },
+        { period:'下午', time:'13:30-15:30', title:'PM 實務：產品介面與整合、快速打造 MVP', teacher:'GIGA', org:'Nautilus AI 執行長' },
+        { period:'小組', time:'16:00-17:00', title:'小組專題時間：專題討論', teacher:'全體學員', org:'—' }
+      ],
+      8: [
+        { period:'上午', time:'09:00-10:20', title:'主題演講', teacher:'陳伶志', org:'台灣人工智慧學校執行長' },
+        { period:'上午', time:'10:35-12:00', title:'AI 素養級認證考試 AIATCL™ (50 分鐘)', teacher:'全體學員', org:'—' },
+        { period:'下午', time:'13:30-15:30', title:'小組成果發表 Demo Day', teacher:'全體學員', org:'—' },
+        { period:'小組', time:'16:00-17:00', title:'結業式', teacher:'全體學員', org:'AIA' }
+      ]
+    };
 
-      // W3 04/25
-      { w:3, date:'04/25 (六)', period:'上午', time:'09:00-12:00', title:'檢索增強生成 (RAG) 與 NotebookLM 應用：個人知識庫的 AI 應用', teacher:'蔡政霖', org:'AIA' },
-      { w:3, date:'04/25 (六)', period:'下午', time:'13:30-15:30', title:'PM 實務：範疇 / 時間 / 人力 / 品質控管', teacher:'GIGA', org:'Nautilus AI 執行長' },
-      { w:3, date:'04/25 (六)', period:'小組', time:'16:00-17:00', title:'專題演講：你是否在公司救了一個專案？— 深談 AI PM 與工具實踐', teacher:'王淳恆', org:'圖策科技 AI 研發處長' },
-
-      // W4 05/02
-      { w:4, date:'05/02 (六)', period:'上午', time:'09:00-12:00', title:'Google Workspace 工具 AI 實戰應用：簡報效率倍增', teacher:'李福裕', org:'AIA' },
-      { w:4, date:'05/02 (六)', period:'下午', time:'13:30-15:30', title:'PM 實務：成本管理 / 採購管理', teacher:'GIGA', org:'Nautilus AI 執行長' },
-      { w:4, date:'05/02 (六)', period:'小組', time:'16:00-17:00', title:'小組專題時間：專題討論', teacher:'全體學員', org:'—' },
-      { w:4, date:'05/02 (六)', period:'課務', time:'17:00-17:30', title:'AI 素養級認證 (AIATCL™) 測驗說明', teacher:'校務團隊', org:'AIA' },
-
-      // W5 05/09
-      { w:5, date:'05/09 (六)', period:'上午', time:'09:00-12:00', title:'業務流程自動化：透過對話式 AI 輕鬆建立專屬的自動化工作夥伴（產品介紹影片分鏡 + 市場趨勢週報）', teacher:'李福裕', org:'AIA' },
-      { w:5, date:'05/09 (六)', period:'下午', time:'13:30-15:30', title:'PM 實務：溝通管理 / 風險管理', teacher:'GIGA', org:'Nautilus AI 執行長' },
-      { w:5, date:'05/09 (六)', period:'小組', time:'16:00-17:00', title:'小組專題時間：專題討論', teacher:'全體學員', org:'—' },
-
-      // W6 05/16
-      { w:6, date:'05/16 (六)', period:'上午', time:'09:00-12:00', title:'Vibe Coding：用說的做原型開發（AI 會議摘要器 + 用 BOM 表產生報價系統）', teacher:'劉又綺', org:'AIA' },
-      { w:6, date:'05/16 (六)', period:'下午', time:'13:30-15:30', title:'PM 實務：產品架構、高效打造 DEMO', teacher:'GIGA', org:'Nautilus AI 執行長' },
-      { w:6, date:'05/16 (六)', period:'小組', time:'16:00-17:00', title:'專題演講：AI 時代，專案經理不再管理專案？', teacher:'孫弘岳', org:'國立臺灣師範大學教授' },
-
-      // W7 05/23
-      { w:7, date:'05/23 (六)', period:'上午', time:'09:00-12:00', title:'Vibe Coding：實戰部署（訂單追蹤儀表板 + 專案看板 Kanban / 驗收 / 驗證）', teacher:'劉又綺', org:'AIA' },
-      { w:7, date:'05/23 (六)', period:'下午', time:'13:30-15:30', title:'PM 實務：產品介面與整合、快速打造 MVP', teacher:'GIGA', org:'Nautilus AI 執行長' },
-      { w:7, date:'05/23 (六)', period:'小組', time:'16:00-17:00', title:'小組專題時間：專題討論', teacher:'全體學員', org:'—' },
-
-      // W8 05/30
-      { w:8, date:'05/30 (六)', period:'上午', time:'09:00-10:20', title:'主題演講', teacher:'陳伶志', org:'台灣人工智慧學校執行長' },
-      { w:8, date:'05/30 (六)', period:'上午', time:'10:35-12:00', title:'AI 素養級認證考試 AIATCL™ (50 分鐘)', teacher:'全體學員', org:'—' },
-      { w:8, date:'05/30 (六)', period:'下午', time:'13:30-15:30', title:'小組成果發表 Demo Day', teacher:'全體學員', org:'—' },
-      { w:8, date:'05/30 (六)', period:'小組', time:'16:00-17:00', title:'結業式', teacher:'全體學員', org:'AIA' }
-    ];
+    // Build ROWS with break slots interleaved
+    var ROWS = [];
+    for (var w = 1; w <= 8; w++) {
+      var d = DATES[w];
+      var c = CONTENT[w];
+      var idx = 0;
+      // Morning 1
+      if (c[idx]) ROWS.push(Object.assign({ w:w, date:d }, c[idx++]));
+      // 10:20-10:35 break
+      ROWS.push({ w:w, date:d, period:'休息', time:'10:20-10:35', title:'☕ 休息', teacher:'—', org:'—' });
+      // Morning 2
+      if (c[idx]) ROWS.push(Object.assign({ w:w, date:d }, c[idx++]));
+      // 12:00-13:30 lunch
+      ROWS.push({ w:w, date:d, period:'休息', time:'12:00-13:30', title:'🍱 午餐', teacher:'—', org:'—' });
+      // Afternoon
+      if (c[idx]) ROWS.push(Object.assign({ w:w, date:d }, c[idx++]));
+      // 15:30-16:00 break
+      ROWS.push({ w:w, date:d, period:'休息', time:'15:30-16:00', title:'☕ 休息', teacher:'—', org:'—' });
+      // Group
+      if (c[idx]) ROWS.push(Object.assign({ w:w, date:d }, c[idx++]));
+      // Ops (W1, W4 only)
+      if (c[idx]) ROWS.push(Object.assign({ w:w, date:d }, c[idx++]));
+      // 17:30- video
+      ROWS.push({ w:w, date:d, period:'影片', time:'17:30-', title:'📹 課程影片', teacher:'—', org:'新光板橋傑仕堡 A棟 2樓' });
+    }
 
     async function initLiff() {
       if (!LIFF_ID || typeof liff === 'undefined') {
@@ -282,8 +332,9 @@
     function populateTeacherFilter() {
       var teachers = {};
       ROWS.forEach(function(r) {
+        if (r.teacher === '—') return;
         r.teacher.split(/[、&]/).map(function(t) { return t.trim(); }).forEach(function(t) {
-          if (t && t !== '全體學員') teachers[t] = true;
+          if (t && t !== '全體學員' && t !== '校務團隊') teachers[t] = true;
         });
       });
       var sel = document.getElementById('f-teacher');
@@ -299,7 +350,10 @@
       if (p === '上午') return 'period-morning';
       if (p === '下午') return 'period-afternoon';
       if (p === '小組') return 'period-group';
-      return 'period-ops';
+      if (p === '課務') return 'period-ops';
+      if (p === '休息') return 'period-break';
+      if (p === '影片') return 'period-video';
+      return '';
     }
 
     function render() {
@@ -307,10 +361,12 @@
       var week = document.getElementById('f-week').value;
       var period = document.getElementById('f-period').value;
       var teacher = document.getElementById('f-teacher').value;
+      var showBreaks = document.getElementById('f-breaks').checked;
 
       var filtered = ROWS.filter(function(r) {
         if (week && String(r.w) !== week) return false;
         if (period && r.period !== period) return false;
+        if (!showBreaks && (r.period === '休息' || r.period === '影片')) return false;
         if (teacher && r.teacher.indexOf(teacher) === -1) return false;
         if (search) {
           var hay = (r.title + ' ' + r.teacher + ' ' + r.org + ' ' + r.date + ' W' + r.w).toLowerCase();
@@ -324,7 +380,8 @@
         tbody.innerHTML = '<tr><td colspan="7" class="text-center text-slate-500 py-8">沒有符合條件的課程</td></tr>';
       } else {
         tbody.innerHTML = filtered.map(function(r) {
-          return '<tr>' +
+          var dim = (r.period === '休息' || r.period === '影片') ? ' row-dim' : '';
+          return '<tr class="' + dim + '">' +
             '<td class="whitespace-nowrap font-mono text-sky-400">W' + r.w + '</td>' +
             '<td class="whitespace-nowrap text-slate-300">' + esc(r.date) + '</td>' +
             '<td class="whitespace-nowrap"><span class="period-tag ' + periodClass(r.period) + '">' + r.period + '</span></td>' +
@@ -344,6 +401,7 @@
       document.getElementById('f-week').value = '';
       document.getElementById('f-period').value = '';
       document.getElementById('f-teacher').value = '';
+      document.getElementById('f-breaks').checked = true;
       render();
     }
 
