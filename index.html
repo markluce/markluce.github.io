@@ -955,9 +955,12 @@
       '班代選舉是哪天？'
     ];
 
+    var CM_PINNED = '概述 8 週課表主要內容和講師 以 table 方式呈現';
+
     function pickCmTopics(n) {
-      var shuffled = CM_TOPICS.slice().sort(function() { return Math.random() - 0.5; });
-      return shuffled.slice(0, n);
+      var pool = CM_TOPICS.filter(function(t) { return t !== CM_PINNED; });
+      var shuffled = pool.slice().sort(function() { return Math.random() - 0.5; });
+      return [CM_PINNED].concat(shuffled.slice(0, n - 1));
     }
 
     var cmPicked = pickCmTopics(5);
