@@ -305,7 +305,7 @@
     </div>
     <div class="chatbot-messages" id="cmMessages">
       <div class="chat-msg bot">
-        <div class="chat-bubble">Hi! 我是 <strong>AI 同學助手</strong> 👥<br><br>我根據同學們填寫的自我介紹和留言回答問題，幫你快速認識班上同學。<br><br>試試看（點擊即送）：<div id="cmSuggestList"></div></div>
+        <div class="chat-bubble">Hi! 我是 <strong>AI 同學助手</strong> 👥<br><br>我根據同學們填寫的自我介紹和留言回答問題，幫你快速認識班上同學。<br><br>試試看（點擊帶入問題、可編輯後送出）：<div id="cmSuggestList"></div></div>
       </div>
     </div>
     <div class="chatbot-input">
@@ -984,8 +984,11 @@
     cmMessages.addEventListener('click', function(e) {
       var btn = e.target.closest('.suggest-btn');
       if (!btn || cmSending) return;
+      // Fill input (don't auto-send) so user can edit (e.g. change group number)
       cmInput.value = btn.dataset.q || btn.textContent;
-      sendCmChat();
+      cmInput.focus();
+      // Move cursor to end so user can easily edit
+      cmInput.setSelectionRange(cmInput.value.length, cmInput.value.length);
     });
 
     async function sendCmChat() {
