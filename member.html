@@ -268,6 +268,9 @@
       if (c.group_number == 0) {
         groupEl.className = 'mt-2 inline-block px-2 py-0.5 bg-amber-500/10 border border-amber-500/20 rounded-full text-amber-400 text-xs';
         groupEl.textContent = '講師 / 助教';
+      } else if (c.group_number == 10) {
+        groupEl.className = 'mt-2 inline-block px-2 py-0.5 bg-amber-500/10 border border-amber-500/20 rounded-full text-amber-400 text-xs';
+        groupEl.textContent = '課程經理 / 校務';
       } else if (c.group_number == 99) {
         groupEl.className = 'mt-2 inline-block px-2 py-0.5 bg-slate-500/10 border border-slate-500/20 rounded-full text-slate-400 text-xs';
         groupEl.textContent = '測試帳號';

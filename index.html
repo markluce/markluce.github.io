@@ -200,15 +200,20 @@
             <label class="text-slate-400 text-xs mb-1 block">組別</label>
             <select id="f-group" class="w-full bg-slate-800 border border-white/20 rounded-lg px-3 py-2 text-white text-sm focus:outline-none focus:border-emerald-500">
               <option value="">請選擇組別</option>
-              <option value="0">講師 / 助教</option>
-              <option value="1">第 1 組</option>
-              <option value="2">第 2 組</option>
-              <option value="3">第 3 組</option>
-              <option value="4">第 4 組</option>
-              <option value="5">第 5 組</option>
-              <option value="6">第 6 組</option>
-              <option value="7">第 7 組</option>
-              <option value="8">第 8 組</option>
+              <optgroup label="校方 AIA">
+                <option value="0">講師 / 助教</option>
+                <option value="10">課程經理 / 校務</option>
+              </optgroup>
+              <optgroup label="學員">
+                <option value="1">第 1 組</option>
+                <option value="2">第 2 組</option>
+                <option value="3">第 3 組</option>
+                <option value="4">第 4 組</option>
+                <option value="5">第 5 組</option>
+                <option value="6">第 6 組</option>
+                <option value="7">第 7 組</option>
+                <option value="8">第 8 組</option>
+              </optgroup>
               <option value="99">測試帳號</option>
             </select>
           </div>
@@ -528,7 +533,7 @@
             (c.company ? escHtml(c.company) : '') + (c.company && c.job_title ? ' · ' : '') + (c.job_title ? escHtml(c.job_title) : '') +
           '</div>' +
           '<div class="flex items-center justify-center gap-1.5 mt-1.5">' +
-            (c.group_number == 0 ? '<span class="px-1.5 py-0.5 bg-amber-500/10 border border-amber-500/20 rounded-full text-amber-400 text-[10px]">講師</span>' : c.group_number == 99 ? '<span class="px-1.5 py-0.5 bg-slate-500/10 border border-slate-500/20 rounded-full text-slate-400 text-[10px]">測試</span>' : c.group_number ? '<span class="px-1.5 py-0.5 bg-sky-500/10 border border-sky-500/20 rounded-full text-sky-400 text-[10px]">第' + c.group_number + '組</span>' : '') +
+            (c.group_number == 0 ? '<span class="px-1.5 py-0.5 bg-amber-500/10 border border-amber-500/20 rounded-full text-amber-400 text-[10px]">講師</span>' : c.group_number == 10 ? '<span class="px-1.5 py-0.5 bg-amber-500/10 border border-amber-500/20 rounded-full text-amber-400 text-[10px]">課程經理</span>' : c.group_number == 99 ? '<span class="px-1.5 py-0.5 bg-slate-500/10 border border-slate-500/20 rounded-full text-slate-400 text-[10px]">測試</span>' : c.group_number ? '<span class="px-1.5 py-0.5 bg-sky-500/10 border border-sky-500/20 rounded-full text-sky-400 text-[10px]">第' + c.group_number + '組</span>' : '') +
             badge +
           '</div>' +
           (updateTime ? '<div class="text-slate-600 text-[10px] mt-1">更新 ' + updateTime + '</div>' : '') +
