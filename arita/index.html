@@ -63,6 +63,8 @@
     .chatbot-input button { background: linear-gradient(135deg, #a855f7, #ec4899); border: none; color: white; padding: 10px 18px; border-radius: 8px; font-size: 0.9rem; font-weight: 600; cursor: pointer; }
     .chatbot-input button:disabled { opacity: 0.4; cursor: not-allowed; }
     .typing-indicator { color: #94a3b8; font-size: 0.8rem; padding: 8px 0; font-style: italic; }
+    .suggest-btn { display: inline-block; margin: 3px 0; padding: 5px 10px; background: rgba(168,85,247,0.15); border: 1px solid rgba(168,85,247,0.35); color: #e9d5ff; border-radius: 8px; font-size: 0.82rem; cursor: pointer; text-align: left; transition: background 0.15s; }
+    .suggest-btn:hover { background: rgba(168,85,247,0.3); }
     /* TTS */
     .voice-selector { display: flex; align-items: center; gap: 12px; padding: 8px 16px; border-top: 1px solid rgba(255,255,255,0.05); font-size: 0.75rem; color: #94a3b8; }
     .voice-selector label { display: flex; align-items: center; gap: 4px; cursor: pointer; }
@@ -182,7 +184,7 @@
     </div>
     <div class="chatbot-messages" id="chatMessages">
       <div class="chat-msg bot">
-        <div class="chat-bubble">Hi! 我是 <strong>Arita</strong>，你的 TOEIC & 雙語學習助手 👋<br><br>我可以幫你：<br>📝 出 TOEIC 練習題（Part 5/6/7）<br>📖 教文法、背單字<br>🌏 中英翻譯 + 解釋<br>💬 商業英語對話練習<br><br>試試看：<br>1. 出一題 Part 5 文法題<br>2. 教我 10 個 TOEIC 高頻單字<br>3. 現在完成式 vs 過去式</div>
+        <div class="chat-bubble">Hi! 我是 <strong>Arita</strong>，你的 TOEIC & 雙語學習助手 👋<br><br>我可以幫你：<br>📝 出 TOEIC 練習題（Part 5/6/7）<br>📖 教文法、背單字<br>🌏 中英翻譯 + 解釋<br>💬 商業英語對話練習<br><br>試試看（點擊即送）：<br><button class="suggest-btn" data-q="出一題 Part 5 文法題">1. 出一題 Part 5 文法題</button><br><button class="suggest-btn" data-q="教我 10 個 TOEIC 高頻商業單字">2. 教我 10 個 TOEIC 高頻單字</button><br><button class="suggest-btn" data-q="現在完成式 vs 過去簡單式的差別是什麼？">3. 現在完成式 vs 過去式</button></div>
       </div>
     </div>
     <div class="voice-selector">
@@ -273,7 +275,9 @@
     var chatInput = document.getElementById('chatInput');
     var chatSend = document.getElementById('chatSend');
     var chatMessages = document.getElementById('chatMessages');
-    var chatHistory = [];
+    // Inject welcome content so AI knows what numbered options mean
+    var WELCOME_TEXT = 'Hi! 我是 Arita，你的 TOEIC & 雙語學習助手 👋\n\n我可以幫你：\n📝 出 TOEIC 練習題（Part 5/6/7）\n📖 教文法、背單字\n🌏 中英翻譯 + 解釋\n💬 商業英語對話練習\n\n試試看：\n1. 出一題 Part 5 文法題\n2. 教我 10 個 TOEIC 高頻單字\n3. 現在完成式 vs 過去式';
+    var chatHistory = [{ role: 'assistant', content: WELCOME_TEXT }];
     var chatSending = false;
 
     chatToggle.onclick = function() { chatPanel.classList.toggle('open'); if (chatPanel.classList.contains('open')) chatInput.focus(); };
@@ -284,6 +288,14 @@
       if (e.key === 'Enter' && !chatSending) sendChat();
     });
     chatSend.onclick = function() { if (!chatSending) sendChat(); };
+
+    // Clickable suggestion buttons
+    chatMessages.addEventListener('click', function(e) {
+      var btn = e.target.closest('.suggest-btn');
+      if (!btn || chatSending) return;
+      chatInput.value = btn.dataset.q || btn.textContent;
+      sendChat();
+    });
 
     async function sendChat() {
       var msg = chatInput.value.trim();
