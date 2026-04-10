@@ -63,6 +63,20 @@
     .chatbot-input button { background: linear-gradient(135deg, #a855f7, #ec4899); border: none; color: white; padding: 10px 18px; border-radius: 8px; font-size: 0.9rem; font-weight: 600; cursor: pointer; }
     .chatbot-input button:disabled { opacity: 0.4; cursor: not-allowed; }
     .typing-indicator { color: #94a3b8; font-size: 0.8rem; padding: 8px 0; font-style: italic; }
+    /* TTS */
+    .voice-selector { display: flex; align-items: center; gap: 12px; padding: 8px 16px; border-top: 1px solid rgba(255,255,255,0.05); font-size: 0.75rem; color: #94a3b8; }
+    .voice-selector label { display: flex; align-items: center; gap: 4px; cursor: pointer; }
+    .voice-selector input[type="radio"] { accent-color: #a855f7; }
+    .chat-bubble-wrap { max-width: 95%; }
+    .tts-btn { background: rgba(168,85,247,0.15); border: 1px solid rgba(168,85,247,0.3); color: #c084fc; padding: 3px 10px; border-radius: 999px; font-size: 0.7rem; cursor: pointer; margin: 4px 0; display: inline-flex; align-items: center; gap: 4px; }
+    .tts-btn:hover { background: rgba(168,85,247,0.25); }
+    .tts-btn.loading { opacity: 0.6; cursor: wait; }
+    .audio-player { display: flex; align-items: center; gap: 8px; margin: 6px 0; padding: 6px 10px; background: rgba(168,85,247,0.08); border: 1px solid rgba(168,85,247,0.2); border-radius: 10px; }
+    .audio-player .pp-btn { background: linear-gradient(135deg,#a855f7,#ec4899); border: none; color: white; width: 28px; height: 28px; border-radius: 50%; cursor: pointer; font-size: 0.75rem; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+    .audio-player .seek { flex: 1; -webkit-appearance: none; appearance: none; height: 4px; background: rgba(255,255,255,0.2); border-radius: 2px; outline: none; cursor: pointer; }
+    .audio-player .seek::-webkit-slider-thumb { -webkit-appearance: none; appearance: none; width: 12px; height: 12px; background: #c084fc; border-radius: 50%; cursor: pointer; }
+    .audio-player .seek::-moz-range-thumb { width: 12px; height: 12px; background: #c084fc; border-radius: 50%; cursor: pointer; border: none; }
+    .audio-player .time { font-size: 0.7rem; color: #cbd5e1; font-variant-numeric: tabular-nums; min-width: 32px; }
     @media (max-width: 480px) {
       .chatbot-panel { width: calc(100vw - 24px); right: 12px; bottom: 88px; max-height: 75vh; }
       .chatbot-toggle { bottom: 16px; right: 16px; width: 52px; height: 52px; font-size: 1.4rem; }
@@ -169,6 +183,11 @@
         <div class="chat-bubble">Hi! 我是 <strong>Arita</strong>，你的 TOEIC & 雙語學習助手 👋<br><br>我可以幫你：<br>📝 出 TOEIC 練習題（Part 5/6/7）<br>📖 教文法、背單字<br>🌏 中英翻譯 + 解釋<br>💬 商業英語對話練習<br><br>試試看：<br>1. 出一題 Part 5 文法題<br>2. 教我 10 個 TOEIC 高頻單字<br>3. 現在完成式 vs 過去式</div>
       </div>
     </div>
+    <div class="voice-selector">
+      <span>🔊 語音:</span>
+      <label><input type="radio" name="voice" value="female" checked> 女聲 Ava</label>
+      <label><input type="radio" name="voice" value="male"> 男聲 Andrew</label>
+    </div>
     <div class="chatbot-input">
       <input type="text" id="chatInput" placeholder="問我英語學習的問題..." autocomplete="off" />
       <button id="chatSend">送出</button>
@@ -187,6 +206,7 @@
     var SUPABASE_KEY = 'sb_publishable_LoGKEHFftjjIf0G1Xv3ozA_A5nZeudW';
     var LIFF_ID = '2009738746-2qigSpHh';
     var CHAT_URL = SUPABASE_URL + '/functions/v1/arita-chat';
+    var TTS_URL = SUPABASE_URL + '/functions/v1/tts';
 
     var sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
     var currentUser = null;
@@ -315,12 +335,117 @@
       var div = document.createElement('div');
       div.className = 'chat-msg ' + role;
       if (role === 'bot') {
-        div.innerHTML = '<div class="chat-bubble md-prose">' + renderMd(text) + '</div>';
+        var ttsText = stripMarkdown(text);
+        div.innerHTML = '<div class="chat-bubble-wrap">' +
+          '<div><button class="tts-btn tts-top">🔊 播放</button></div>' +
+          '<div class="chat-bubble md-prose">' + renderMd(text) + '</div>' +
+          '<div><button class="tts-btn tts-bottom">🔊 播放</button></div>' +
+          '</div>';
+        var btns = div.querySelectorAll('.tts-btn');
+        btns.forEach(function(b) {
+          b.addEventListener('click', function() { loadAndPlay(b, ttsText, div); });
+        });
       } else {
         div.innerHTML = '<div class="chat-bubble">' + escHtml(text) + '</div>';
       }
       chatMessages.appendChild(div);
       chatMessages.scrollTop = chatMessages.scrollHeight;
+    }
+
+    function stripMarkdown(str) {
+      return (str || '')
+        .replace(/#{1,6}\s*/g, '')
+        .replace(/\*\*(.+?)\*\*/g, '$1')
+        .replace(/\*(.+?)\*/g, '$1')
+        .replace(/`(.+?)`/g, '$1')
+        .replace(/\[(.+?)\]\(.+?\)/g, '$1');
+    }
+
+    // Azure TTS playback
+    var currentAudio = null;
+    async function loadAndPlay(btn, text, msgDiv) {
+      var existingPlayer = msgDiv.querySelector('.audio-player');
+      if (existingPlayer) {
+        var audio = existingPlayer._audio;
+        if (audio.paused) { audio.play(); } else { audio.pause(); }
+        return;
+      }
+      if (currentAudio) { currentAudio.pause(); currentAudio = null; }
+      var gender = document.querySelector('input[name="voice"]:checked').value;
+      btn.classList.add('loading');
+      btn.innerHTML = '⏳ 載入中';
+      try {
+        var res = await fetch(TTS_URL, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + SUPABASE_KEY },
+          body: JSON.stringify({ text: text, voice: gender })
+        });
+        if (!res.ok) throw new Error('TTS failed');
+        var blob = await res.blob();
+        var url = URL.createObjectURL(blob);
+        var audio = new Audio();
+        audio.preload = 'auto';
+        audio.src = url;
+        currentAudio = audio;
+
+        var player = document.createElement('div');
+        player.className = 'audio-player';
+        player._audio = audio;
+        player.innerHTML =
+          '<button class="pp-btn" title="播放/暫停">▶</button>' +
+          '<span class="time cur">0:00</span>' +
+          '<input type="range" min="0" max="1000" value="0" step="1" class="seek">' +
+          '<span class="time dur">--:--</span>';
+
+        var ppBtn = player.querySelector('.pp-btn');
+        var seekBar = player.querySelector('.seek');
+        var curTime = player.querySelector('.cur');
+        var durTime = player.querySelector('.dur');
+
+        function fmt(s) {
+          if (!s || !isFinite(s)) return '--:--';
+          var m = Math.floor(s / 60);
+          return m + ':' + (Math.floor(s % 60) + '').padStart(2, '0');
+        }
+        function updateDuration() {
+          if (audio.duration && isFinite(audio.duration)) durTime.textContent = fmt(audio.duration);
+        }
+        audio.addEventListener('loadedmetadata', updateDuration);
+        audio.addEventListener('durationchange', updateDuration);
+        audio.addEventListener('canplay', updateDuration);
+        audio.addEventListener('timeupdate', function() {
+          if (!seekBar._dragging && audio.duration && isFinite(audio.duration))
+            seekBar.value = Math.floor(audio.currentTime / audio.duration * 1000);
+          curTime.textContent = fmt(audio.currentTime);
+          updateDuration();
+        });
+        audio.addEventListener('play', function() { ppBtn.innerHTML = '⏸'; });
+        audio.addEventListener('pause', function() { ppBtn.innerHTML = '▶'; });
+        audio.addEventListener('ended', function() { ppBtn.innerHTML = '▶'; seekBar.value = 0; curTime.textContent = '0:00'; });
+
+        ppBtn.onclick = function() { audio.paused ? audio.play() : audio.pause(); };
+        seekBar.addEventListener('mousedown', function() { seekBar._dragging = true; });
+        seekBar.addEventListener('mouseup', function() { seekBar._dragging = false; });
+        seekBar.addEventListener('touchstart', function() { seekBar._dragging = true; });
+        seekBar.addEventListener('touchend', function() { seekBar._dragging = false; });
+        seekBar.addEventListener('input', function() {
+          if (audio.duration && isFinite(audio.duration))
+            audio.currentTime = (seekBar.value / 1000) * audio.duration;
+        });
+
+        var bubble = msgDiv.querySelector('.chat-bubble');
+        bubble.insertAdjacentElement('afterend', player);
+
+        msgDiv.querySelectorAll('.tts-btn').forEach(function(b) {
+          b.classList.remove('loading');
+          b.innerHTML = '🔊 播放';
+        });
+        audio.play();
+      } catch (err) {
+        btn.classList.remove('loading');
+        btn.innerHTML = '🔊 失敗';
+        console.error('TTS error:', err);
+      }
     }
 
     // Visit tracking
@@ -330,6 +455,24 @@
       }).catch(function() {
         sb.from('visits').insert({ page: location.pathname, user_agent: navigator.userAgent, referrer: document.referrer || null, screen_width: screen.width, screen_height: screen.height, language: navigator.language });
       });
+    })();
+
+    // Wire up TTS on the initial welcome message (re-render with buttons)
+    (function() {
+      var firstMsg = document.querySelector('#chatMessages .chat-msg.bot .chat-bubble');
+      if (firstMsg) {
+        var parent = firstMsg.parentElement;
+        var text = firstMsg.innerText || firstMsg.textContent;
+        parent.innerHTML = '<div class="chat-bubble-wrap">' +
+          '<div><button class="tts-btn tts-top">🔊 播放</button></div>' +
+          '<div class="chat-bubble md-prose">' + firstMsg.innerHTML + '</div>' +
+          '<div><button class="tts-btn tts-bottom">🔊 播放</button></div>' +
+          '</div>';
+        var ttsText = stripMarkdown(text);
+        parent.querySelectorAll('.tts-btn').forEach(function(b) {
+          b.addEventListener('click', function() { loadAndPlay(b, ttsText, parent); });
+        });
+      }
     })();
 
     initLiff();
