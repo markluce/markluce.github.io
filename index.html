@@ -44,6 +44,32 @@
     .md-prose h1 { font-size: 1.5em; font-weight: 700; margin-bottom: 0.4em; margin-top: 0.6em; }
     .md-prose h2 { font-size: 1.25em; font-weight: 600; margin-bottom: 0.3em; margin-top: 0.5em; }
     .md-prose h3 { font-size: 1.1em; font-weight: 600; margin-bottom: 0.25em; margin-top: 0.4em; }
+    /* Chatbot */
+    .chatbot-toggle { position: fixed; bottom: 24px; right: 24px; z-index: 40; width: 56px; height: 56px; border-radius: 50%; background: linear-gradient(135deg, #06b6d4, #0ea5e9); border: none; color: white; font-size: 1.5rem; cursor: pointer; box-shadow: 0 4px 20px rgba(14,165,233,0.4); transition: transform 0.2s, box-shadow 0.2s; }
+    .chatbot-toggle:hover { transform: scale(1.1); box-shadow: 0 6px 28px rgba(14,165,233,0.5); }
+    .chatbot-panel { display: none; position: fixed; bottom: 90px; right: 24px; z-index: 50; width: 380px; max-height: 520px; background: #0f172a; border: 1px solid rgba(255,255,255,0.1); border-radius: 16px; flex-direction: column; overflow: hidden; box-shadow: 0 20px 60px rgba(0,0,0,0.5); }
+    .chatbot-panel.open { display: flex; }
+    .chatbot-header { display: flex; align-items: center; justify-content: space-between; padding: 12px 16px; background: rgba(255,255,255,0.05); border-bottom: 1px solid rgba(255,255,255,0.1); }
+    .chatbot-header span { font-size: 0.85rem; font-weight: 600; color: #e2e8f0; }
+    .chatbot-header button { background: none; border: none; color: #94a3b8; cursor: pointer; font-size: 1.1rem; padding: 2px 6px; }
+    .chatbot-header button:hover { color: white; }
+    .chatbot-messages { flex: 1; overflow-y: auto; padding: 16px; min-height: 300px; }
+    .chat-msg { margin-bottom: 12px; display: flex; flex-direction: column; }
+    .chat-msg.user { align-items: flex-end; }
+    .chat-msg.bot { align-items: flex-start; }
+    .chat-bubble { padding: 10px 14px; border-radius: 12px; max-width: 90%; font-size: 0.85rem; line-height: 1.6; word-break: break-word; }
+    .chat-msg.user .chat-bubble { background: #0ea5e9; color: white; }
+    .chat-msg.bot .chat-bubble { background: rgba(255,255,255,0.08); color: #e2e8f0; }
+    .chatbot-input { display: flex; gap: 8px; padding: 12px 16px; border-top: 1px solid rgba(255,255,255,0.1); }
+    .chatbot-input input { flex: 1; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.15); border-radius: 8px; padding: 8px 12px; color: white; font-size: 0.85rem; outline: none; }
+    .chatbot-input input:focus { border-color: #0ea5e9; }
+    .chatbot-input button { background: #0ea5e9; border: none; color: white; padding: 8px 16px; border-radius: 8px; font-size: 0.85rem; font-weight: 600; cursor: pointer; }
+    .chatbot-input button:disabled { opacity: 0.4; cursor: not-allowed; }
+    .typing-indicator { color: #64748b; font-size: 0.8rem; padding: 8px 0; }
+    @media (max-width: 480px) {
+      .chatbot-panel { width: calc(100vw - 32px); right: 16px; bottom: 88px; max-height: 70vh; }
+      .chatbot-toggle { bottom: 16px; right: 16px; width: 48px; height: 48px; font-size: 1.3rem; }
+    }
   </style>
 </head>
 <body class="min-h-screen bg-gradient-to-br from-slate-900 via-sky-950 to-slate-900 text-white font-sans">
@@ -201,6 +227,24 @@
     <div class="text-center" onclick="event.stopPropagation()">
       <img id="avatar-modal-img" src="" alt="" class="w-64 h-64 rounded-full mx-auto shadow-2xl shadow-sky-500/20 border-4 border-white/10" />
       <p id="avatar-modal-name" class="text-white font-bold text-lg mt-4"></p>
+    </div>
+  </div>
+
+  <!-- Chatbot -->
+  <button class="chatbot-toggle" id="chatToggle" title="問 AI 關於同學的事">💬</button>
+  <div class="chatbot-panel" id="chatPanel">
+    <div class="chatbot-header">
+      <span>🤖 AI 同學助手</span>
+      <button id="chatClose">&times;</button>
+    </div>
+    <div class="chatbot-messages" id="chatMessages">
+      <div class="chat-msg bot">
+        <div class="chat-bubble">你好！我是 AI PM 班的 AI 助手 👋<br><br>你可以問我關於同學的問題，例如：<br>1. 有哪些同學來自科技業？<br>2. 第 2 組有哪些人？<br>3. 有人做產品管理嗎？</div>
+      </div>
+    </div>
+    <div class="chatbot-input">
+      <input type="text" id="chatInput" placeholder="問問關於同學的事..." autocomplete="off" />
+      <button id="chatSend">送出</button>
     </div>
   </div>
 
@@ -538,6 +582,74 @@
 
     initLiff();
     loadClassmates();
+
+    // Chatbot
+    var CHAT_URL = SUPABASE_URL + '/functions/v1/chat';
+    var chatToggle = document.getElementById('chatToggle');
+    var chatPanel = document.getElementById('chatPanel');
+    var chatClose = document.getElementById('chatClose');
+    var chatInput = document.getElementById('chatInput');
+    var chatSend = document.getElementById('chatSend');
+    var chatMessages = document.getElementById('chatMessages');
+    var chatHistory = [];
+    var chatSending = false;
+
+    chatToggle.onclick = function() { chatPanel.classList.toggle('open'); if (chatPanel.classList.contains('open')) chatInput.focus(); };
+    chatClose.onclick = function() { chatPanel.classList.remove('open'); };
+
+    chatInput.addEventListener('keydown', function(e) {
+      if (e.key === 'Enter' && !chatSending) sendChat();
+    });
+    chatSend.onclick = function() { if (!chatSending) sendChat(); };
+
+    async function sendChat() {
+      var msg = chatInput.value.trim();
+      if (!msg) return;
+      chatInput.value = '';
+      chatSending = true;
+      chatSend.disabled = true;
+      appendChat('user', msg);
+      chatHistory.push({ role: 'user', content: msg });
+
+      var typing = document.createElement('div');
+      typing.className = 'typing-indicator';
+      typing.textContent = 'AI 思考中...';
+      chatMessages.appendChild(typing);
+      chatMessages.scrollTop = chatMessages.scrollHeight;
+
+      try {
+        var res = await fetch(CHAT_URL, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + SUPABASE_KEY },
+          body: JSON.stringify({ message: msg, history: chatHistory.slice(-10) })
+        });
+        var data = await res.json();
+        typing.remove();
+        if (data.reply) {
+          appendChat('bot', data.reply);
+          chatHistory.push({ role: 'assistant', content: data.reply });
+        } else {
+          appendChat('bot', data.error || '抱歉，目前無法回應，請稍後再試。');
+        }
+      } catch (err) {
+        typing.remove();
+        appendChat('bot', '連線錯誤，請稍後再試。');
+      }
+      chatSending = false;
+      chatSend.disabled = false;
+    }
+
+    function appendChat(role, text) {
+      var div = document.createElement('div');
+      div.className = 'chat-msg ' + role;
+      if (role === 'bot') {
+        div.innerHTML = '<div class="chat-bubble">' + renderMd(text) + '</div>';
+      } else {
+        div.innerHTML = '<div class="chat-bubble">' + escHtml(text) + '</div>';
+      }
+      chatMessages.appendChild(div);
+      chatMessages.scrollTop = chatMessages.scrollHeight;
+    }
   </script>
 
 </body>
