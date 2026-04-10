@@ -93,8 +93,7 @@ Deno.serve(async (req: Request) => {
 
     // Build classmates knowledge text
     const classmatesText = classmates.map((c: any, idx: number) => {
-      const group = c.group_number === 0 ? "講師/助教"
-        : c.group_number === 10 ? "課程經理/校務"
+      const group = c.group_number === 0 ? "校方 AIA（講師、助教、課程經理、校務）"
         : c.group_number ? `第${c.group_number}組` : "未分組";
       const lines: string[] = [];
       lines.push(`【${idx + 1}】${c.display_name}`);
