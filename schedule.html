@@ -15,54 +15,155 @@
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Noto+Sans+TC:wght@400;500;600;700;900&display=swap" rel="stylesheet" />
   <script charset="utf-8" src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
   <style>
-    /* Light theme — traditional old-school */
-    body { background: #f5f5f0; color: #1a1a1a; }
+    /* Theme tokens — defaults to light */
+    :root {
+      --bg: #f5f5f0;
+      --fg: #1a1a1a;
+      --meta: #555;
+      --filter-label: #6c6c65;
+      --card-bg: #ffffff;
+      --card-border: #d4d4d4;
+      --table-bg: #ffffff;
+      --table-border: #c0c0c0;
+      --thead-bg: #e8eef2;
+      --thead-fg: #1a1a1a;
+      --row-even: #f7f7f4;
+      --row-hover: #fff8e1;
+      --row-dim-bg: #fafaf6;
+      --row-dim-fg: #6c6c65;
+      --input-bg: #ffffff;
+      --input-border: #c0c0c0;
+      --input-fg: #1a1a1a;
+      --focus: #4a90e2;
+      --nav-bg: #1a1a1a;
+      --nav-fg: #f5f5f0;
+      --nav-link: #d4d4d4;
+      --nav-link-active: #fff8e1;
+      --nav-accent: #0c5a80;
+      --title-accent: #0c5a80;
+      --link: #0066cc;
+      --btn-reset-bg: #4a4a4a;
+      --btn-reset-hover: #2a2a2a;
+      --divider: #d4d4d4;
+      --tag-morning-bg: #fff3cd; --tag-morning-fg: #856404; --tag-morning-bd: #ffe08a;
+      --tag-afternoon-bg: #cfe8f7; --tag-afternoon-fg: #0c5a80; --tag-afternoon-bd: #8ac6e0;
+      --tag-group-bg: #d4edda; --tag-group-fg: #155724; --tag-group-bd: #a3d9b1;
+      --tag-ops-bg: #e2e3e5; --tag-ops-fg: #383d41; --tag-ops-bd: #c6c8ca;
+      --tag-break-bg: #f0f0ec; --tag-break-fg: #6c6c65; --tag-break-bd: #d4d4cc;
+      --tag-video-bg: #e8dff5; --tag-video-fg: #4b2e7a; --tag-video-bd: #c7b8e6;
+      --cell-w: #0c5a80;
+      --cell-date: #333;
+      --cell-time: #555;
+      --cell-title: #1a1a1a;
+      --cell-teacher: #0c5a80;
+      --cell-org: #555;
+    }
+
+    [data-theme="dark"] {
+      --bg: #0f1419;
+      --fg: #e5e7eb;
+      --meta: #94a3b8;
+      --filter-label: #64748b;
+      --card-bg: #1a2028;
+      --card-border: #2d3748;
+      --table-bg: #1a2028;
+      --table-border: #2d3748;
+      --thead-bg: #233045;
+      --thead-fg: #bae6fd;
+      --row-even: #1f2730;
+      --row-hover: #2a3441;
+      --row-dim-bg: #151c24;
+      --row-dim-fg: #64748b;
+      --input-bg: #0f1419;
+      --input-border: #2d3748;
+      --input-fg: #e5e7eb;
+      --focus: #38bdf8;
+      --nav-bg: #0a0e13;
+      --nav-fg: #e5e7eb;
+      --nav-link: #94a3b8;
+      --nav-link-active: #7dd3fc;
+      --nav-accent: #38bdf8;
+      --title-accent: #7dd3fc;
+      --link: #7dd3fc;
+      --btn-reset-bg: #334155;
+      --btn-reset-hover: #475569;
+      --divider: #2d3748;
+      --tag-morning-bg: rgba(251,191,36,0.15); --tag-morning-fg: #fbbf24; --tag-morning-bd: rgba(251,191,36,0.35);
+      --tag-afternoon-bg: rgba(56,189,248,0.15); --tag-afternoon-fg: #7dd3fc; --tag-afternoon-bd: rgba(56,189,248,0.35);
+      --tag-group-bg: rgba(52,211,153,0.15); --tag-group-fg: #6ee7b7; --tag-group-bd: rgba(52,211,153,0.35);
+      --tag-ops-bg: rgba(148,163,184,0.15); --tag-ops-fg: #cbd5e1; --tag-ops-bd: rgba(148,163,184,0.35);
+      --tag-break-bg: rgba(100,116,139,0.15); --tag-break-fg: #94a3b8; --tag-break-bd: rgba(100,116,139,0.35);
+      --tag-video-bg: rgba(167,139,250,0.15); --tag-video-fg: #c4b5fd; --tag-video-bd: rgba(167,139,250,0.35);
+      --cell-w: #7dd3fc;
+      --cell-date: #cbd5e1;
+      --cell-time: #94a3b8;
+      --cell-title: #e5e7eb;
+      --cell-teacher: #6ee7b7;
+      --cell-org: #94a3b8;
+    }
+
+    body { background: var(--bg); color: var(--fg); transition: background 0.2s, color 0.2s; }
     .line-btn { background: #06C755; }
     .line-btn:hover { background: #05b64d; }
     .glow-ring { box-shadow: 0 0 0 3px rgba(6, 199, 85, 0.25); }
     .fade-in { animation: fadeIn 0.4s ease-out; }
     @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
 
-    .card { background: #ffffff; border: 1px solid #d4d4d4; }
-    .card-inset { background: #fafafa; border: 1px solid #e5e5e5; }
+    .card { background: var(--card-bg); border: 1px solid var(--card-border); }
 
-    table.sched { border-collapse: collapse; width: 100%; font-size: 0.85rem; background: #ffffff; }
-    table.sched th, table.sched td { border: 1px solid #c0c0c0; padding: 8px 10px; text-align: left; vertical-align: top; }
-    table.sched thead th { background: #e8eef2; color: #1a1a1a; font-weight: 700; }
+    table.sched { border-collapse: collapse; width: 100%; font-size: 0.85rem; background: var(--table-bg); }
+    table.sched th, table.sched td { border: 1px solid var(--table-border); padding: 8px 10px; text-align: left; vertical-align: top; }
+    table.sched thead th { background: var(--thead-bg); color: var(--thead-fg); font-weight: 700; }
     table.sched tbody tr { transition: background 0.15s; }
-    table.sched tbody tr:nth-child(even) { background: #f7f7f4; }
-    table.sched tbody tr:hover { background: #fff8e1; }
+    table.sched tbody tr:nth-child(even) { background: var(--row-even); }
+    table.sched tbody tr:hover { background: var(--row-hover); }
 
     .period-tag { display: inline-block; padding: 1px 7px; border-radius: 3px; font-size: 0.72rem; font-weight: 600; white-space: nowrap; }
-    .period-morning { background: #fff3cd; color: #856404; border: 1px solid #ffe08a; }
-    .period-afternoon { background: #cfe8f7; color: #0c5a80; border: 1px solid #8ac6e0; }
-    .period-group { background: #d4edda; color: #155724; border: 1px solid #a3d9b1; }
-    .period-ops { background: #e2e3e5; color: #383d41; border: 1px solid #c6c8ca; }
-    .period-break { background: #f0f0ec; color: #6c6c65; border: 1px solid #d4d4cc; }
-    .period-video { background: #e8dff5; color: #4b2e7a; border: 1px solid #c7b8e6; }
-    tr.row-dim { color: #6c6c65; background: #fafaf6 !important; }
+    .period-morning { background: var(--tag-morning-bg); color: var(--tag-morning-fg); border: 1px solid var(--tag-morning-bd); }
+    .period-afternoon { background: var(--tag-afternoon-bg); color: var(--tag-afternoon-fg); border: 1px solid var(--tag-afternoon-bd); }
+    .period-group { background: var(--tag-group-bg); color: var(--tag-group-fg); border: 1px solid var(--tag-group-bd); }
+    .period-ops { background: var(--tag-ops-bg); color: var(--tag-ops-fg); border: 1px solid var(--tag-ops-bd); }
+    .period-break { background: var(--tag-break-bg); color: var(--tag-break-fg); border: 1px solid var(--tag-break-bd); }
+    .period-video { background: var(--tag-video-bg); color: var(--tag-video-fg); border: 1px solid var(--tag-video-bd); }
+    tr.row-dim { color: var(--row-dim-fg); background: var(--row-dim-bg) !important; }
     tr.row-dim td { font-style: italic; }
 
     input[type="text"], select {
-      background: #ffffff;
-      border: 1px solid #c0c0c0;
-      color: #1a1a1a;
+      background: var(--input-bg);
+      border: 1px solid var(--input-border);
+      color: var(--input-fg);
     }
-    input[type="text"]:focus, select:focus { border-color: #4a90e2; outline: 1px solid #4a90e2; }
+    input[type="text"]:focus, select:focus { border-color: var(--focus); outline: 1px solid var(--focus); }
 
-    .filter-label { color: #6c6c65; font-size: 10px; text-transform: uppercase; letter-spacing: 0.05em; }
-    .btn-reset { background: #4a4a4a; color: white; }
-    .btn-reset:hover { background: #2a2a2a; }
+    .filter-label { color: var(--filter-label); font-size: 10px; text-transform: uppercase; letter-spacing: 0.05em; }
+    .btn-reset { background: var(--btn-reset-bg); color: white; }
+    .btn-reset:hover { background: var(--btn-reset-hover); }
 
-    .title-text { color: #1a1a1a; font-weight: 800; }
-    .title-accent { color: #0c5a80; }
-    .meta-text { color: #555; }
+    .title-text { color: var(--fg); font-weight: 800; }
+    .title-accent { color: var(--title-accent); }
+    .meta-text { color: var(--meta); }
+    a.theme-link { color: var(--link); }
+    a.theme-link:hover { text-decoration: underline; }
 
-    /* Nav */
-    nav.topnav { background: #1a1a1a; color: #f5f5f0; border-bottom: 3px solid #0c5a80; }
-    nav.topnav a { color: #d4d4d4; }
+    nav.topnav { background: var(--nav-bg); color: var(--nav-fg); border-bottom: 3px solid var(--nav-accent); }
+    nav.topnav a { color: var(--nav-link); }
     nav.topnav a:hover, nav.topnav a.active { color: #ffffff; }
-    nav.topnav a.active { color: #fff8e1; }
+    nav.topnav a.active { color: var(--nav-link-active); }
+
+    /* Theme toggle button */
+    .theme-toggle {
+      background: transparent;
+      border: 1px solid var(--nav-link);
+      color: var(--nav-link);
+      padding: 4px 10px;
+      border-radius: 4px;
+      font-size: 0.75rem;
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+    .theme-toggle:hover { background: var(--nav-link); color: var(--nav-bg); }
+
+    .divider { border-color: var(--divider); }
   </style>
 </head>
 <body class="min-h-screen font-sans">
@@ -77,6 +178,7 @@
         <a href="/" class="hover:text-white transition">AI PM 同學牆</a>
         <a href="/schedule.html" class="active font-medium">8 週完整課表</a>
         <a href="/more.html" class="hover:text-white transition">更多</a>
+        <button id="theme-toggle" class="theme-toggle" title="切換明暗主題" onclick="toggleTheme()">🌙 夜間</button>
         <div id="user-info" class="hidden flex items-center gap-2">
           <img id="user-avatar" class="w-7 h-7 md:w-8 md:h-8 rounded-full glow-ring" src="" alt="" />
           <span id="user-name" class="text-xs md:text-sm text-emerald-300 font-medium max-w-[80px] md:max-w-none truncate"></span>
@@ -170,13 +272,14 @@
             顯示休息 / 午餐 / 影片
           </label>
         </div>
-        <div class="flex gap-2 text-[10px] flex-wrap">
-          <span class="period-tag period-morning">上午</span>
-          <span class="period-tag period-afternoon">下午</span>
-          <span class="period-tag period-group">小組</span>
-          <span class="period-tag period-ops">課務</span>
-          <span class="period-tag period-break">休息</span>
-          <span class="period-tag period-video">影片</span>
+        <div class="flex gap-2 text-[10px] flex-wrap items-center">
+          <span class="meta-text text-[10px]">點擊篩選:</span>
+          <button type="button" class="period-tag period-morning cursor-pointer hover:opacity-80" onclick="setPeriod('上午')">上午</button>
+          <button type="button" class="period-tag period-afternoon cursor-pointer hover:opacity-80" onclick="setPeriod('下午')">下午</button>
+          <button type="button" class="period-tag period-group cursor-pointer hover:opacity-80" onclick="setPeriod('小組')">小組</button>
+          <button type="button" class="period-tag period-ops cursor-pointer hover:opacity-80" onclick="setPeriod('課務')">課務</button>
+          <button type="button" class="period-tag period-break cursor-pointer hover:opacity-80" onclick="setPeriod('休息')">休息</button>
+          <button type="button" class="period-tag period-video cursor-pointer hover:opacity-80" onclick="setPeriod('影片')">影片</button>
         </div>
       </div>
     </div>
@@ -217,6 +320,26 @@
   <script>
     var LIFF_ID = '2009738746-2qigSpHh';
     var currentUser = null;
+
+    // Theme management — persists in localStorage
+    function applyTheme(t) {
+      document.documentElement.setAttribute('data-theme', t);
+      var btn = document.getElementById('theme-toggle');
+      if (btn) btn.innerHTML = t === 'dark' ? '☀️ 日間' : '🌙 夜間';
+      try { localStorage.setItem('schedule_theme', t); } catch(e) {}
+    }
+    function toggleTheme() {
+      var cur = document.documentElement.getAttribute('data-theme') || 'light';
+      applyTheme(cur === 'dark' ? 'light' : 'dark');
+    }
+    // Load saved theme immediately (before LIFF check)
+    (function() {
+      try {
+        var saved = localStorage.getItem('schedule_theme');
+        if (saved === 'dark') applyTheme('dark');
+        else applyTheme('light');
+      } catch(e) { applyTheme('light'); }
+    })();
 
     // === Complete day agenda (Toastmaster-style) ===
     var DATES = { 1:'04/11 (六)', 2:'04/18 (六)', 3:'04/25 (六)', 4:'05/02 (六)', 5:'05/09 (六)', 6:'05/16 (六)', 7:'05/23 (六)', 8:'05/30 (六)' };
@@ -405,18 +528,26 @@
         tbody.innerHTML = filtered.map(function(r) {
           var dim = (r.period === '休息' || r.period === '影片') ? ' row-dim' : '';
           return '<tr class="' + dim + '">' +
-            '<td class="whitespace-nowrap font-mono font-bold" style="color:#0c5a80">W' + r.w + '</td>' +
-            '<td class="whitespace-nowrap" style="color:#333">' + esc(r.date) + '</td>' +
+            '<td class="whitespace-nowrap font-mono font-bold" style="color:var(--cell-w)">W' + r.w + '</td>' +
+            '<td class="whitespace-nowrap" style="color:var(--cell-date)">' + esc(r.date) + '</td>' +
             '<td class="whitespace-nowrap"><span class="period-tag ' + periodClass(r.period) + '">' + r.period + '</span></td>' +
-            '<td class="whitespace-nowrap font-mono text-[11px]" style="color:#555">' + esc(r.time) + '</td>' +
-            '<td style="color:#1a1a1a">' + esc(r.title) + '</td>' +
-            '<td class="whitespace-nowrap font-medium" style="color:#0c5a80">' + esc(r.teacher) + '</td>' +
-            '<td class="whitespace-nowrap text-[11px]" style="color:#555">' + esc(r.org) + '</td>' +
+            '<td class="whitespace-nowrap font-mono text-[11px]" style="color:var(--cell-time)">' + esc(r.time) + '</td>' +
+            '<td style="color:var(--cell-title)">' + esc(r.title) + '</td>' +
+            '<td class="whitespace-nowrap font-medium" style="color:var(--cell-teacher)">' + esc(r.teacher) + '</td>' +
+            '<td class="whitespace-nowrap text-[11px]" style="color:var(--cell-org)">' + esc(r.org) + '</td>' +
           '</tr>';
         }).join('');
       }
 
       document.getElementById('count').textContent = '共 ' + filtered.length + ' / ' + ROWS.length + ' 筆';
+    }
+
+    function setPeriod(p) {
+      document.getElementById('f-period').value = p;
+      if (p === '休息' || p === '影片') {
+        document.getElementById('f-breaks').checked = true;
+      }
+      render();
     }
 
     function resetFilters() {
