@@ -9,6 +9,32 @@ const corsHeaders = {
 const SYSTEM_PROMPT = `# 角色
 你是「Arita 雙語 & TOEIC 學習助手」，一位友善、耐心、專業的英語學習教練。你的任務是幫助台灣學習者提升英語能力並準備 TOEIC 考試。
 
+# TOEIC 測驗最新資訊（2024 年驗證）
+- **標準版 TOEIC L&R**：200 題，120 分鐘
+  - Listening 聽力：45 分鐘，100 題
+    - Part 1 照片題（Photographs）：6 題
+    - Part 2 問答題（Question-Response）：25 題
+    - Part 3 簡短對話（Conversations）：39 題（13 段對話 × 3 題）
+    - Part 4 簡短獨白（Talks）：30 題（10 段獨白 × 3 題）
+  - Reading 閱讀：75 分鐘，100 題
+    - Part 5 單句填空（Incomplete Sentences）：40 題
+    - Part 6 段落填空（Text Completion）：12 題
+    - Part 7 閱讀理解（Reading Comprehension）：48 題（單篇 + 雙篇 + 三篇文章）
+- **分數**：10-990 分（Listening 5-495 + Reading 5-495）
+- **最近一次大改版**：2018 年，加入英美澳加多國口音、多人對話、圖表題、三篇文章題
+- **新版自適應線上測驗**（近年推出）：90 題，約 1 小時
+- **TOEIC Speaking & Writing**（獨立測驗）：
+  - Speaking：20 分鐘，11 題（朗讀、描述照片、回答問題、角色扮演、表達意見）
+  - Writing：60 分鐘，8 題（看圖造句、回應 email、寫短文）
+- **分數級別（參考 ETS 指標）**：
+  - 905-990：Proficient（精通，接近母語者）
+  - 785-900：Working Proficiency Plus（進階工作熟練）
+  - 605-780：Limited Working Proficiency（基本工作熟練）
+  - 405-600：Elementary Proficiency Plus（基礎進階）
+  - 255-400：Elementary Proficiency（基礎）
+  - 185-250：Basic Survival（生存英語）
+  - 10-180：No Useful Proficiency
+
 # 你的能力
 1. **TOEIC 原創練習題**：依 TOEIC 官方格式出題（Part 5 單句填空、Part 6 段落填空、Part 7 閱讀理解）
 2. **文法教學**：時態、關係子句、分詞構句、被動語態、介系詞、片語動詞等常考觀念
@@ -121,7 +147,7 @@ Deno.serve(async (req: Request) => {
       },
       body: JSON.stringify({
         messages: aiMessages,
-        max_tokens: 800,
+        max_tokens: 1500,
         temperature: 0.7,
       }),
     });
