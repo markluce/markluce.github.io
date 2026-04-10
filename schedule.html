@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'><rect width='64' height='64' rx='12' fill='%230EA5E9'/><text x='32' y='28' font-family='Arial,sans-serif' font-size='16' font-weight='bold' fill='white' text-anchor='middle'>MARK</text><text x='32' y='48' font-family='Arial,sans-serif' font-size='14' font-weight='bold' fill='%2322D3EE' text-anchor='middle'>LUCE</text></svg>" />
-  <title>經理人 AI PM 班 — 課程表</title>
+  <title>AM151 課程表 — 經理人 AI PM 班</title>
   <meta name="robots" content="noindex, nofollow" />
   <script src="https://cdn.tailwindcss.com"></script>
   <script>
@@ -21,8 +21,18 @@
     .fade-in { animation: fadeIn 0.6s ease-out; }
     @keyframes fadeIn { from { opacity: 0; transform: translateY(16px); } to { opacity: 1; transform: translateY(0); } }
     .glow-ring { box-shadow: 0 0 0 4px rgba(6, 199, 85, 0.2); }
-    .week-card { transition: transform 0.2s, box-shadow 0.2s; }
-    .week-card:hover { transform: translateY(-2px); box-shadow: 0 12px 28px -8px rgba(14, 165, 233, 0.2); }
+    table.sched { border-collapse: collapse; width: 100%; font-size: 0.85rem; }
+    table.sched th, table.sched td { border: 1px solid rgba(255,255,255,0.12); padding: 8px 10px; text-align: left; vertical-align: top; }
+    table.sched thead th { background: rgba(14,165,233,0.15); color: #bae6fd; font-weight: 600; position: sticky; top: 0; z-index: 5; }
+    table.sched tbody tr { transition: background 0.15s; }
+    table.sched tbody tr:nth-child(even) { background: rgba(255,255,255,0.02); }
+    table.sched tbody tr:hover { background: rgba(14,165,233,0.08); }
+    table.sched tbody tr.highlight { background: rgba(245,158,11,0.08); }
+    .period-tag { display: inline-block; padding: 1px 6px; border-radius: 999px; font-size: 0.7rem; font-weight: 600; white-space: nowrap; }
+    .period-morning { background: rgba(251,191,36,0.15); color: #fbbf24; border: 1px solid rgba(251,191,36,0.3); }
+    .period-afternoon { background: rgba(14,165,233,0.15); color: #38bdf8; border: 1px solid rgba(14,165,233,0.3); }
+    .period-group { background: rgba(16,185,129,0.15); color: #34d399; border: 1px solid rgba(16,185,129,0.3); }
+    .period-ops { background: rgba(148,163,184,0.15); color: #94a3b8; border: 1px solid rgba(148,163,184,0.3); }
   </style>
 </head>
 <body class="min-h-screen bg-gradient-to-br from-slate-900 via-sky-950 to-slate-900 text-white font-sans">
@@ -33,7 +43,7 @@
   </div>
 
   <!-- Nav -->
-  <nav class="relative z-10 max-w-5xl mx-auto px-4 md:px-6 py-4 md:py-6">
+  <nav class="relative z-10 max-w-6xl mx-auto px-4 md:px-6 py-4 md:py-6">
     <div class="flex items-center justify-between">
       <a href="/" class="text-lg md:text-xl font-bold tracking-tight">
         <span class="text-sky-400">mark</span>luce
@@ -71,38 +81,93 @@
   </div>
 
   <!-- Schedule Content -->
-  <main id="schedule-content" class="hidden relative z-10 max-w-5xl mx-auto px-4 md:px-6 pb-16 fade-in">
-    <header class="text-center pt-6 pb-10">
+  <main id="schedule-content" class="hidden relative z-10 max-w-7xl mx-auto px-4 md:px-6 pb-16 fade-in">
+    <header class="text-center pt-4 pb-6">
       <div class="inline-block mb-3 px-4 py-1.5 bg-emerald-500/10 border border-emerald-500/20 rounded-full text-emerald-400 text-sm font-medium">
-        台灣人工智慧學校 · 經理人 AI PM 班 第一期
+        台灣人工智慧學校 · 經理人 AI PM 班 第一期 (AM151)
       </div>
-      <h1 class="text-3xl md:text-4xl font-extrabold leading-tight mb-3">
-        <span class="gradient-text">AM151 課程表</span>
+      <h1 class="text-2xl md:text-3xl font-extrabold leading-tight mb-2">
+        <span class="gradient-text">8 週完整課程表</span>
       </h1>
-      <p class="text-slate-400 text-sm">2026/04/11 ~ 2026/05/30 · 每週六 09:00-17:00（08:30 報到）</p>
-      <p class="text-slate-500 text-xs mt-2">📍 新光板橋傑仕堡 A棟 2樓 · 國際會議廳</p>
+      <p class="text-slate-400 text-xs">2026/04/11 ~ 2026/05/30 · 每週六 09:00-17:30 · 📍 新光板橋傑仕堡 A棟 2樓 · 國際會議廳</p>
     </header>
 
-    <!-- Week Cards -->
-    <div id="weeks" class="space-y-4"></div>
-
-    <!-- Key dates -->
-    <div class="mt-10 bg-white/5 border border-white/10 rounded-xl p-5">
-      <h3 class="font-bold text-sky-400 text-sm mb-3">📌 重要資訊</h3>
-      <ul class="text-slate-300 text-xs space-y-1.5">
-        <li>• <strong>報到時間：</strong>每週六 08:30 開始</li>
-        <li>• <strong>結業條件：</strong>創新競賽（小組專題） + AIATCL 素養級認證通過</li>
-        <li>• <strong>AIATCL 考試：</strong>05/30（W8）上午 10:35-11:25</li>
-        <li>• <strong>Demo Day：</strong>05/30（W8）下午 13:30-15:30</li>
-        <li>• <strong>小組討論：</strong>每次課程 16:00-17:00（開課首日選組長）</li>
-        <li>• <strong>班代選舉：</strong>04/18（W2）投票，4/16 12:00 前投件至 hi@aiacademy.tw</li>
-        <li>• <strong>開課日必備：</strong>有照片之身分證件、筆電、名片、環保杯餐具</li>
-      </ul>
+    <!-- Filters -->
+    <div class="bg-white/5 border border-white/10 rounded-xl p-4 mb-4 backdrop-blur-sm">
+      <div class="grid grid-cols-2 md:grid-cols-5 gap-3">
+        <div>
+          <label class="text-slate-500 text-[10px] uppercase tracking-wider block mb-1">搜尋</label>
+          <input id="f-search" type="text" oninput="render()" placeholder="關鍵字、講師、主題..." class="w-full bg-slate-800 border border-white/15 rounded px-2 py-1.5 text-white text-xs focus:outline-none focus:border-sky-500" />
+        </div>
+        <div>
+          <label class="text-slate-500 text-[10px] uppercase tracking-wider block mb-1">週次</label>
+          <select id="f-week" onchange="render()" class="w-full bg-slate-800 border border-white/15 rounded px-2 py-1.5 text-white text-xs focus:outline-none focus:border-sky-500">
+            <option value="">全部 (1-8)</option>
+            <option value="1">W1 · 04/11</option>
+            <option value="2">W2 · 04/18</option>
+            <option value="3">W3 · 04/25</option>
+            <option value="4">W4 · 05/02</option>
+            <option value="5">W5 · 05/09</option>
+            <option value="6">W6 · 05/16</option>
+            <option value="7">W7 · 05/23</option>
+            <option value="8">W8 · 05/30</option>
+          </select>
+        </div>
+        <div>
+          <label class="text-slate-500 text-[10px] uppercase tracking-wider block mb-1">時段</label>
+          <select id="f-period" onchange="render()" class="w-full bg-slate-800 border border-white/15 rounded px-2 py-1.5 text-white text-xs focus:outline-none focus:border-sky-500">
+            <option value="">全部時段</option>
+            <option value="上午">上午 09:00-12:00</option>
+            <option value="下午">下午 13:30-15:30</option>
+            <option value="小組">小組 16:00-17:00</option>
+            <option value="課務">課務 17:00-17:30</option>
+          </select>
+        </div>
+        <div>
+          <label class="text-slate-500 text-[10px] uppercase tracking-wider block mb-1">講師</label>
+          <select id="f-teacher" onchange="render()" class="w-full bg-slate-800 border border-white/15 rounded px-2 py-1.5 text-white text-xs focus:outline-none focus:border-sky-500">
+            <option value="">全部講師</option>
+          </select>
+        </div>
+        <div>
+          <label class="text-slate-500 text-[10px] uppercase tracking-wider block mb-1">&nbsp;</label>
+          <button onclick="resetFilters()" class="w-full bg-slate-700 hover:bg-slate-600 rounded px-2 py-1.5 text-white text-xs font-medium transition">重置篩選</button>
+        </div>
+      </div>
+      <div class="flex items-center justify-between mt-3 pt-3 border-t border-white/10">
+        <span id="count" class="text-slate-400 text-xs"></span>
+        <div class="flex gap-3 text-[10px]">
+          <span class="period-tag period-morning">上午</span>
+          <span class="period-tag period-afternoon">下午</span>
+          <span class="period-tag period-group">小組</span>
+          <span class="period-tag period-ops">課務</span>
+        </div>
+      </div>
     </div>
 
-    <div class="mt-6 text-center text-slate-600 text-xs">
-      📄 資料來源：<a href="http://mgr.aiacademy.tw/" target="_blank" class="text-sky-500 hover:text-sky-400">學員專區</a>（帳密請參考開課通知信）
+    <!-- Table -->
+    <div class="bg-white/5 border border-white/10 rounded-xl overflow-hidden backdrop-blur-sm">
+      <div class="overflow-x-auto max-h-[70vh]">
+        <table class="sched">
+          <thead>
+            <tr>
+              <th class="whitespace-nowrap">週</th>
+              <th class="whitespace-nowrap">日期</th>
+              <th class="whitespace-nowrap">時段</th>
+              <th class="whitespace-nowrap">時間</th>
+              <th>課程主題</th>
+              <th class="whitespace-nowrap">講師</th>
+              <th class="whitespace-nowrap">單位</th>
+            </tr>
+          </thead>
+          <tbody id="tbody"></tbody>
+        </table>
+      </div>
     </div>
+
+    <p class="text-center text-slate-600 text-[10px] mt-4">
+      📄 資料來源：<a href="http://mgr.aiacademy.tw/" target="_blank" class="text-sky-500 hover:text-sky-400">AIA 學員專區</a>
+    </p>
   </main>
 
   <footer class="relative z-10 max-w-6xl mx-auto px-6 py-12 text-center border-t border-white/10">
@@ -116,74 +181,51 @@
     var LIFF_ID = '2009738746-2qigSpHh';
     var currentUser = null;
 
-    // Course schedule data — no sensitive info
-    var WEEKS = [
-      {
-        num: 1, date: '04/11 (六)', tag: '始業',
-        morning: [
-          { title: '始業式・校務長演講', sub: 'AI PM 課程導覽', teacher: '蔡明順校務長 & GIGA', time: '09:00-10:20' },
-          { title: '專題演講：從 AI Agent 到虛擬員工', sub: 'AI 在產品的開發、管理', teacher: '李國財 (BEJO) · FIKAYARD', time: '10:35-12:00' }
-        ],
-        afternoon: { title: '主題演講', sub: '', teacher: '吳振和 · Cacafly 技術副總' },
-        evening: { title: '學員分組相見歡', sub: '課務須知 / 競賽說明 / AIATCL 考前閱讀' }
-      },
-      {
-        num: 2, date: '04/18 (六)', tag: 'Gemini',
-        morning: [
-          { title: '提示工程與 Gemini 多模態實戰', sub: 'AI 溝通術：用提示指令高效產出企劃內容', teacher: '蔡政霖', time: '09:00-12:00' }
-        ],
-        afternoon: { title: 'PM 實務：產品開發企劃', sub: '', teacher: 'GIGA · Nautilus AI 執行長' },
-        evening: { title: '小組專題討論', sub: '班代選舉投票' }
-      },
-      {
-        num: 3, date: '04/25 (六)', tag: 'RAG',
-        morning: [
-          { title: '檢索增強生成 (RAG) 與 NotebookLM 應用', sub: '個人知識庫的 AI 應用：快速從資料中找到洞察與摘要', teacher: '蔡政霖', time: '09:00-12:00' }
-        ],
-        afternoon: { title: 'PM 實務：範疇 / 時間 / 人力 / 品質控管', sub: '', teacher: 'GIGA · Nautilus AI 執行長' },
-        evening: { title: '專題演講：你是否在公司救了一個專案？', sub: '深談 AI PM 與工具實踐', teacher: '王淳恆 · 圖策科技 AI 研發處長' }
-      },
-      {
-        num: 4, date: '05/02 (六)', tag: 'Workspace',
-        morning: [
-          { title: 'Google Workspace 工具 AI 實戰應用', sub: '簡報效率倍增：AI 自動優化日常文件、簡報與影音製作', teacher: '李福裕', time: '09:00-12:00' }
-        ],
-        afternoon: { title: 'PM 實務：成本管理 / 採購管理', sub: '', teacher: 'GIGA · Nautilus AI 執行長' },
-        evening: { title: '小組專題討論 + AIATCL 測驗說明', sub: '' }
-      },
-      {
-        num: 5, date: '05/09 (六)', tag: '自動化',
-        morning: [
-          { title: '業務流程自動化', sub: '透過對話式 AI 建立專屬自動化工作夥伴（影片分鏡 + 市場趨勢週報）', teacher: '李福裕', time: '09:00-12:00' }
-        ],
-        afternoon: { title: 'PM 實務：溝通管理 / 風險管理', sub: '', teacher: 'GIGA · Nautilus AI 執行長' },
-        evening: { title: '小組專題討論', sub: '' }
-      },
-      {
-        num: 6, date: '05/16 (六)', tag: 'Vibe Coding',
-        morning: [
-          { title: 'Vibe Coding：用說的做原型開發', sub: 'AI 會議摘要器 + 用 BOM 表產生報價系統', teacher: '劉又綺', time: '09:00-12:00' }
-        ],
-        afternoon: { title: 'PM 實務：產品架構、高效打造 DEMO', sub: '', teacher: 'GIGA · Nautilus AI 執行長' },
-        evening: { title: '專題演講：AI 時代，專案經理不再管理專案？', sub: '', teacher: '孫弘岳 · 國立臺灣師範大學教授' }
-      },
-      {
-        num: 7, date: '05/23 (六)', tag: '部署',
-        morning: [
-          { title: 'Vibe Coding：實戰部署', sub: '訂單追蹤儀表板 + 專案看板 Kanban / 驗收 / 驗證', teacher: '劉又綺', time: '09:00-12:00' }
-        ],
-        afternoon: { title: 'PM 實務：產品介面與整合、快速打造 MVP', sub: '', teacher: 'GIGA · Nautilus AI 執行長' },
-        evening: { title: '小組專題討論', sub: '' }
-      },
-      {
-        num: 8, date: '05/30 (六)', tag: '結業',
-        morning: [
-          { title: '主題演講', sub: '', teacher: '陳伶志 · 台灣人工智慧學校執行長', time: '09:00-10:20' },
-          { title: 'AI 素養級認證考試 (AIATCL)', sub: '50 分鐘', teacher: '全體學員', time: '10:35-12:00' }
-        ],
-        afternoon: { title: '小組成果發表 Demo Day', sub: '', teacher: '全體學員' },
-        evening: { title: '結業式', sub: '' }
-      }
+    // Schedule data — pre-parsed, one row per time slot
+    var ROWS = [
+      // W1 04/11
+      { w:1, date:'04/11 (六)', period:'上午', time:'09:00-10:20', title:'始業式・校務長演講 + AI PM 課程導覽', teacher:'蔡明順 & GIGA', org:'AIA 校務長 / Nautilus AI' },
+      { w:1, date:'04/11 (六)', period:'上午', time:'10:35-12:00', title:'專題演講：從 AI Agent 到虛擬員工 — AI 在產品的開發、管理', teacher:'李國財 (BEJO)', org:'FIKAYARD' },
+      { w:1, date:'04/11 (六)', period:'下午', time:'13:30-15:30', title:'主題演講', teacher:'吳振和', org:'Cacafly 技術副總' },
+      { w:1, date:'04/11 (六)', period:'小組', time:'16:00-17:00', title:'小組專題時間：學員分組相見歡', teacher:'全體學員', org:'—' },
+      { w:1, date:'04/11 (六)', period:'課務', time:'17:00-17:30', title:'課務須知、競賽說明、課程問卷、AIATCL 考前閱讀', teacher:'校務團隊', org:'AIA' },
+
+      // W2 04/18
+      { w:2, date:'04/18 (六)', period:'上午', time:'09:00-12:00', title:'提示工程與 Gemini 多模態實戰：AI 溝通術 — 用提示指令高效產出企劃內容', teacher:'蔡政霖', org:'AIA' },
+      { w:2, date:'04/18 (六)', period:'下午', time:'13:30-15:30', title:'PM 實務：產品開發企劃', teacher:'GIGA', org:'Nautilus AI 執行長' },
+      { w:2, date:'04/18 (六)', period:'小組', time:'16:00-17:00', title:'小組專題時間：專題討論 + 班代選舉投票', teacher:'全體學員', org:'—' },
+
+      // W3 04/25
+      { w:3, date:'04/25 (六)', period:'上午', time:'09:00-12:00', title:'檢索增強生成 (RAG) 與 NotebookLM 應用：個人知識庫的 AI 應用', teacher:'蔡政霖', org:'AIA' },
+      { w:3, date:'04/25 (六)', period:'下午', time:'13:30-15:30', title:'PM 實務：範疇 / 時間 / 人力 / 品質控管', teacher:'GIGA', org:'Nautilus AI 執行長' },
+      { w:3, date:'04/25 (六)', period:'小組', time:'16:00-17:00', title:'專題演講：你是否在公司救了一個專案？— 深談 AI PM 與工具實踐', teacher:'王淳恆', org:'圖策科技 AI 研發處長' },
+
+      // W4 05/02
+      { w:4, date:'05/02 (六)', period:'上午', time:'09:00-12:00', title:'Google Workspace 工具 AI 實戰應用：簡報效率倍增', teacher:'李福裕', org:'AIA' },
+      { w:4, date:'05/02 (六)', period:'下午', time:'13:30-15:30', title:'PM 實務：成本管理 / 採購管理', teacher:'GIGA', org:'Nautilus AI 執行長' },
+      { w:4, date:'05/02 (六)', period:'小組', time:'16:00-17:00', title:'小組專題時間：專題討論', teacher:'全體學員', org:'—' },
+      { w:4, date:'05/02 (六)', period:'課務', time:'17:00-17:30', title:'AI 素養級認證 (AIATCL™) 測驗說明', teacher:'校務團隊', org:'AIA' },
+
+      // W5 05/09
+      { w:5, date:'05/09 (六)', period:'上午', time:'09:00-12:00', title:'業務流程自動化：透過對話式 AI 輕鬆建立專屬的自動化工作夥伴（產品介紹影片分鏡 + 市場趨勢週報）', teacher:'李福裕', org:'AIA' },
+      { w:5, date:'05/09 (六)', period:'下午', time:'13:30-15:30', title:'PM 實務：溝通管理 / 風險管理', teacher:'GIGA', org:'Nautilus AI 執行長' },
+      { w:5, date:'05/09 (六)', period:'小組', time:'16:00-17:00', title:'小組專題時間：專題討論', teacher:'全體學員', org:'—' },
+
+      // W6 05/16
+      { w:6, date:'05/16 (六)', period:'上午', time:'09:00-12:00', title:'Vibe Coding：用說的做原型開發（AI 會議摘要器 + 用 BOM 表產生報價系統）', teacher:'劉又綺', org:'AIA' },
+      { w:6, date:'05/16 (六)', period:'下午', time:'13:30-15:30', title:'PM 實務：產品架構、高效打造 DEMO', teacher:'GIGA', org:'Nautilus AI 執行長' },
+      { w:6, date:'05/16 (六)', period:'小組', time:'16:00-17:00', title:'專題演講：AI 時代，專案經理不再管理專案？', teacher:'孫弘岳', org:'國立臺灣師範大學教授' },
+
+      // W7 05/23
+      { w:7, date:'05/23 (六)', period:'上午', time:'09:00-12:00', title:'Vibe Coding：實戰部署（訂單追蹤儀表板 + 專案看板 Kanban / 驗收 / 驗證）', teacher:'劉又綺', org:'AIA' },
+      { w:7, date:'05/23 (六)', period:'下午', time:'13:30-15:30', title:'PM 實務：產品介面與整合、快速打造 MVP', teacher:'GIGA', org:'Nautilus AI 執行長' },
+      { w:7, date:'05/23 (六)', period:'小組', time:'16:00-17:00', title:'小組專題時間：專題討論', teacher:'全體學員', org:'—' },
+
+      // W8 05/30
+      { w:8, date:'05/30 (六)', period:'上午', time:'09:00-10:20', title:'主題演講', teacher:'陳伶志', org:'台灣人工智慧學校執行長' },
+      { w:8, date:'05/30 (六)', period:'上午', time:'10:35-12:00', title:'AI 素養級認證考試 AIATCL™ (50 分鐘)', teacher:'全體學員', org:'—' },
+      { w:8, date:'05/30 (六)', period:'下午', time:'13:30-15:30', title:'小組成果發表 Demo Day', teacher:'全體學員', org:'—' },
+      { w:8, date:'05/30 (六)', period:'小組', time:'16:00-17:00', title:'結業式', teacher:'全體學員', org:'AIA' }
     ];
 
     async function initLiff() {
@@ -227,7 +269,8 @@
       document.getElementById('user-avatar').src = currentUser.pictureUrl;
       document.getElementById('user-name').textContent = currentUser.displayName;
       document.getElementById('schedule-content').classList.remove('hidden');
-      renderWeeks();
+      populateTeacherFilter();
+      render();
     }
 
     function esc(s) {
@@ -236,54 +279,72 @@
       return d.innerHTML;
     }
 
-    function renderWeeks() {
-      var container = document.getElementById('weeks');
-      container.innerHTML = WEEKS.map(function(w) {
-        var morningHtml = w.morning.map(function(m) {
-          return '<div class="mb-2">' +
-            (m.time ? '<span class="text-[10px] text-slate-500 font-mono">' + m.time + '</span> ' : '') +
-            '<span class="font-semibold text-white text-sm">' + esc(m.title) + '</span>' +
-            (m.sub ? '<div class="text-slate-400 text-xs ml-0.5">' + esc(m.sub) + '</div>' : '') +
-            (m.teacher ? '<div class="text-slate-500 text-xs ml-0.5">👨‍🏫 ' + esc(m.teacher) + '</div>' : '') +
-            '</div>';
+    function populateTeacherFilter() {
+      var teachers = {};
+      ROWS.forEach(function(r) {
+        r.teacher.split(/[、&]/).map(function(t) { return t.trim(); }).forEach(function(t) {
+          if (t && t !== '全體學員') teachers[t] = true;
+        });
+      });
+      var sel = document.getElementById('f-teacher');
+      Object.keys(teachers).sort().forEach(function(t) {
+        var opt = document.createElement('option');
+        opt.value = t;
+        opt.textContent = t;
+        sel.appendChild(opt);
+      });
+    }
+
+    function periodClass(p) {
+      if (p === '上午') return 'period-morning';
+      if (p === '下午') return 'period-afternoon';
+      if (p === '小組') return 'period-group';
+      return 'period-ops';
+    }
+
+    function render() {
+      var search = document.getElementById('f-search').value.trim().toLowerCase();
+      var week = document.getElementById('f-week').value;
+      var period = document.getElementById('f-period').value;
+      var teacher = document.getElementById('f-teacher').value;
+
+      var filtered = ROWS.filter(function(r) {
+        if (week && String(r.w) !== week) return false;
+        if (period && r.period !== period) return false;
+        if (teacher && r.teacher.indexOf(teacher) === -1) return false;
+        if (search) {
+          var hay = (r.title + ' ' + r.teacher + ' ' + r.org + ' ' + r.date + ' W' + r.w).toLowerCase();
+          if (hay.indexOf(search) === -1) return false;
+        }
+        return true;
+      });
+
+      var tbody = document.getElementById('tbody');
+      if (filtered.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="7" class="text-center text-slate-500 py-8">沒有符合條件的課程</td></tr>';
+      } else {
+        tbody.innerHTML = filtered.map(function(r) {
+          return '<tr>' +
+            '<td class="whitespace-nowrap font-mono text-sky-400">W' + r.w + '</td>' +
+            '<td class="whitespace-nowrap text-slate-300">' + esc(r.date) + '</td>' +
+            '<td class="whitespace-nowrap"><span class="period-tag ' + periodClass(r.period) + '">' + r.period + '</span></td>' +
+            '<td class="whitespace-nowrap font-mono text-[11px] text-slate-400">' + esc(r.time) + '</td>' +
+            '<td class="text-white">' + esc(r.title) + '</td>' +
+            '<td class="whitespace-nowrap text-emerald-300">' + esc(r.teacher) + '</td>' +
+            '<td class="whitespace-nowrap text-slate-400 text-[11px]">' + esc(r.org) + '</td>' +
+          '</tr>';
         }).join('');
+      }
 
-        var afternoonHtml = '<div>' +
-          '<span class="font-semibold text-white text-sm">' + esc(w.afternoon.title) + '</span>' +
-          (w.afternoon.sub ? '<div class="text-slate-400 text-xs">' + esc(w.afternoon.sub) + '</div>' : '') +
-          (w.afternoon.teacher ? '<div class="text-slate-500 text-xs">👨‍🏫 ' + esc(w.afternoon.teacher) + '</div>' : '') +
-          '</div>';
+      document.getElementById('count').textContent = '共 ' + filtered.length + ' / ' + ROWS.length + ' 筆';
+    }
 
-        var eveningHtml = '<div>' +
-          '<span class="font-semibold text-white text-sm">' + esc(w.evening.title) + '</span>' +
-          (w.evening.sub ? '<div class="text-slate-400 text-xs">' + esc(w.evening.sub) + '</div>' : '') +
-          (w.evening.teacher ? '<div class="text-slate-500 text-xs">👨‍🏫 ' + esc(w.evening.teacher) + '</div>' : '') +
-          '</div>';
-
-        return '<div class="week-card bg-white/5 border border-white/10 rounded-xl p-5 backdrop-blur-sm">' +
-          '<div class="flex items-center gap-3 mb-4 pb-3 border-b border-white/10">' +
-            '<div class="w-10 h-10 rounded-full bg-gradient-to-br from-sky-500 to-cyan-500 flex items-center justify-center text-white font-bold text-sm flex-shrink-0">W' + w.num + '</div>' +
-            '<div>' +
-              '<div class="text-white font-bold">' + esc(w.date) + '</div>' +
-              '<div class="text-slate-500 text-xs">' + esc(w.tag) + '</div>' +
-            '</div>' +
-          '</div>' +
-          '<div class="grid md:grid-cols-3 gap-4">' +
-            '<div>' +
-              '<div class="text-[10px] font-bold text-sky-400 mb-1.5">☀️ 上午 09:00-12:00</div>' +
-              morningHtml +
-            '</div>' +
-            '<div>' +
-              '<div class="text-[10px] font-bold text-amber-400 mb-1.5">🍱 下午 13:30-15:30</div>' +
-              afternoonHtml +
-            '</div>' +
-            '<div>' +
-              '<div class="text-[10px] font-bold text-emerald-400 mb-1.5">💬 小組 16:00-17:00</div>' +
-              eveningHtml +
-            '</div>' +
-          '</div>' +
-        '</div>';
-      }).join('');
+    function resetFilters() {
+      document.getElementById('f-search').value = '';
+      document.getElementById('f-week').value = '';
+      document.getElementById('f-period').value = '';
+      document.getElementById('f-teacher').value = '';
+      render();
     }
 
     initLiff();
