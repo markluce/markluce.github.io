@@ -110,6 +110,13 @@
     </h1>
     <p class="text-slate-400 text-sm">經理人 AI PM 班 第一期 &middot; 2026/04/11 開課</p>
     <p class="text-slate-500 text-xs mt-3">📝 LINE 登入後填寫自我介紹 &middot; 💬 點擊同學卡片可留言（每人限一則）</p>
+
+    <!-- Unread messages banner -->
+    <a id="unread-banner" href="#" class="hidden mt-4 inline-flex items-center gap-2 px-5 py-2.5 bg-sky-500/15 border border-sky-500/30 rounded-full text-sky-300 text-sm font-medium hover:bg-sky-500/25 transition animate-pulse">
+      <span>💬</span>
+      <span id="unread-text"></span>
+      <span class="text-sky-400">&rarr;</span>
+    </a>
   </header>
 
   <!-- Intro Form (hidden until logged in) -->
@@ -300,6 +307,25 @@
       document.getElementById('intro-form').classList.remove('hidden');
       if (isAdmin()) {
         document.getElementById('admin-toggle').classList.remove('hidden');
+      }
+
+      // Check for unread messages
+      checkUnread();
+    }
+
+    async function checkUnread() {
+      if (!currentUser) return;
+      var lastSeen = localStorage.getItem('lastSeenMessages_' + currentUser.userId) || '1970-01-01T00:00:00Z';
+      var result = await sb.from('member_messages')
+        .select('id, created_at')
+        .eq('to_member_id', currentUser.userId)
+        .gt('created_at', lastSeen);
+
+      if (result.data && result.data.length > 0) {
+        var banner = document.getElementById('unread-banner');
+        document.getElementById('unread-text').textContent = '你有 ' + result.data.length + ' 則新留言！點擊查看';
+        banner.href = '/member.html?id=' + encodeURIComponent(currentUser.userId);
+        banner.classList.remove('hidden');
       }
     }
 

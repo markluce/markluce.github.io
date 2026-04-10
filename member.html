@@ -225,8 +225,11 @@
       document.getElementById('user-name').textContent = currentUser.displayName;
       document.getElementById('login-prompt').classList.add('hidden');
 
-      // Don't show message form on own page
-      if (currentUser.userId === pageId) return;
+      // Own page: mark messages as seen, don't show form
+      if (currentUser.userId === pageId) {
+        localStorage.setItem('lastSeenMessages_' + currentUser.userId, new Date().toISOString());
+        return;
+      }
 
       // Check for existing message
       var result = await sb.from('member_messages')
