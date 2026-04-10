@@ -69,6 +69,8 @@
     .chatbot-input button { background: #0ea5e9; border: none; color: white; padding: 8px 16px; border-radius: 8px; font-size: 0.85rem; font-weight: 600; cursor: pointer; }
     .chatbot-input button:disabled { opacity: 0.4; cursor: not-allowed; }
     .typing-indicator { color: #64748b; font-size: 0.8rem; padding: 8px 0; }
+    .suggest-btn { display: inline-block; margin: 3px 0; padding: 5px 10px; background: rgba(14,165,233,0.15); border: 1px solid rgba(14,165,233,0.35); color: #bae6fd; border-radius: 8px; font-size: 0.82rem; cursor: pointer; text-align: left; transition: background 0.15s; font-family: inherit; }
+    .suggest-btn:hover { background: rgba(14,165,233,0.3); }
     @media (max-width: 480px) {
       .chatbot-panel { width: calc(100vw - 32px); right: 16px; bottom: 88px; max-height: 70vh; }
       .chatbot-toggle { bottom: 16px; right: 16px; width: 48px; height: 48px; font-size: 1.3rem; }
@@ -245,7 +247,7 @@
     </div>
     <div class="chatbot-messages" id="chatMessages">
       <div class="chat-msg bot">
-        <div class="chat-bubble">你好！我是 <strong>AIATCL 素養認證考前助手</strong> 👋<br><br>我只根據以下 4 份官方 PDF 文件回答問題：<br>📄 <strong>AIA 人才認證 (AIATC™) 考場規則</strong><br>📄 <strong>AIATCL 預試卷</strong><br>📄 <strong>AI 素養評測考前閱讀資料</strong><br>📄 <strong>GenAI 素養認證實作班 Syllabus v.5</strong><br><br>你可以問我：<br>1. 考試當天要準備什麼？<br>2. 機器學習跟深度學習差在哪？<br>3. <strong>開始模擬考</strong>（出題練習）</div>
+        <div class="chat-bubble">你好！我是 <strong>AIATCL 素養認證考前助手</strong> 👋<br><br>我只根據以下 4 份官方 PDF 文件回答問題：<br>📄 <strong>AIA 人才認證 (AIATC™) 考場規則</strong><br>📄 <strong>AIATCL 預試卷</strong><br>📄 <strong>AI 素養評測考前閱讀資料</strong><br>📄 <strong>GenAI 素養認證實作班 Syllabus v.5</strong><br><br>試試看（點擊即送）：<div id="aiatclSuggestList"></div></div>
       </div>
     </div>
     <div class="chatbot-input">
@@ -597,8 +599,63 @@
     var chatInput = document.getElementById('chatInput');
     var chatSend = document.getElementById('chatSend');
     var chatMessages = document.getElementById('chatMessages');
-    var chatHistory = [];
+
+    // Topic pool for AIATCL chatbot
+    var AIATCL_TOPICS = [
+      '考試當天要準備什麼？',
+      '考場規則有哪些？',
+      '考試可以攜帶哪些東西？',
+      '考試禁止做什麼事？',
+      '監考人員會做什麼？',
+      '考試時間和題數是多少？',
+      'AIATCL 的測驗範圍包含哪些？',
+      '機器學習和深度學習差在哪？',
+      '什麼是遷移學習 (Transfer Learning)？',
+      '什麼是聯邦學習 (Federated Learning)？',
+      '雲端運算跟邊緣運算差別在哪？',
+      '什麼是生成式 AI？',
+      '什麼是大型語言模型 (LLM)？',
+      '什麼是 Prompt 提示工程？',
+      '什麼是 RAG 檢索增強生成？',
+      '監督式、非監督式、強化學習差別？',
+      '什麼是 AI 倫理與偏見？',
+      '什麼是數位孿生 (Digital Twin)？',
+      'AI 的歷程演進是怎樣？',
+      '弱 AI 和強 AI 差別是什麼？',
+      '開始模擬考',
+      '再來一題'
+    ];
+
+    function pickAiatclTopics(n) {
+      var shuffled = AIATCL_TOPICS.slice().sort(function() { return Math.random() - 0.5; });
+      return shuffled.slice(0, n);
+    }
+
+    var aiatclPicked = pickAiatclTopics(5);
+    (function() {
+      var list = document.getElementById('aiatclSuggestList');
+      if (list) {
+        list.innerHTML = aiatclPicked.map(function(t, i) {
+          return '<button class="suggest-btn" data-q="' + t.replace(/"/g, '&quot;') + '">' + (i + 1) + '. ' + t + '</button>';
+        }).join('<br>');
+      }
+    })();
+
+    var chatHistory = [{
+      role: 'assistant',
+      content: '你好！我是 AIATCL 素養認證考前助手。我剛剛給了用戶以下建議選項：\n' +
+        aiatclPicked.map(function(t, i) { return (i + 1) + '. ' + t; }).join('\n') +
+        '\n若用戶回答數字 1-5，對應這些選項。'
+    }];
     var chatSending = false;
+
+    // Clickable suggestion buttons
+    chatMessages.addEventListener('click', function(e) {
+      var btn = e.target.closest('.suggest-btn');
+      if (!btn || chatSending) return;
+      chatInput.value = btn.dataset.q || btn.textContent;
+      sendChat();
+    });
 
     chatToggle.onclick = function() { chatPanel.classList.toggle('open'); if (chatPanel.classList.contains('open')) chatInput.focus(); };
     chatClose.onclick = function() { chatPanel.classList.remove('open'); chatPanel.classList.remove('fullscreen'); };
