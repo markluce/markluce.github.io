@@ -105,6 +105,7 @@
 <script>
 // ----- Config -----
 var SUPABASE_URL = 'https://dcjlekszmobaenhrdbfl.supabase.co';
+var SUPABASE_KEY = 'sb_publishable_LoGKEHFftjjIf0G1Xv3ozA_A5nZeudW';
 var FN_URL = SUPABASE_URL + '/functions/v1/audrey-chat';
 // Reusing arita LIFF ID for prototype. Replace with dedicated Audrey LIFF ID for production.
 var LIFF_ID = '2009738746-2qigSpHh';
@@ -178,7 +179,10 @@ btn.addEventListener('click', async function() {
   try {
     var res = await fetch(FN_URL, {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer ' + SUPABASE_KEY,
+      },
       body: JSON.stringify({
         age: age,
         level: level,

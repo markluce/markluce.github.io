@@ -412,3 +412,42 @@ entrypoint = "./functions/chat/index.ts"
 # Specifies static files to be bundled with the function. Supports glob patterns.
 # For example, if you want to serve static HTML pages in your function:
 # static_files = [ "./functions/chat/*.html" ]
+
+[functions.arita-chat]
+enabled = true
+verify_jwt = true
+import_map = "./functions/arita-chat/deno.json"
+# Uncomment to specify a custom file path to the entrypoint.
+# Supported file extensions are: .ts, .js, .mjs, .jsx, .tsx
+entrypoint = "./functions/arita-chat/index.ts"
+# Specifies static files to be bundled with the function. Supports glob patterns.
+# For example, if you want to serve static HTML pages in your function:
+# static_files = [ "./functions/arita-chat/*.html" ]
+
+[functions.audrey-chat]
+enabled = true
+verify_jwt = true
+import_map = "./functions/audrey-chat/deno.json"
+entrypoint = "./functions/audrey-chat/index.ts"
+
+[functions.tts]
+enabled = true
+verify_jwt = true
+import_map = "./functions/tts/deno.json"
+# Uncomment to specify a custom file path to the entrypoint.
+# Supported file extensions are: .ts, .js, .mjs, .jsx, .tsx
+entrypoint = "./functions/tts/index.ts"
+# Specifies static files to be bundled with the function. Supports glob patterns.
+# For example, if you want to serve static HTML pages in your function:
+# static_files = [ "./functions/tts/*.html" ]
+
+[functions.classmates-chat]
+enabled = true
+verify_jwt = true
+import_map = "./functions/classmates-chat/deno.json"
+# Uncomment to specify a custom file path to the entrypoint.
+# Supported file extensions are: .ts, .js, .mjs, .jsx, .tsx
+entrypoint = "./functions/classmates-chat/index.ts"
+# Specifies static files to be bundled with the function. Supports glob patterns.
+# For example, if you want to serve static HTML pages in your function:
+# static_files = [ "./functions/classmates-chat/*.html" ]
