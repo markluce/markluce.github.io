@@ -20,6 +20,15 @@
     @keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
     .line-btn { background: #06C755; }
     .line-btn:hover { background: #05b64d; }
+    .audio-player { display: flex; align-items: center; gap: 10px; margin: 12px 0 0; padding: 8px 12px; background: rgba(245,158,11,0.10); border: 1px solid rgba(245,158,11,0.30); border-radius: 12px; width: 100%; box-sizing: border-box; }
+    .audio-player .pp-btn { background: linear-gradient(135deg,#f59e0b,#ef4444); border: none; color: white; width: 32px; height: 32px; border-radius: 50%; cursor: pointer; font-size: 0.85rem; display: flex; align-items: center; justify-content: center; flex-shrink: 0; padding: 0; }
+    .audio-player .pp-btn:disabled { opacity: 0.6; cursor: not-allowed; }
+    .audio-player .seek { flex: 1 1 auto; min-width: 50px; -webkit-appearance: none; appearance: none; height: 6px; background: rgba(120,53,15,0.20); border-radius: 3px; outline: none; cursor: pointer; padding: 0; margin: 0; }
+    .audio-player .seek::-webkit-slider-runnable-track { height: 6px; background: rgba(120,53,15,0.20); border-radius: 3px; }
+    .audio-player .seek::-webkit-slider-thumb { -webkit-appearance: none; appearance: none; width: 14px; height: 14px; background: #f59e0b; border-radius: 50%; cursor: pointer; margin-top: -4px; border: 2px solid #fff7ed; }
+    .audio-player .seek::-moz-range-track { height: 6px; background: rgba(120,53,15,0.20); border-radius: 3px; border: none; }
+    .audio-player .seek::-moz-range-thumb { width: 14px; height: 14px; background: #f59e0b; border-radius: 50%; cursor: pointer; border: 2px solid #fff7ed; }
+    .audio-player .time { font-size: 0.72rem; color: #78350f; font-variant-numeric: tabular-nums; min-width: 34px; white-space: nowrap; flex-shrink: 0; }
   </style>
 </head>
 <body class="text-slate-800">
@@ -93,6 +102,7 @@
           </div>
         </div>
         <div id="script" class="script-box"></div>
+        <div id="player-slot"></div>
       </div>
     </section>
 
@@ -227,20 +237,65 @@ function escapeHtml(s) {
 }
 
 var currentAudio = null;
+
+function fmtTime(s) {
+  if (!s || !isFinite(s)) return '--:--';
+  var m = Math.floor(s / 60);
+  return m + ':' + (Math.floor(s % 60) + '').padStart(2, '0');
+}
+
+function buildPlayer(audio) {
+  var player = document.createElement('div');
+  player.className = 'audio-player';
+  player.innerHTML =
+    '<button class="pp-btn" title="播放/暫停">▶</button>' +
+    '<span class="time cur">0:00</span>' +
+    '<input type="range" min="0" max="1000" value="0" step="1" class="seek">' +
+    '<span class="time dur">--:--</span>';
+
+  var ppBtn = player.querySelector('.pp-btn');
+  var seekBar = player.querySelector('.seek');
+  var curTime = player.querySelector('.cur');
+  var durTime = player.querySelector('.dur');
+
+  function updateDuration() {
+    if (audio.duration && isFinite(audio.duration)) durTime.textContent = fmtTime(audio.duration);
+  }
+  audio.addEventListener('loadedmetadata', updateDuration);
+  audio.addEventListener('durationchange', updateDuration);
+  audio.addEventListener('canplay', updateDuration);
+  audio.addEventListener('timeupdate', function() {
+    if (!seekBar._dragging && audio.duration && isFinite(audio.duration))
+      seekBar.value = Math.floor(audio.currentTime / audio.duration * 1000);
+    curTime.textContent = fmtTime(audio.currentTime);
+    updateDuration();
+  });
+  audio.addEventListener('play', function() { ppBtn.innerHTML = '⏸'; });
+  audio.addEventListener('pause', function() { ppBtn.innerHTML = '▶'; });
+  audio.addEventListener('ended', function() {
+    ppBtn.innerHTML = '▶'; seekBar.value = 0; curTime.textContent = '0:00';
+  });
+
+  ppBtn.onclick = function() { audio.paused ? audio.play() : audio.pause(); };
+  seekBar.addEventListener('mousedown', function() { seekBar._dragging = true; });
+  seekBar.addEventListener('mouseup', function() { seekBar._dragging = false; });
+  seekBar.addEventListener('touchstart', function() { seekBar._dragging = true; });
+  seekBar.addEventListener('touchend', function() { seekBar._dragging = false; });
+  seekBar.addEventListener('input', function() {
+    if (audio.duration && isFinite(audio.duration))
+      audio.currentTime = (seekBar.value / 1000) * audio.duration;
+  });
+  return player;
+}
+
 $('speak').addEventListener('click', async function() {
   var text = Array.prototype.slice.call(scriptEl.querySelectorAll('.en'))
     .map(function(e) { return e.textContent; }).join(' ');
   if (!text) return;
 
-  // Toggle if already playing
-  if (currentAudio && !currentAudio.paused) {
-    currentAudio.pause();
-    $('speak').textContent = '🔊 朗讀';
-    return;
-  }
-  if (currentAudio && currentAudio.paused && currentAudio.src) {
-    currentAudio.play();
-    $('speak').textContent = '⏸ 暫停';
+  // If player already exists, don't refetch — toggle play/pause
+  if (currentAudio) {
+    currentAudio.paused ? currentAudio.play() : currentAudio.pause();
     return;
   }
 
@@ -260,29 +315,31 @@ $('speak').addEventListener('click', async function() {
     var blob = await res.blob();
     var url = URL.createObjectURL(blob);
     currentAudio = new Audio(url);
-    currentAudio.addEventListener('ended', function() {
-      speakBtn.textContent = '🔊 朗讀';
-    });
-    currentAudio.addEventListener('pause', function() {
-      if (!currentAudio.ended) speakBtn.textContent = '▶ 繼續';
-    });
-    currentAudio.addEventListener('play', function() {
-      speakBtn.textContent = '⏸ 暫停';
-    });
+    currentAudio.preload = 'auto';
+
+    var player = buildPlayer(currentAudio);
+    var slot = $('player-slot');
+    slot.innerHTML = '';
+    slot.appendChild(player);
+
+    speakBtn.textContent = '🔊 朗讀';
     await currentAudio.play();
   } catch (err) {
     console.error('TTS error:', err);
     speakBtn.textContent = '❌ 朗讀失敗';
     setTimeout(function() { speakBtn.textContent = '🔊 朗讀'; }, 2000);
+    currentAudio = null;
   } finally {
     speakBtn.disabled = false;
   }
 });
 
-// Reset audio when a new script is generated
+// Reset audio + player when a new script is generated
 var origRender = renderScript;
 renderScript = function(data) {
   if (currentAudio) { currentAudio.pause(); currentAudio = null; }
+  var slot = $('player-slot');
+  if (slot) slot.innerHTML = '';
   $('speak').textContent = '🔊 朗讀';
   origRender(data);
 };
