@@ -1,0 +1,374 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'><rect width='64' height='64' rx='12' fill='%230ea5e9'/><text x='32' y='42' font-family='Arial,sans-serif' font-size='24' font-weight='bold' fill='white' text-anchor='middle'>ML</text></svg>" />
+  <title>Mark 陳炳陵 — 馬克路思科技</title>
+  <meta name="description" content="Mark 陳炳陵 · 馬克路思科技有限公司 · AI 協作開發、網頁設計、系統規劃" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Noto+Sans+TC:wght@400;500;700;900&display=swap" rel="stylesheet" />
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    html, body {
+      min-height: 100vh;
+      font-family: 'Noto Sans TC', 'Inter', system-ui, sans-serif;
+      background: radial-gradient(ellipse at top, #0f172a 0%, #020617 60%, #000 100%);
+      color: #e2e8f0;
+      overflow-x: hidden;
+    }
+    .page {
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 40px 20px;
+    }
+    .hint {
+      color: #64748b;
+      font-size: 0.75rem;
+      margin-bottom: 20px;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      user-select: none;
+    }
+    .hint::before { content: "✦ "; color: #0ea5e9; }
+    .hint::after  { content: " ✦"; color: #0ea5e9; }
+
+    /* ========== Card ========== */
+    .card-wrap {
+      perspective: 1600px;
+      width: min(92vw, 440px);
+      aspect-ratio: 1.75 / 1;  /* 88mm x 55mm business card ratio */
+    }
+    .card {
+      position: relative;
+      width: 100%;
+      height: 100%;
+      transform-style: preserve-3d;
+      transition: transform 0.85s cubic-bezier(0.25, 1, 0.35, 1);
+      cursor: pointer;
+    }
+    .card.flipped { transform: rotateY(180deg); }
+
+    .face {
+      position: absolute;
+      inset: 0;
+      border-radius: 18px;
+      -webkit-backface-visibility: hidden;
+      backface-visibility: hidden;
+      box-shadow:
+        0 30px 60px -12px rgba(14, 165, 233, 0.25),
+        0 18px 36px -18px rgba(0, 0, 0, 0.8),
+        inset 0 1px 0 rgba(255, 255, 255, 0.08);
+      overflow: hidden;
+    }
+
+    /* ----- Front ----- */
+    .front {
+      background:
+        radial-gradient(ellipse at top left, rgba(14,165,233,0.35), transparent 55%),
+        radial-gradient(ellipse at bottom right, rgba(139,92,246,0.25), transparent 50%),
+        linear-gradient(135deg, #0b1220 0%, #1e293b 60%, #0f172a 100%);
+      padding: 28px 32px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+    .front::before {
+      /* subtle grid */
+      content: "";
+      position: absolute; inset: 0;
+      background-image:
+        linear-gradient(rgba(148,163,184,0.05) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(148,163,184,0.05) 1px, transparent 1px);
+      background-size: 22px 22px;
+      mask-image: radial-gradient(ellipse at center, black 40%, transparent 85%);
+      pointer-events: none;
+    }
+    .front::after {
+      /* corner accent */
+      content: "";
+      position: absolute;
+      top: -40px; right: -40px;
+      width: 160px; height: 160px;
+      background: conic-gradient(from 120deg at 50% 50%, #0ea5e9, #06b6d4, #8b5cf6, #0ea5e9);
+      filter: blur(42px);
+      opacity: 0.45;
+      border-radius: 50%;
+      pointer-events: none;
+    }
+
+    .front-top, .front-bottom { position: relative; z-index: 1; }
+
+    .brand {
+      display: inline-flex;
+      align-items: baseline;
+      gap: 1px;
+      font-family: 'Inter', sans-serif;
+      font-size: 1.05rem;
+      font-weight: 900;
+      letter-spacing: -0.02em;
+    }
+    .brand .mark { color: #38bdf8; }
+    .brand .luce { color: #fff; }
+    .brand-sub {
+      color: #94a3b8;
+      font-size: 0.68rem;
+      margin-top: 2px;
+      font-weight: 500;
+      letter-spacing: 0.02em;
+    }
+
+    .name-block { margin-top: auto; }
+    .name-en {
+      font-family: 'Inter', sans-serif;
+      font-size: 1.55rem;
+      font-weight: 800;
+      color: #fff;
+      letter-spacing: -0.01em;
+      line-height: 1;
+    }
+    .name-zh {
+      font-size: 1rem;
+      font-weight: 700;
+      color: #cbd5e1;
+      margin-top: 4px;
+    }
+    .title-line {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-top: 10px;
+    }
+    .title-line::before {
+      content: "";
+      width: 28px; height: 2px;
+      background: linear-gradient(90deg, #0ea5e9, transparent);
+    }
+    .title {
+      color: #7dd3fc;
+      font-size: 0.78rem;
+      font-weight: 600;
+      letter-spacing: 0.04em;
+    }
+
+    /* ----- Back ----- */
+    .back {
+      background:
+        linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+      padding: 26px 30px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      gap: 10px;
+      transform: rotateY(180deg);
+    }
+    .back::before {
+      content: "";
+      position: absolute;
+      left: 0; top: 0; bottom: 0;
+      width: 4px;
+      background: linear-gradient(180deg, #0ea5e9, #8b5cf6);
+    }
+    .row {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      font-size: 0.8rem;
+      color: #cbd5e1;
+      min-width: 0;
+    }
+    .row .icon {
+      width: 26px; height: 26px;
+      flex-shrink: 0;
+      border-radius: 8px;
+      background: rgba(14, 165, 233, 0.12);
+      border: 1px solid rgba(14, 165, 233, 0.25);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.85rem;
+    }
+    .row a {
+      color: #7dd3fc;
+      text-decoration: none;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+    .row a:hover { color: #38bdf8; text-decoration: underline; }
+    .row .label {
+      color: #64748b;
+      font-size: 0.65rem;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      margin-right: 4px;
+    }
+    .company-line {
+      color: #94a3b8;
+      font-size: 0.7rem;
+      border-top: 1px solid rgba(148, 163, 184, 0.15);
+      padding-top: 8px;
+      margin-top: 4px;
+    }
+    .company-line strong { color: #cbd5e1; }
+
+    /* ----- Actions ----- */
+    .actions {
+      margin-top: 28px;
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+    .btn {
+      appearance: none;
+      border: 1px solid rgba(148, 163, 184, 0.25);
+      background: rgba(15, 23, 42, 0.6);
+      color: #cbd5e1;
+      padding: 9px 18px;
+      border-radius: 10px;
+      font-size: 0.78rem;
+      font-weight: 600;
+      font-family: inherit;
+      cursor: pointer;
+      backdrop-filter: blur(8px);
+      transition: all 0.2s ease;
+    }
+    .btn:hover {
+      border-color: #0ea5e9;
+      color: #fff;
+      background: rgba(14, 165, 233, 0.15);
+      transform: translateY(-1px);
+    }
+    .btn-primary {
+      background: linear-gradient(135deg, #0ea5e9, #0284c7);
+      border-color: #0ea5e9;
+      color: #fff;
+    }
+    .btn-primary:hover {
+      background: linear-gradient(135deg, #38bdf8, #0ea5e9);
+    }
+
+    footer {
+      margin-top: auto;
+      padding-top: 40px;
+      color: #475569;
+      font-size: 0.7rem;
+      text-align: center;
+    }
+    footer a { color: #64748b; text-decoration: none; }
+    footer a:hover { color: #94a3b8; }
+
+    @media (max-width: 380px) {
+      .front, .back { padding: 22px 22px; }
+      .name-en { font-size: 1.35rem; }
+    }
+  </style>
+</head>
+<body>
+  <div class="page">
+    <div class="hint">點擊名片翻面</div>
+
+    <div class="card-wrap">
+      <div class="card" id="card">
+        <!-- Front -->
+        <div class="face front">
+          <div class="front-top">
+            <div class="brand"><span class="mark">mark</span><span class="luce">luce</span></div>
+            <div class="brand-sub">馬克路思科技有限公司</div>
+          </div>
+          <div class="front-bottom name-block">
+            <div class="name-en">Mark Chen</div>
+            <div class="name-zh">陳炳陵</div>
+            <div class="title-line"><span class="title">FOUNDER · AI 協作開發</span></div>
+          </div>
+        </div>
+
+        <!-- Back -->
+        <div class="face back">
+          <div class="row">
+            <div class="icon">🌐</div>
+            <div><span class="label">Web</span><a href="https://markluce.ai" target="_blank">markluce.ai</a></div>
+          </div>
+          <div class="row">
+            <div class="icon">✉</div>
+            <div><span class="label">Email</span><a href="mailto:markluceai@gmail.com">markluceai@gmail.com</a></div>
+          </div>
+          <div class="row">
+            <div class="icon">💬</div>
+            <div><span class="label">LINE</span>@markluce</div>
+          </div>
+          <div class="row">
+            <div class="icon">🐙</div>
+            <div><span class="label">GitHub</span><a href="https://github.com/markluce" target="_blank">github.com/markluce</a></div>
+          </div>
+          <div class="company-line">
+            <strong>馬克路思科技有限公司</strong> · 統編 60670979<br>
+            台中市中區大誠里台灣大道一段501號10樓之1
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="actions">
+      <button class="btn btn-primary" id="flip-btn">翻面 / Flip</button>
+      <a class="btn" id="vcard-btn" download="mark-chen.vcf">下載 vCard</a>
+      <button class="btn" id="share-btn">分享</button>
+    </div>
+
+    <footer>
+      <a href="/">← markluce.ai</a>
+    </footer>
+  </div>
+
+<script>
+  var card = document.getElementById('card');
+  card.addEventListener('click', function() { card.classList.toggle('flipped'); });
+  document.getElementById('flip-btn').addEventListener('click', function(e) {
+    e.stopPropagation();
+    card.classList.toggle('flipped');
+  });
+
+  // vCard
+  var vcard = [
+    'BEGIN:VCARD',
+    'VERSION:3.0',
+    'FN:Mark Chen',
+    'N:Chen;Mark;;;',
+    'ORG:Markluce Tech Co., Ltd.;馬克路思科技有限公司',
+    'TITLE:Founder',
+    'EMAIL;TYPE=INTERNET:markluceai@gmail.com',
+    'URL:https://markluce.ai',
+    'ADR;TYPE=WORK:;;台灣大道一段501號10樓之1;台中市中區;;;台灣',
+    'NOTE:AI 協作開發 · 網頁設計 · 系統規劃分析 · 管理顧問',
+    'END:VCARD',
+  ].join('\r\n');
+  var blob = new Blob([vcard], { type: 'text/vcard' });
+  document.getElementById('vcard-btn').href = URL.createObjectURL(blob);
+
+  // Share
+  document.getElementById('share-btn').addEventListener('click', async function() {
+    var data = {
+      title: 'Mark 陳炳陵 — 馬克路思科技',
+      text: 'Mark Chen · 馬克路思科技有限公司',
+      url: 'https://markluce.ai/namecard/',
+    };
+    if (navigator.share) {
+      try { await navigator.share(data); } catch (e) {}
+    } else {
+      try {
+        await navigator.clipboard.writeText(data.url);
+        var btn = document.getElementById('share-btn');
+        var orig = btn.textContent;
+        btn.textContent = '✓ 已複製連結';
+        setTimeout(function() { btn.textContent = orig; }, 1500);
+      } catch (e) {}
+    }
+  });
+</script>
+</body>
+</html>
