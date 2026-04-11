@@ -107,6 +107,7 @@
 var SUPABASE_URL = 'https://dcjlekszmobaenhrdbfl.supabase.co';
 var SUPABASE_KEY = 'sb_publishable_LoGKEHFftjjIf0G1Xv3ozA_A5nZeudW';
 var FN_URL = SUPABASE_URL + '/functions/v1/audrey-chat';
+var TTS_URL = SUPABASE_URL + '/functions/v1/tts';
 // Reusing arita LIFF ID for prototype. Replace with dedicated Audrey LIFF ID for production.
 var LIFF_ID = '2009738746-2qigSpHh';
 
@@ -225,16 +226,66 @@ function escapeHtml(s) {
   });
 }
 
-$('speak').addEventListener('click', function() {
+var currentAudio = null;
+$('speak').addEventListener('click', async function() {
   var text = Array.prototype.slice.call(scriptEl.querySelectorAll('.en'))
     .map(function(e) { return e.textContent; }).join(' ');
   if (!text) return;
-  var u = new SpeechSynthesisUtterance(text);
-  u.lang = 'en-US';
-  u.rate = 0.85;
-  speechSynthesis.cancel();
-  speechSynthesis.speak(u);
+
+  // Toggle if already playing
+  if (currentAudio && !currentAudio.paused) {
+    currentAudio.pause();
+    $('speak').textContent = '🔊 朗讀';
+    return;
+  }
+  if (currentAudio && currentAudio.paused && currentAudio.src) {
+    currentAudio.play();
+    $('speak').textContent = '⏸ 暫停';
+    return;
+  }
+
+  var speakBtn = $('speak');
+  speakBtn.disabled = true;
+  speakBtn.textContent = '⏳ 載入中';
+  try {
+    var res = await fetch(TTS_URL, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer ' + SUPABASE_KEY,
+      },
+      body: JSON.stringify({ text: text, voice: 'female' }),
+    });
+    if (!res.ok) throw new Error('TTS HTTP ' + res.status);
+    var blob = await res.blob();
+    var url = URL.createObjectURL(blob);
+    currentAudio = new Audio(url);
+    currentAudio.addEventListener('ended', function() {
+      speakBtn.textContent = '🔊 朗讀';
+    });
+    currentAudio.addEventListener('pause', function() {
+      if (!currentAudio.ended) speakBtn.textContent = '▶ 繼續';
+    });
+    currentAudio.addEventListener('play', function() {
+      speakBtn.textContent = '⏸ 暫停';
+    });
+    await currentAudio.play();
+  } catch (err) {
+    console.error('TTS error:', err);
+    speakBtn.textContent = '❌ 朗讀失敗';
+    setTimeout(function() { speakBtn.textContent = '🔊 朗讀'; }, 2000);
+  } finally {
+    speakBtn.disabled = false;
+  }
 });
+
+// Reset audio when a new script is generated
+var origRender = renderScript;
+renderScript = function(data) {
+  if (currentAudio) { currentAudio.pause(); currentAudio = null; }
+  $('speak').textContent = '🔊 朗讀';
+  origRender(data);
+};
 
 $('copy').addEventListener('click', async function() {
   var text = Array.prototype.slice.call(scriptEl.querySelectorAll('.en'))
