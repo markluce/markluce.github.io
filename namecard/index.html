@@ -118,9 +118,10 @@
       margin-top: 2px;
     }
 
-    /* Name block */
+    /* Name block — pushed below vertical center */
     .name-block {
-      margin-top: 14px;
+      margin-top: auto;
+      padding-top: 14px;
     }
     .name-zh {
       font-family: 'Noto Serif TC', serif;
@@ -162,7 +163,7 @@
 
     /* Details block at bottom */
     .details {
-      margin-top: auto;
+      margin-top: 10px;
       padding-top: 10px;
     }
     .detail-row {
@@ -264,7 +265,9 @@
     <div class="card">
       <!-- LEFT: QR code -->
       <div class="qr-col">
-        <div class="qr-box"><canvas id="qr"></canvas></div>
+        <div class="qr-box">
+          <img src="https://api.qrserver.com/v1/create-qr-code/?size=256x256&margin=0&data=https%3A%2F%2Fmarkluce.ai" alt="markluce.ai QR" />
+        </div>
         <a class="qr-url" href="https://markluce.ai" target="_blank">markluce.ai</a>
       </div>
 
@@ -313,16 +316,7 @@
     </footer>
   </div>
 
-<script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.4/build/qrcode.min.js"></script>
 <script>
-  // Render QR to https://markluce.ai
-  QRCode.toCanvas(document.getElementById('qr'), 'https://markluce.ai', {
-    width: 256,
-    margin: 0,
-    color: { dark: '#000000', light: '#ffffff' },
-    errorCorrectionLevel: 'M',
-  }, function(err) { if (err) console.error(err); });
-
   // vCard
   var vcard = [
     'BEGIN:VCARD',
