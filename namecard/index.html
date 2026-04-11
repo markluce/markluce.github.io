@@ -3,20 +3,19 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'><rect width='64' height='64' rx='12' fill='%230ea5e9'/><text x='32' y='42' font-family='Arial,sans-serif' font-size='24' font-weight='bold' fill='white' text-anchor='middle'>ML</text></svg>" />
-  <title>Mark 陳炳陵 — 馬克路思科技</title>
-  <meta name="description" content="Mark 陳炳陵 · 馬克路思科技有限公司 · AI 協作開發、網頁設計、系統規劃" />
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'><rect width='64' height='64' rx='4' fill='white'/><text x='32' y='44' font-family='serif' font-size='32' font-weight='bold' fill='black' text-anchor='middle'>陳</text></svg>" />
+  <title>Mark 陳炳陵 — 馬克路思科技有限公司</title>
+  <meta name="description" content="Mark 陳炳陵 · 馬克路思科技有限公司 · 統編 60670979" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Noto+Sans+TC:wght@400;500;700;900&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@400;500;600;700;900&family=Noto+Sans+TC:wght@400;500;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
     html, body {
       min-height: 100vh;
       font-family: 'Noto Sans TC', 'Inter', system-ui, sans-serif;
-      background: radial-gradient(ellipse at top, #0f172a 0%, #020617 60%, #000 100%);
-      color: #e2e8f0;
-      overflow-x: hidden;
+      background: #e5e5e5;
+      color: #111;
     }
     .page {
       min-height: 100vh;
@@ -27,21 +26,18 @@
       padding: 40px 20px;
     }
     .hint {
-      color: #64748b;
-      font-size: 0.75rem;
+      color: #777;
+      font-size: 0.72rem;
       margin-bottom: 20px;
-      letter-spacing: 0.08em;
-      text-transform: uppercase;
+      letter-spacing: 0.12em;
       user-select: none;
     }
-    .hint::before { content: "✦ "; color: #0ea5e9; }
-    .hint::after  { content: " ✦"; color: #0ea5e9; }
 
     /* ========== Card ========== */
     .card-wrap {
       perspective: 1600px;
-      width: min(92vw, 440px);
-      aspect-ratio: 1.75 / 1;  /* 88mm x 55mm business card ratio */
+      width: min(92vw, 480px);
+      aspect-ratio: 1.636 / 1;  /* 90mm x 55mm — Taiwan standard */
     }
     .card {
       position: relative;
@@ -56,167 +52,189 @@
     .face {
       position: absolute;
       inset: 0;
-      border-radius: 18px;
+      background: #fff;
+      border: 1px solid #d4d4d4;
       -webkit-backface-visibility: hidden;
       backface-visibility: hidden;
       box-shadow:
-        0 30px 60px -12px rgba(14, 165, 233, 0.25),
-        0 18px 36px -18px rgba(0, 0, 0, 0.8),
-        inset 0 1px 0 rgba(255, 255, 255, 0.08);
+        0 1px 2px rgba(0,0,0,0.04),
+        0 8px 16px -6px rgba(0,0,0,0.12),
+        0 20px 40px -12px rgba(0,0,0,0.15);
       overflow: hidden;
     }
 
-    /* ----- Front ----- */
+    /* ======= FRONT ======= */
     .front {
-      background:
-        radial-gradient(ellipse at top left, rgba(14,165,233,0.35), transparent 55%),
-        radial-gradient(ellipse at bottom right, rgba(139,92,246,0.25), transparent 50%),
-        linear-gradient(135deg, #0b1220 0%, #1e293b 60%, #0f172a 100%);
       padding: 28px 32px;
+      display: grid;
+      grid-template-columns: auto 1px 1fr;
+      gap: 24px;
+      align-items: center;
+    }
+
+    /* Left: company mark (seal-style) */
+    .seal {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-width: 72px;
+    }
+    .seal-box {
+      width: 64px;
+      height: 64px;
+      border: 2px solid #000;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: 'Noto Serif TC', serif;
+      font-size: 2rem;
+      font-weight: 900;
+      color: #000;
+      letter-spacing: -0.05em;
+      line-height: 1;
+    }
+    .seal-en {
+      margin-top: 6px;
+      font-family: 'Inter', sans-serif;
+      font-size: 0.56rem;
+      font-weight: 700;
+      letter-spacing: 0.15em;
+      color: #000;
+      text-transform: uppercase;
+    }
+
+    /* Divider line */
+    .divider {
+      width: 1px;
+      height: 80%;
+      background: #000;
+      align-self: center;
+    }
+
+    /* Right: identity */
+    .identity {
       display: flex;
       flex-direction: column;
       justify-content: space-between;
+      height: 100%;
+      padding: 6px 0;
     }
-    .front::before {
-      /* subtle grid */
-      content: "";
-      position: absolute; inset: 0;
-      background-image:
-        linear-gradient(rgba(148,163,184,0.05) 1px, transparent 1px),
-        linear-gradient(90deg, rgba(148,163,184,0.05) 1px, transparent 1px);
-      background-size: 22px 22px;
-      mask-image: radial-gradient(ellipse at center, black 40%, transparent 85%);
-      pointer-events: none;
+    .company-zh {
+      font-family: 'Noto Serif TC', serif;
+      font-size: 0.88rem;
+      font-weight: 600;
+      color: #000;
+      letter-spacing: 0.05em;
     }
-    .front::after {
-      /* corner accent */
-      content: "";
-      position: absolute;
-      top: -40px; right: -40px;
-      width: 160px; height: 160px;
-      background: conic-gradient(from 120deg at 50% 50%, #0ea5e9, #06b6d4, #8b5cf6, #0ea5e9);
-      filter: blur(42px);
-      opacity: 0.45;
-      border-radius: 50%;
-      pointer-events: none;
-    }
-
-    .front-top, .front-bottom { position: relative; z-index: 1; }
-
-    .brand {
-      display: inline-flex;
-      align-items: baseline;
-      gap: 1px;
+    .company-en {
       font-family: 'Inter', sans-serif;
-      font-size: 1.05rem;
-      font-weight: 900;
-      letter-spacing: -0.02em;
+      font-size: 0.6rem;
+      color: #444;
+      letter-spacing: 0.08em;
+      margin-top: 1px;
     }
-    .brand .mark { color: #38bdf8; }
-    .brand .luce { color: #fff; }
-    .brand-sub {
-      color: #94a3b8;
-      font-size: 0.68rem;
-      margin-top: 2px;
-      font-weight: 500;
-      letter-spacing: 0.02em;
-    }
-
-    .name-block { margin-top: auto; }
-    .name-en {
-      font-family: 'Inter', sans-serif;
-      font-size: 1.55rem;
-      font-weight: 800;
-      color: #fff;
-      letter-spacing: -0.01em;
-      line-height: 1;
+    .name-block {
+      margin: auto 0;
     }
     .name-zh {
-      font-size: 1rem;
+      font-family: 'Noto Serif TC', serif;
+      font-size: 1.85rem;
       font-weight: 700;
-      color: #cbd5e1;
-      margin-top: 4px;
+      color: #000;
+      letter-spacing: 0.15em;
+      line-height: 1;
     }
-    .title-line {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      margin-top: 10px;
-    }
-    .title-line::before {
-      content: "";
-      width: 28px; height: 2px;
-      background: linear-gradient(90deg, #0ea5e9, transparent);
-    }
-    .title {
-      color: #7dd3fc;
+    .name-en {
+      font-family: 'Inter', sans-serif;
       font-size: 0.78rem;
-      font-weight: 600;
+      font-weight: 500;
+      color: #333;
+      margin-top: 6px;
       letter-spacing: 0.04em;
     }
+    .title-zh {
+      font-family: 'Noto Serif TC', serif;
+      font-size: 0.78rem;
+      color: #000;
+      letter-spacing: 0.08em;
+      border-top: 1px solid #000;
+      padding-top: 6px;
+      display: inline-block;
+      min-width: 60%;
+    }
 
-    /* ----- Back ----- */
+    /* ======= BACK ======= */
     .back {
-      background:
-        linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
-      padding: 26px 30px;
+      transform: rotateY(180deg);
+      padding: 26px 32px;
       display: flex;
       flex-direction: column;
       justify-content: center;
-      gap: 10px;
-      transform: rotateY(180deg);
+      gap: 9px;
     }
-    .back::before {
-      content: "";
-      position: absolute;
-      left: 0; top: 0; bottom: 0;
-      width: 4px;
-      background: linear-gradient(180deg, #0ea5e9, #8b5cf6);
+    .back-header {
+      font-family: 'Noto Serif TC', serif;
+      font-size: 0.78rem;
+      font-weight: 600;
+      color: #000;
+      padding-bottom: 6px;
+      margin-bottom: 4px;
+      border-bottom: 1px solid #000;
+      letter-spacing: 0.08em;
     }
     .row {
       display: flex;
-      align-items: center;
-      gap: 12px;
-      font-size: 0.8rem;
-      color: #cbd5e1;
-      min-width: 0;
+      gap: 10px;
+      font-size: 0.74rem;
+      color: #111;
+      line-height: 1.4;
+      align-items: flex-start;
     }
-    .row .icon {
-      width: 26px; height: 26px;
+    .row .k {
       flex-shrink: 0;
-      border-radius: 8px;
-      background: rgba(14, 165, 233, 0.12);
-      border: 1px solid rgba(14, 165, 233, 0.25);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 0.85rem;
+      width: 42px;
+      color: #000;
+      font-weight: 600;
+      font-family: 'Noto Serif TC', serif;
+      letter-spacing: 0.05em;
     }
-    .row a {
-      color: #7dd3fc;
-      text-decoration: none;
-      overflow: hidden;
-      text-overflow: ellipsis;
-      white-space: nowrap;
-    }
-    .row a:hover { color: #38bdf8; text-decoration: underline; }
-    .row .label {
-      color: #64748b;
-      font-size: 0.65rem;
-      text-transform: uppercase;
-      letter-spacing: 0.06em;
-      margin-right: 4px;
-    }
-    .company-line {
-      color: #94a3b8;
-      font-size: 0.7rem;
-      border-top: 1px solid rgba(148, 163, 184, 0.15);
-      padding-top: 8px;
-      margin-top: 4px;
-    }
-    .company-line strong { color: #cbd5e1; }
+    .row .v { min-width: 0; word-break: break-word; }
+    .row a { color: #000; text-decoration: none; }
+    .row a:hover { text-decoration: underline; }
 
-    /* ----- Actions ----- */
+    .tax {
+      margin-top: 6px;
+      padding-top: 8px;
+      border-top: 1px solid #000;
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      font-size: 0.7rem;
+      font-family: 'Inter', sans-serif;
+      color: #000;
+      letter-spacing: 0.06em;
+    }
+    .tax .tax-label {
+      font-family: 'Noto Serif TC', serif;
+      font-weight: 600;
+    }
+    .tax .tax-no {
+      font-weight: 700;
+      font-variant-numeric: tabular-nums;
+    }
+
+    /* Responsive */
+    @media (max-width: 420px) {
+      .front { padding: 22px 22px; gap: 16px; }
+      .back { padding: 22px 22px; }
+      .seal-box { width: 56px; height: 56px; font-size: 1.7rem; }
+      .name-zh { font-size: 1.55rem; letter-spacing: 0.1em; }
+      .row { font-size: 0.68rem; }
+      .row .k { width: 38px; }
+    }
+
+    /* ======= Actions ======= */
     .actions {
       margin-top: 28px;
       display: flex;
@@ -226,89 +244,90 @@
     }
     .btn {
       appearance: none;
-      border: 1px solid rgba(148, 163, 184, 0.25);
-      background: rgba(15, 23, 42, 0.6);
-      color: #cbd5e1;
+      border: 1px solid #000;
+      background: #fff;
+      color: #000;
       padding: 9px 18px;
-      border-radius: 10px;
-      font-size: 0.78rem;
-      font-weight: 600;
+      font-size: 0.76rem;
+      font-weight: 500;
       font-family: inherit;
       cursor: pointer;
-      backdrop-filter: blur(8px);
-      transition: all 0.2s ease;
+      letter-spacing: 0.05em;
+      text-decoration: none;
+      display: inline-block;
+      transition: all 0.15s ease;
     }
     .btn:hover {
-      border-color: #0ea5e9;
+      background: #000;
       color: #fff;
-      background: rgba(14, 165, 233, 0.15);
-      transform: translateY(-1px);
     }
     .btn-primary {
-      background: linear-gradient(135deg, #0ea5e9, #0284c7);
-      border-color: #0ea5e9;
+      background: #000;
       color: #fff;
     }
     .btn-primary:hover {
-      background: linear-gradient(135deg, #38bdf8, #0ea5e9);
+      background: #fff;
+      color: #000;
     }
 
     footer {
-      margin-top: auto;
       padding-top: 40px;
-      color: #475569;
-      font-size: 0.7rem;
+      color: #888;
+      font-size: 0.68rem;
       text-align: center;
     }
-    footer a { color: #64748b; text-decoration: none; }
-    footer a:hover { color: #94a3b8; }
-
-    @media (max-width: 380px) {
-      .front, .back { padding: 22px 22px; }
-      .name-en { font-size: 1.35rem; }
-    }
+    footer a { color: #555; text-decoration: none; }
+    footer a:hover { color: #000; }
   </style>
 </head>
 <body>
   <div class="page">
-    <div class="hint">點擊名片翻面</div>
+    <div class="hint">點擊名片翻面 · TAP TO FLIP</div>
 
     <div class="card-wrap">
       <div class="card" id="card">
         <!-- Front -->
         <div class="face front">
-          <div class="front-top">
-            <div class="brand"><span class="mark">mark</span><span class="luce">luce</span></div>
-            <div class="brand-sub">馬克路思科技有限公司</div>
+          <div class="seal">
+            <div class="seal-box">陳</div>
+            <div class="seal-en">MARKLUCE</div>
           </div>
-          <div class="front-bottom name-block">
-            <div class="name-en">Mark Chen</div>
-            <div class="name-zh">陳炳陵</div>
-            <div class="title-line"><span class="title">FOUNDER · AI 協作開發</span></div>
+          <div class="divider"></div>
+          <div class="identity">
+            <div>
+              <div class="company-zh">馬克路思科技有限公司</div>
+              <div class="company-en">MARKLUCE TECH CO., LTD.</div>
+            </div>
+            <div class="name-block">
+              <div class="name-zh">陳炳陵</div>
+              <div class="name-en">Mark Chen</div>
+            </div>
+            <div class="title-zh">創辦人 · Founder</div>
           </div>
         </div>
 
         <!-- Back -->
         <div class="face back">
+          <div class="back-header">聯絡資訊 · CONTACT</div>
           <div class="row">
-            <div class="icon">🌐</div>
-            <div><span class="label">Web</span><a href="https://markluce.ai" target="_blank">markluce.ai</a></div>
+            <div class="k">地　址</div>
+            <div class="v">台中市中區大誠里台灣大道一段501號10樓之1</div>
           </div>
           <div class="row">
-            <div class="icon">✉</div>
-            <div><span class="label">Email</span><a href="mailto:markluceai@gmail.com">markluceai@gmail.com</a></div>
+            <div class="k">電　郵</div>
+            <div class="v"><a href="mailto:markluceai@gmail.com">markluceai@gmail.com</a></div>
           </div>
           <div class="row">
-            <div class="icon">💬</div>
-            <div><span class="label">LINE</span>@markluce</div>
+            <div class="k">網　站</div>
+            <div class="v"><a href="https://markluce.ai" target="_blank">markluce.ai</a></div>
           </div>
           <div class="row">
-            <div class="icon">🐙</div>
-            <div><span class="label">GitHub</span><a href="https://github.com/markluce" target="_blank">github.com/markluce</a></div>
+            <div class="k">LINE</div>
+            <div class="v">@markluce</div>
           </div>
-          <div class="company-line">
-            <strong>馬克路思科技有限公司</strong> · 統編 60670979<br>
-            台中市中區大誠里台灣大道一段501號10樓之1
+          <div class="tax">
+            <span class="tax-label">統一編號</span>
+            <span class="tax-no">60670979</span>
           </div>
         </div>
       </div>
@@ -337,14 +356,14 @@
   var vcard = [
     'BEGIN:VCARD',
     'VERSION:3.0',
-    'FN:Mark Chen',
+    'FN:Mark Chen 陳炳陵',
     'N:Chen;Mark;;;',
     'ORG:Markluce Tech Co., Ltd.;馬克路思科技有限公司',
-    'TITLE:Founder',
+    'TITLE:Founder 創辦人',
     'EMAIL;TYPE=INTERNET:markluceai@gmail.com',
     'URL:https://markluce.ai',
     'ADR;TYPE=WORK:;;台灣大道一段501號10樓之1;台中市中區;;;台灣',
-    'NOTE:AI 協作開發 · 網頁設計 · 系統規劃分析 · 管理顧問',
+    'NOTE:統一編號 60670979',
     'END:VCARD',
   ].join('\r\n');
   var blob = new Blob([vcard], { type: 'text/vcard' });
@@ -353,8 +372,8 @@
   // Share
   document.getElementById('share-btn').addEventListener('click', async function() {
     var data = {
-      title: 'Mark 陳炳陵 — 馬克路思科技',
-      text: 'Mark Chen · 馬克路思科技有限公司',
+      title: '陳炳陵 Mark Chen — 馬克路思科技有限公司',
+      text: '馬克路思科技有限公司 · 統編 60670979',
       url: 'https://markluce.ai/namecard/',
     };
     if (navigator.share) {
