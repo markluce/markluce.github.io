@@ -317,6 +317,18 @@ $('speak').addEventListener('click', async function() {
     currentAudio = new Audio(url);
     currentAudio.preload = 'auto';
 
+    // Workaround: Azure TTS MP3 blobs lack duration metadata → audio.duration = Infinity.
+    // Seeking to max then back to 0 forces Chrome to compute real duration.
+    currentAudio.addEventListener('loadedmetadata', function onMeta() {
+      if (currentAudio.duration === Infinity || isNaN(currentAudio.duration)) {
+        currentAudio.currentTime = Number.MAX_SAFE_INTEGER;
+        currentAudio.addEventListener('timeupdate', function onSeeked() {
+          currentAudio.removeEventListener('timeupdate', onSeeked);
+          currentAudio.currentTime = 0;
+        });
+      }
+    }, { once: true });
+
     var player = buildPlayer(currentAudio);
     var slot = $('player-slot');
     slot.innerHTML = '';
