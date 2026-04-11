@@ -29,7 +29,7 @@
     /* ========== Card ========== */
     .card {
       position: relative;
-      width: min(92vw, 520px);
+      width: min(92vw, 540px);
       aspect-ratio: 1.636 / 1;  /* 90mm x 55mm — Taiwan standard */
       background: #fff;
       border: 1px solid #d4d4d4;
@@ -37,132 +37,158 @@
         0 1px 2px rgba(0,0,0,0.04),
         0 8px 16px -6px rgba(0,0,0,0.12),
         0 20px 40px -12px rgba(0,0,0,0.15);
-      padding: 22px 26px;
+      padding: 22px 28px;
       display: grid;
-      grid-template-columns: auto 1px 1fr;
-      gap: 20px;
+      grid-template-columns: auto 1fr;
+      gap: 26px;
       align-items: stretch;
       overflow: hidden;
     }
 
-    /* Left: seal */
-    .seal {
+    /* Left: QR + url */
+    .qr-col {
       display: flex;
       flex-direction: column;
       align-items: center;
       justify-content: center;
-      min-width: 68px;
+      gap: 8px;
+      padding-right: 6px;
+      border-right: 1px solid #000;
     }
-    .seal-box {
-      width: 60px;
-      height: 60px;
-      border: 2px solid #000;
+    .qr-box {
+      width: 96px;
+      height: 96px;
+      padding: 5px;
+      border: 1px solid #000;
+      background: #fff;
       display: flex;
       align-items: center;
       justify-content: center;
-      font-family: 'Noto Serif TC', serif;
-      font-size: 1.9rem;
-      font-weight: 900;
-      color: #000;
-      line-height: 1;
     }
-    .seal-en {
-      margin-top: 6px;
+    .qr-box img, .qr-box canvas {
+      width: 100%;
+      height: 100%;
+      display: block;
+    }
+    .qr-url {
       font-family: 'Inter', sans-serif;
-      font-size: 0.54rem;
-      font-weight: 700;
-      letter-spacing: 0.15em;
+      font-size: 0.62rem;
+      font-weight: 600;
+      letter-spacing: 0.1em;
       color: #000;
-      text-transform: uppercase;
+      text-decoration: none;
     }
-
-    /* Divider */
-    .divider {
-      width: 1px;
-      background: #000;
-    }
+    .qr-url:hover { text-decoration: underline; }
 
     /* Right: content */
     .content {
       display: flex;
       flex-direction: column;
       min-width: 0;
+      padding-right: 4px;
+    }
+
+    /* Company header */
+    .company {
+      display: flex;
+      align-items: baseline;
+      justify-content: space-between;
+      gap: 12px;
     }
     .company-zh {
       font-family: 'Noto Serif TC', serif;
-      font-size: 0.82rem;
+      font-size: 0.9rem;
       font-weight: 600;
       color: #000;
-      letter-spacing: 0.05em;
+      letter-spacing: 0.08em;
+    }
+    .monogram {
+      font-family: 'Inter', serif;
+      font-size: 0.82rem;
+      font-weight: 900;
+      letter-spacing: 0.2em;
+      color: #000;
     }
     .company-en {
       font-family: 'Inter', sans-serif;
       font-size: 0.56rem;
-      color: #444;
-      letter-spacing: 0.08em;
-      margin-top: 1px;
-    }
-
-    .name-row {
-      display: flex;
-      align-items: baseline;
-      gap: 12px;
-      margin-top: 8px;
-      padding-top: 8px;
-      border-top: 1px solid #000;
-    }
-    .name-zh {
-      font-family: 'Noto Serif TC', serif;
-      font-size: 1.5rem;
-      font-weight: 700;
-      color: #000;
+      color: #555;
       letter-spacing: 0.12em;
-      line-height: 1;
-    }
-    .name-en {
-      font-family: 'Inter', sans-serif;
-      font-size: 0.72rem;
-      font-weight: 500;
-      color: #333;
-      letter-spacing: 0.04em;
-    }
-    .title-zh {
-      font-family: 'Noto Serif TC', serif;
-      font-size: 0.68rem;
-      color: #333;
-      letter-spacing: 0.08em;
+      text-transform: uppercase;
       margin-top: 2px;
     }
 
-    .contacts {
-      margin-top: 8px;
-      display: flex;
-      flex-direction: column;
-      gap: 2px;
+    /* Name block */
+    .name-block {
+      margin-top: 14px;
     }
-    .row {
+    .name-zh {
+      font-family: 'Noto Serif TC', serif;
+      font-size: 1.9rem;
+      font-weight: 700;
+      color: #000;
+      letter-spacing: 0.22em;
+      line-height: 1;
+      text-indent: 0.22em;  /* visually center with the trailing tracking */
+    }
+    .name-en-line {
       display: flex;
-      gap: 8px;
+      align-items: center;
+      gap: 10px;
+      margin-top: 8px;
+    }
+    .name-en-line::before {
+      content: "";
+      flex: 0 0 22px;
+      height: 1px;
+      background: #000;
+    }
+    .name-en {
+      font-family: 'Inter', sans-serif;
+      font-size: 0.74rem;
+      font-weight: 500;
+      color: #000;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+    }
+    .title-line {
+      font-family: 'Noto Serif TC', serif;
+      font-size: 0.7rem;
+      color: #333;
+      letter-spacing: 0.12em;
+      margin-top: 4px;
+      margin-left: 32px;
+    }
+
+    /* Details block at bottom */
+    .details {
+      margin-top: auto;
+      padding-top: 10px;
+    }
+    .detail-row {
+      display: flex;
+      gap: 10px;
       font-size: 0.66rem;
       color: #111;
-      line-height: 1.45;
+      line-height: 1.5;
       align-items: flex-start;
       font-family: 'Noto Sans TC', sans-serif;
     }
-    .row .k {
+    .detail-row + .detail-row { margin-top: 2px; }
+    .detail-row .k {
       flex-shrink: 0;
-      width: 36px;
+      width: 42px;
       color: #000;
       font-weight: 600;
       font-family: 'Noto Serif TC', serif;
-      letter-spacing: 0.04em;
+      letter-spacing: 0.25em;
     }
-    .row .v { min-width: 0; word-break: break-word; }
-    .row a { color: #000; text-decoration: none; }
-    .row a:hover { text-decoration: underline; }
+    .detail-row .v { min-width: 0; word-break: break-word; }
+    .detail-row a { color: #000; text-decoration: none; }
+    .detail-row a:hover { text-decoration: underline; }
 
     .tax {
-      margin-top: auto;
+      margin-top: 8px;
       padding-top: 6px;
       border-top: 1px solid #000;
       display: flex;
@@ -170,24 +196,29 @@
       align-items: baseline;
       font-size: 0.62rem;
       color: #000;
-      letter-spacing: 0.06em;
     }
     .tax .tax-label {
       font-family: 'Noto Serif TC', serif;
       font-weight: 600;
+      letter-spacing: 0.25em;
     }
     .tax .tax-no {
       font-family: 'Inter', sans-serif;
       font-weight: 700;
       font-variant-numeric: tabular-nums;
+      letter-spacing: 0.15em;
     }
 
-    @media (max-width: 460px) {
-      .card { padding: 18px 18px; gap: 14px; }
-      .seal-box { width: 52px; height: 52px; font-size: 1.55rem; }
-      .name-zh { font-size: 1.25rem; letter-spacing: 0.08em; }
-      .row { font-size: 0.62rem; }
-      .row .k { width: 32px; }
+    @media (max-width: 500px) {
+      .card { padding: 18px 20px; gap: 18px; }
+      .qr-box { width: 80px; height: 80px; padding: 4px; }
+      .qr-url { font-size: 0.55rem; }
+      .company-zh { font-size: 0.78rem; }
+      .name-zh { font-size: 1.5rem; letter-spacing: 0.15em; }
+      .name-en { font-size: 0.65rem; }
+      .title-line { font-size: 0.62rem; margin-left: 28px; }
+      .detail-row { font-size: 0.6rem; }
+      .detail-row .k { width: 38px; }
     }
 
     /* ======= Actions ======= */
@@ -231,47 +262,43 @@
   <div class="page">
 
     <div class="card">
-      <div class="seal">
-        <div class="seal-box">陳</div>
-        <div class="seal-en">MARKLUCE</div>
+      <!-- LEFT: QR code -->
+      <div class="qr-col">
+        <div class="qr-box"><canvas id="qr"></canvas></div>
+        <a class="qr-url" href="https://markluce.ai" target="_blank">markluce.ai</a>
       </div>
-      <div class="divider"></div>
+
+      <!-- RIGHT: content -->
       <div class="content">
-        <div>
-          <div class="company-zh">馬克路思科技有限公司</div>
-          <div class="company-en">MARKLUCE TECH CO., LTD.</div>
-        </div>
-
-        <div class="name-row">
-          <div class="name-zh">陳炳陵</div>
+        <div class="company">
           <div>
-            <div class="name-en">Mark Chen</div>
-            <div class="title-zh">創辦人 · Founder</div>
+            <div class="company-zh">馬克路思科技有限公司</div>
+            <div class="company-en">Markluce Tech Co., Ltd.</div>
           </div>
+          <div class="monogram">ML</div>
         </div>
 
-        <div class="contacts">
-          <div class="row">
-            <div class="k">地　址</div>
+        <div class="name-block">
+          <div class="name-zh">陳炳陵</div>
+          <div class="name-en-line">
+            <span class="name-en">Mark Chen</span>
+          </div>
+          <div class="title-line">創辦人 · Founder</div>
+        </div>
+
+        <div class="details">
+          <div class="detail-row">
+            <div class="k">地址</div>
             <div class="v">台中市中區大誠里台灣大道一段501號10樓之1</div>
           </div>
-          <div class="row">
-            <div class="k">電　郵</div>
+          <div class="detail-row">
+            <div class="k">電郵</div>
             <div class="v"><a href="mailto:mark@aipm.com.tw">mark@aipm.com.tw</a></div>
           </div>
-          <div class="row">
-            <div class="k">網　站</div>
-            <div class="v"><a href="https://markluce.ai" target="_blank">markluce.ai</a></div>
+          <div class="tax">
+            <span class="tax-label">統一編號</span>
+            <span class="tax-no">60670979</span>
           </div>
-          <div class="row">
-            <div class="k">LINE</div>
-            <div class="v">@markluce</div>
-          </div>
-        </div>
-
-        <div class="tax">
-          <span class="tax-label">統一編號</span>
-          <span class="tax-no">60670979</span>
         </div>
       </div>
     </div>
@@ -286,7 +313,17 @@
     </footer>
   </div>
 
+<script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.4/build/qrcode.min.js"></script>
 <script>
+  // Render QR to https://markluce.ai
+  QRCode.toCanvas(document.getElementById('qr'), 'https://markluce.ai', {
+    width: 256,
+    margin: 0,
+    color: { dark: '#000000', light: '#ffffff' },
+    errorCorrectionLevel: 'M',
+  }, function(err) { if (err) console.error(err); });
+
+  // vCard
   var vcard = [
     'BEGIN:VCARD',
     'VERSION:3.0',
