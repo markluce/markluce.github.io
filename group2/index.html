@@ -1,0 +1,821 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'><rect width='64' height='64' rx='12' fill='%230EA5E9'/><text x='32' y='28' font-family='Arial,sans-serif' font-size='16' font-weight='bold' fill='white' text-anchor='middle'>MARK</text><text x='32' y='48' font-family='Arial,sans-serif' font-size='14' font-weight='bold' fill='%2322D3EE' text-anchor='middle'>LUCE</text></svg>" />
+  <title>Group 2 期末專題 — 報告架構 (Deliverables)</title>
+  <meta name="description" content="AIA 經理人 AIPM 班第一期 Group 2 期末專題交付項目：0–12 歲個人化語言繪本" />
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['"Noto Sans TC"', 'Inter', 'system-ui', 'sans-serif'],
+          },
+        },
+      },
+    }
+  </script>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Noto+Sans+TC:wght@400;500;600;700;900&display=swap" rel="stylesheet" />
+  <script type="module">
+    import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.esm.min.mjs';
+    mermaid.initialize({
+      startOnLoad: true,
+      theme: 'dark',
+      themeVariables: {
+        primaryColor: '#0ea5e9',
+        primaryTextColor: '#f8fafc',
+        primaryBorderColor: '#38bdf8',
+        lineColor: '#64748b',
+        secondaryColor: '#1e293b',
+        tertiaryColor: '#0f172a',
+        background: '#0f172a',
+        mainBkg: '#1e293b',
+        nodeBorder: '#38bdf8',
+        clusterBkg: 'rgba(14,165,233,0.08)',
+        clusterBorder: 'rgba(56,189,248,0.3)',
+        titleColor: '#e2e8f0',
+        edgeLabelBackground: '#1e293b',
+      },
+      flowchart: { curve: 'basis', padding: 16 },
+      fontSize: 13,
+    });
+  </script>
+  <style>
+    .gradient-text { background: linear-gradient(135deg, #38bdf8, #06b6d4); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+    .fade-in { animation: fadeIn 0.6s ease-out; }
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(16px); } to { opacity: 1; transform: translateY(0); } }
+    .section-card { background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.08); border-radius: 16px; }
+    .section-card:hover { border-color: rgba(14,165,233,0.3); }
+    .nav-pill { transition: all 0.2s; }
+    .nav-pill:hover, .nav-pill.active { background: rgba(14,165,233,0.2); color: #38bdf8; }
+    .badge-ai { background: rgba(249,115,22,0.15); color: #fb923c; border: 1px solid rgba(249,115,22,0.3); }
+    .badge-human { background: rgba(34,197,94,0.15); color: #4ade80; border: 1px solid rgba(34,197,94,0.3); }
+    .status-done { color: #4ade80; }
+    .status-wip { color: #fbbf24; }
+    .status-plan { color: #94a3b8; }
+    pre.mermaid { background: transparent !important; text-align: center; }
+    .mermaid svg { max-width: 100%; height: auto; }
+    table { border-collapse: collapse; width: 100%; font-size: 0.85rem; }
+    th, td { border: 1px solid rgba(255,255,255,0.1); padding: 8px 12px; text-align: left; }
+    th { background: rgba(14,165,233,0.12); font-weight: 600; color: #bae6fd; }
+    tr:nth-child(even) { background: rgba(255,255,255,0.02); }
+    .toc-link { display: block; padding: 6px 12px; border-radius: 8px; color: #94a3b8; text-decoration: none; font-size: 0.85rem; transition: all 0.15s; }
+    .toc-link:hover { background: rgba(14,165,233,0.1); color: #38bdf8; }
+    .workflow-box { font-family: 'Noto Sans TC', monospace; font-size: 0.82rem; line-height: 1.6; white-space: pre; overflow-x: auto; }
+    @media (max-width: 768px) {
+      .desktop-nav { display: none; }
+    }
+  </style>
+</head>
+<body class="bg-slate-950 text-slate-200 min-h-screen">
+
+  <!-- Header -->
+  <header class="border-b border-white/5 bg-slate-950/80 backdrop-blur-md sticky top-0 z-30">
+    <div class="max-w-6xl mx-auto px-4 py-3 flex items-center justify-between">
+      <a href="/" class="flex items-center gap-2 text-white font-bold text-lg hover:opacity-80 transition">
+        <span class="gradient-text">MARKLUCE</span>
+        <span class="text-slate-500 text-sm font-normal">/ group2</span>
+      </a>
+      <nav class="desktop-nav flex gap-1 text-sm">
+        <a href="#prd" class="nav-pill px-3 py-1.5 rounded-lg text-slate-400">PRD</a>
+        <a href="#arch" class="nav-pill px-3 py-1.5 rounded-lg text-slate-400">架構圖</a>
+        <a href="#mvp" class="nav-pill px-3 py-1.5 rounded-lg text-slate-400">MVP Demo</a>
+        <a href="#results" class="nav-pill px-3 py-1.5 rounded-lg text-slate-400">成果展示</a>
+      </nav>
+    </div>
+  </header>
+
+  <!-- Hero -->
+  <section class="max-w-6xl mx-auto px-4 pt-12 pb-8 fade-in">
+    <div class="text-center">
+      <p class="text-sm text-cyan-400 font-medium tracking-wide mb-2">AIA 經理人 AIPM 班 第一期 · Group 2</p>
+      <h1 class="text-3xl md:text-4xl font-extrabold text-white mb-3">五、報告架構 <span class="gradient-text">(Deliverables)</span></h1>
+      <p class="text-lg text-slate-400 max-w-2xl mx-auto mb-4">0–12 歲個人化語言繪本，由家長（或老師）親自審閱</p>
+      <div class="flex items-center justify-center gap-4 text-sm text-slate-500">
+        <span>原始發想：<strong class="text-slate-300">Audrey</strong></span>
+        <span class="text-slate-700">|</span>
+        <span>提案整理：<strong class="text-slate-300">Mark</strong></span>
+      </div>
+    </div>
+
+    <!-- Deliverable overview cards -->
+    <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mt-10">
+      <a href="#prd" class="section-card p-5 hover:bg-white/5 transition group">
+        <div class="text-2xl mb-2">&#128203;</div>
+        <h3 class="font-bold text-white group-hover:text-cyan-400 transition">一、PRD</h3>
+        <p class="text-sm text-slate-400 mt-1">產品需求文件</p>
+        <p class="text-xs text-slate-500 mt-2">市場分析 · 用戶畫像 · 功能規格</p>
+      </a>
+      <a href="#arch" class="section-card p-5 hover:bg-white/5 transition group">
+        <div class="text-2xl mb-2">&#128736;</div>
+        <h3 class="font-bold text-white group-hover:text-cyan-400 transition">二、技術架構</h3>
+        <p class="text-sm text-slate-400 mt-1">Mermaid 流程圖</p>
+        <p class="text-xs text-slate-500 mt-2">系統架構 · AI Pipeline · RAG</p>
+      </a>
+      <a href="#mvp" class="section-card p-5 hover:bg-white/5 transition group">
+        <div class="text-2xl mb-2">&#128187;</div>
+        <h3 class="font-bold text-white group-hover:text-cyan-400 transition">三、MVP Demo</h3>
+        <p class="text-sm text-slate-400 mt-1">互動式產品原型</p>
+        <p class="text-xs text-slate-500 mt-2">Vibe Coding · 可操作 Demo</p>
+      </a>
+      <a href="#results" class="section-card p-5 hover:bg-white/5 transition group">
+        <div class="text-2xl mb-2">&#127942;</div>
+        <h3 class="font-bold text-white group-hover:text-cyan-400 transition">四、成果展示</h3>
+        <p class="text-sm text-slate-400 mt-1">痛點解決 · 商業價值</p>
+        <p class="text-xs text-slate-500 mt-2">Live Demo · 量化效益</p>
+      </a>
+    </div>
+  </section>
+
+  <hr class="border-white/5 max-w-6xl mx-auto" />
+
+  <!-- ==================== 一、PRD ==================== -->
+  <section id="prd" class="max-w-6xl mx-auto px-4 py-12 fade-in">
+    <h2 class="text-2xl font-bold text-white mb-1 flex items-center gap-2">
+      <span class="text-cyan-400">&#128203;</span> 一、產品需求文件 (PRD)
+    </h2>
+    <p class="text-sm text-slate-500 mb-8">包含市場分析、用戶畫像、功能規格。標註 AI 協助生成之部分。</p>
+
+    <!-- 1.1 Product positioning -->
+    <div class="section-card p-6 mb-6">
+      <div class="flex items-center gap-2 mb-3">
+        <h3 class="text-lg font-bold text-white">1.1 產品定位</h3>
+        <span class="badge-human text-xs px-2 py-0.5 rounded-full font-medium">人工撰寫</span>
+      </div>
+      <blockquote class="border-l-4 border-cyan-500/50 pl-4 text-lg text-slate-300 italic mb-4">
+        0–12 歲個人化語言繪本，由家長（或老師）親自審閱。
+      </blockquote>
+      <p class="text-slate-400 text-sm leading-relaxed">
+        AI 草擬每一本書。一位具名的家長或老師逐頁審閱、簽核後才出貨。以 <strong class="text-slate-200">LINE 登入綁定的 PWA</strong> 交付，支援繁體中文（基礎）+ 英文 + 選購日文。目標市場：台灣，LINE 原生。
+      </p>
+    </div>
+
+    <!-- 1.2 Core logic -->
+    <div class="section-card p-6 mb-6">
+      <div class="flex items-center gap-2 mb-3">
+        <h3 class="text-lg font-bold text-white">1.2 核心商業邏輯</h3>
+        <span class="badge-human text-xs px-2 py-0.5 rounded-full font-medium">人工撰寫</span>
+        <span class="text-xs text-red-400 font-medium ml-2">不可妥協</span>
+      </div>
+      <div class="bg-gradient-to-r from-cyan-500/10 to-purple-500/10 border border-cyan-500/20 rounded-xl p-5">
+        <p class="text-white font-bold text-lg text-center">AI 草擬 &rarr; 人類審閱 &rarr; 出貨</p>
+        <p class="text-slate-400 text-sm text-center mt-2">沒有合作夥伴簽核的書，絕不交付。這不是流程細節 &mdash; 這是商業模式本身。</p>
+      </div>
+    </div>
+
+    <!-- 1.3 Market analysis -->
+    <div class="section-card p-6 mb-6">
+      <div class="flex items-center gap-2 mb-4">
+        <h3 class="text-lg font-bold text-white">1.3 市場分析</h3>
+        <span class="badge-ai text-xs px-2 py-0.5 rounded-full font-medium">AI 協助整理</span>
+      </div>
+
+      <h4 class="text-sm font-bold text-cyan-400 mb-2 mt-4">目標市場</h4>
+      <table class="mb-6">
+        <thead><tr><th>層級</th><th>對象</th><th>說明</th></tr></thead>
+        <tbody>
+          <tr><td class="font-medium text-white">Mark 的客戶（B2B）</td><td>合作夥伴（Partner）</td><td>小型經營者，擁有接觸 0–12 歲孩子家長的管道</td></tr>
+          <tr><td class="font-medium text-white">合作夥伴的客戶</td><td>0–12 歲孩子的家長</td><td>Mark 不直接向家長收費</td></tr>
+        </tbody>
+      </table>
+
+      <h4 class="text-sm font-bold text-cyan-400 mb-2">地理市場</h4>
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-3 mb-6">
+        <div class="bg-white/5 rounded-lg p-3">
+          <p class="text-xs text-slate-500 mb-1">主要</p>
+          <p class="text-sm text-white font-medium">台灣（繁體中文 + LINE 原生）</p>
+        </div>
+        <div class="bg-white/5 rounded-lg p-3">
+          <p class="text-xs text-slate-500 mb-1">次要</p>
+          <p class="text-sm text-white font-medium">香港、海外繁中華僑</p>
+        </div>
+        <div class="bg-white/5 rounded-lg p-3">
+          <p class="text-xs text-slate-500 mb-1">第三</p>
+          <p class="text-sm text-white font-medium">日本（ja-JP 選購語言）</p>
+        </div>
+      </div>
+
+      <h4 class="text-sm font-bold text-cyan-400 mb-2">為什麼 LINE-first</h4>
+      <ul class="text-sm text-slate-400 space-y-1 list-disc list-inside">
+        <li>目標家長生活在 LINE 上（台灣/日本原生通訊軟體）</li>
+        <li>LINE Login 已整合完成</li>
+        <li>合作夥伴經營自己的 LINE 群組 &mdash; 不需要建立社交層</li>
+        <li>PWA 可用 LINE 帳號綁定</li>
+      </ul>
+    </div>
+
+    <!-- 1.4 User personas -->
+    <div class="section-card p-6 mb-6">
+      <div class="flex items-center gap-2 mb-4">
+        <h3 class="text-lg font-bold text-white">1.4 用戶畫像</h3>
+        <span class="badge-human text-xs px-2 py-0.5 rounded-full font-medium">人工撰寫</span>
+        <span class="badge-ai text-xs px-2 py-0.5 rounded-full font-medium">AI 協助整理</span>
+      </div>
+
+      <h4 class="text-sm font-bold text-cyan-400 mb-3">合作夥伴畫像（Mark 的客戶）</h4>
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+        <!-- Audrey -->
+        <div class="bg-gradient-to-br from-cyan-500/10 to-transparent border border-cyan-500/20 rounded-xl p-4">
+          <div class="flex items-center gap-2 mb-2">
+            <div class="w-8 h-8 rounded-full bg-cyan-500/20 flex items-center justify-center text-cyan-400 font-bold text-sm">A</div>
+            <div>
+              <p class="font-bold text-white text-sm">Audrey</p>
+              <p class="text-xs text-cyan-400">主要 MVP</p>
+            </div>
+          </div>
+          <p class="text-xs text-slate-400 leading-relaxed">職場家長 / 學校圈。同儕口碑。孩子 6 歲 + 10 歲。覆蓋 4–12 年齡層。</p>
+        </div>
+        <!-- Arita -->
+        <div class="bg-gradient-to-br from-purple-500/10 to-transparent border border-purple-500/20 rounded-xl p-4">
+          <div class="flex items-center gap-2 mb-2">
+            <div class="w-8 h-8 rounded-full bg-purple-500/20 flex items-center justify-center text-purple-400 font-bold text-sm">A</div>
+            <div>
+              <p class="font-bold text-white text-sm">Arita</p>
+              <p class="text-xs text-purple-400">延伸目標</p>
+            </div>
+          </div>
+          <p class="text-xs text-slate-400 leading-relaxed">兒童英語老師。一對一師生/家長諮詢。覆蓋 4–12 年齡層。</p>
+        </div>
+        <!-- Amy -->
+        <div class="bg-gradient-to-br from-emerald-500/10 to-transparent border border-emerald-500/20 rounded-xl p-4">
+          <div class="flex items-center gap-2 mb-2">
+            <div class="w-8 h-8 rounded-full bg-emerald-500/20 flex items-center justify-center text-emerald-400 font-bold text-sm">A</div>
+            <div>
+              <p class="font-bold text-white text-sm">Amy</p>
+              <p class="text-xs text-emerald-400">延伸目標</p>
+            </div>
+          </div>
+          <p class="text-xs text-slate-400 leading-relaxed">新手媽媽。新手家長社交圈。兒子 1 歲。覆蓋 0–3 年齡層。</p>
+        </div>
+      </div>
+
+      <h4 class="text-sm font-bold text-cyan-400 mb-2">終端使用者畫像</h4>
+      <ul class="text-sm text-slate-400 space-y-1 list-disc list-inside">
+        <li>繁體中文母語，希望孩子接觸英文</li>
+        <li>重視個人化、可反覆閱讀、離線可用的收藏品</li>
+        <li>願意向信任的合作夥伴（老師、家長朋友）付費</li>
+      </ul>
+    </div>
+
+    <!-- 1.5 Feature specs -->
+    <div class="section-card p-6 mb-6">
+      <div class="flex items-center gap-2 mb-4">
+        <h3 class="text-lg font-bold text-white">1.5 功能規格</h3>
+        <span class="badge-ai text-xs px-2 py-0.5 rounded-full font-medium">AI 協助整理</span>
+      </div>
+
+      <h4 class="text-sm font-bold text-cyan-400 mb-2">繪本規格（依年齡分級）</h4>
+      <table class="mb-6">
+        <thead><tr><th>年齡層</th><th>頁數</th><th>每頁文字量</th><th>特徵</th></tr></thead>
+        <tbody>
+          <tr><td class="font-medium text-white">0–3</td><td>6–8 頁</td><td>1 個詞/短語</td><td>超大插圖、極簡字彙</td></tr>
+          <tr><td class="font-medium text-white">4–6</td><td>10–12 頁</td><td>2–3 句</td><td>簡單對話、重複角色</td></tr>
+          <tr><td class="font-medium text-white">7–9</td><td>12–16 頁</td><td>短段落</td><td>基礎情節弧線</td></tr>
+          <tr><td class="font-medium text-white">10–12</td><td>16–20 頁</td><td>章節式</td><td>豐富字彙、主題/寓意</td></tr>
+        </tbody>
+      </table>
+
+      <h4 class="text-sm font-bold text-cyan-400 mb-2">語言支援</h4>
+      <div class="flex gap-3 mb-6">
+        <span class="bg-red-500/15 text-red-300 border border-red-500/30 px-3 py-1 rounded-lg text-xs font-medium">繁體中文（必選基礎）</span>
+        <span class="bg-blue-500/15 text-blue-300 border border-blue-500/30 px-3 py-1 rounded-lg text-xs font-medium">英文（必選附加）</span>
+        <span class="bg-amber-500/15 text-amber-300 border border-amber-500/30 px-3 py-1 rounded-lg text-xs font-medium">日文（選購）</span>
+      </div>
+
+      <h4 class="text-sm font-bold text-cyan-400 mb-2">生成流程（Generation Pipeline）</h4>
+      <div class="grid grid-cols-2 md:grid-cols-6 gap-2 mb-6">
+        <div class="bg-white/5 rounded-lg p-3 text-center">
+          <p class="text-lg mb-1">&#9997;&#65039;</p>
+          <p class="text-xs text-white font-medium">故事撰寫</p>
+          <p class="text-xs text-slate-500">GPT-4 · zh-TW</p>
+        </div>
+        <div class="bg-white/5 rounded-lg p-3 text-center">
+          <p class="text-lg mb-1">&#127912;</p>
+          <p class="text-xs text-white font-medium">插圖生成</p>
+          <p class="text-xs text-slate-500">gpt-image-1</p>
+        </div>
+        <div class="bg-white/5 rounded-lg p-3 text-center">
+          <p class="text-lg mb-1">&#128264;</p>
+          <p class="text-xs text-white font-medium">語音朗讀</p>
+          <p class="text-xs text-slate-500">Azure TTS</p>
+        </div>
+        <div class="bg-white/5 rounded-lg p-3 text-center">
+          <p class="text-lg mb-1">&#128196;</p>
+          <p class="text-xs text-white font-medium">排版渲染</p>
+          <p class="text-xs text-slate-500">HTML &rarr; PDF</p>
+        </div>
+        <div class="bg-white/5 rounded-lg p-3 text-center">
+          <p class="text-lg mb-1">&#128241;</p>
+          <p class="text-xs text-white font-medium">PWA 建置</p>
+          <p class="text-xs text-slate-500">離線快取</p>
+        </div>
+        <div class="bg-white/5 rounded-lg p-3 text-center">
+          <p class="text-lg mb-1">&#128230;</p>
+          <p class="text-xs text-white font-medium">打包匯出</p>
+          <p class="text-xs text-slate-500">.zip bundle</p>
+        </div>
+      </div>
+
+      <h4 class="text-sm font-bold text-cyan-400 mb-2">審閱工作流</h4>
+      <span class="badge-human text-xs px-2 py-0.5 rounded-full font-medium mb-3 inline-block">人工撰寫</span>
+      <span class="text-xs text-red-400 font-medium ml-2">不可妥協</span>
+      <div class="bg-slate-900 rounded-xl p-4 mt-2 overflow-x-auto">
+        <div class="workflow-box text-slate-300">
+[問卷送出]
+    |
+    v
+ +----------+
+ |  DRAFT   |  &larr; AI 撰寫故事、生成插圖、TTS 渲染
+ +----+-----+     PWA/zip 已建置但未交付
+      |
+      v
+ +----------+
+ | PENDING  |  &larr; 進入合作夥伴的「待審閱」佇列
+ |  REVIEW  |    可：閱讀、聆聽、編輯、重生成、核准
+ +----+-----+
+      |
+      +-- 退件 --&gt; DISCARDED
+      |
+      +-- 修改 --&gt; 回到 DRAFT 重新生成
+      |
+      +-- 核准 --+
+                  v
+          +-----------+
+          | APPROVED  |  &larr; 簽名鎖入 meta.json
+          +-----+-----+    credits 頁面生成
+                |
+                v
+          +-----------+
+          | DELIVERED |  &larr; PWA 上線、LINE 推播
+          +-----------+</div>
+      </div>
+    </div>
+
+    <!-- 1.6 Privacy -->
+    <div class="section-card p-6 mb-6">
+      <div class="flex items-center gap-2 mb-3">
+        <h3 class="text-lg font-bold text-white">1.6 照片上傳隱私政策</h3>
+        <span class="badge-human text-xs px-2 py-0.5 rounded-full font-medium">人工撰寫</span>
+      </div>
+      <div class="bg-red-500/5 border border-red-500/20 rounded-xl p-4">
+        <ul class="text-sm text-slate-300 space-y-2">
+          <li><strong class="text-red-400">不上傳孩子臉部照片。</strong> 主角外觀由 AI 依文字描述生成。</li>
+          <li><strong class="text-slate-200">只接受環境/場景照片：</strong> 房間、玩具、常去的地方、寵物。</li>
+          <li>環境照片上傳後<strong class="text-slate-200">立即卡通化處理</strong>，原始照片<strong class="text-red-400">立即刪除</strong>（最遲 24h）。</li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- 1.7 MVP scope -->
+    <div class="section-card p-6 mb-6">
+      <div class="flex items-center gap-2 mb-3">
+        <h3 class="text-lg font-bold text-white">1.7 MVP 範圍（8 週內交付）</h3>
+        <span class="badge-human text-xs px-2 py-0.5 rounded-full font-medium">人工撰寫</span>
+      </div>
+      <div class="grid grid-cols-1 md:grid-cols-5 gap-3">
+        <div class="bg-cyan-500/10 border border-cyan-500/20 rounded-xl p-4 text-center">
+          <p class="text-2xl mb-1">1</p>
+          <p class="text-sm text-white font-medium">合作夥伴</p>
+          <p class="text-xs text-slate-400">Audrey</p>
+        </div>
+        <div class="bg-cyan-500/10 border border-cyan-500/20 rounded-xl p-4 text-center">
+          <p class="text-2xl mb-1">1</p>
+          <p class="text-sm text-white font-medium">真實小孩</p>
+          <p class="text-xs text-slate-400">6 歲</p>
+        </div>
+        <div class="bg-cyan-500/10 border border-cyan-500/20 rounded-xl p-4 text-center">
+          <p class="text-2xl mb-1">1</p>
+          <p class="text-sm text-white font-medium">本繪本</p>
+          <p class="text-xs text-slate-400">4–6 分級 · 雙語</p>
+        </div>
+        <div class="bg-cyan-500/10 border border-cyan-500/20 rounded-xl p-4 text-center">
+          <p class="text-2xl mb-1">1</p>
+          <p class="text-sm text-white font-medium">個 PWA</p>
+          <p class="text-xs text-slate-400">LINE 登入 · 離線</p>
+        </div>
+        <div class="bg-cyan-500/10 border border-cyan-500/20 rounded-xl p-4 text-center">
+          <p class="text-2xl mb-1">1</p>
+          <p class="text-sm text-white font-medium">次完整流程</p>
+          <p class="text-xs text-slate-400">問卷 &rarr; 交付</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <hr class="border-white/5 max-w-6xl mx-auto" />
+
+  <!-- ==================== 二、技術架構 ==================== -->
+  <section id="arch" class="max-w-6xl mx-auto px-4 py-12 fade-in">
+    <h2 class="text-2xl font-bold text-white mb-1 flex items-center gap-2">
+      <span class="text-cyan-400">&#128736;</span> 二、技術架構與流程圖
+    </h2>
+    <p class="text-sm text-slate-500 mb-8">使用 Mermaid 繪製。包含系統架構、AI Pipeline、RAG 知識庫。</p>
+
+    <!-- 2.1 System arch -->
+    <div class="section-card p-6 mb-6">
+      <h3 class="text-lg font-bold text-white mb-4">2.1 系統架構圖</h3>
+      <pre class="mermaid">
+graph TB
+    subgraph Frontend["Frontend — Next.js 14+ TypeScript"]
+        A["Partner 公開頁\napp.markluce.ai/audrey"]
+        B["問卷表單"]
+        C["繪本閱讀器 PWA"]
+        D["Partner 後台\napp.markluce.ai/audrey/admin"]
+        E["審閱介面"]
+        F["客戶管理"]
+    end
+
+    subgraph Auth["Auth — LINE Login"]
+        H["LINE Login v2.1 OIDC"]
+        I["Supabase JWT Bridge"]
+        J["state=partner_slug"]
+    end
+
+    subgraph Backend["Backend — Supabase"]
+        K[("Postgres + RLS")]
+        P["Storage\n插圖 · MP3 · 場景"]
+        T["Edge Functions"]
+        U["AI Pipeline Orchestrator"]
+    end
+
+    subgraph AI["AI Services"]
+        V["OpenAI GPT-4\n故事撰寫"]
+        W["OpenAI gpt-image-1\n插圖生成"]
+        X["Azure Neural TTS\n語音朗讀"]
+    end
+
+    subgraph Delivery["Delivery"]
+        Y["PWA per book\n離線快取"]
+        Z[".zip export"]
+    end
+
+    A --> B
+    A --> C
+    D --> E
+    D --> F
+    B --> I
+    H --> I
+    I --> J
+    B --> U
+    T --> U
+    U --> V
+    U --> W
+    U --> X
+    U --> K
+    U --> P
+    E --> K
+    K -->|核准| Y
+    K -->|核准| Z
+    C --> Y
+      </pre>
+    </div>
+
+    <!-- 2.2 AI Pipeline -->
+    <div class="section-card p-6 mb-6">
+      <h3 class="text-lg font-bold text-white mb-4">2.2 繪本生成流程（AI Pipeline）</h3>
+      <pre class="mermaid">
+flowchart LR
+    A["家長填寫問卷"] --> B["Edge Function\n接收問卷"]
+    B --> C{"年齡分級"}
+    C -->|0-3| D1["6-8 頁"]
+    C -->|4-6| D2["10-12 頁"]
+    C -->|7-9| D3["12-16 頁"]
+    C -->|10-12| D4["16-20 頁"]
+    D1 & D2 & D3 & D4 --> E["GPT-4\n故事生成"]
+    E --> F["結構化 JSON"]
+    F --> G["gpt-image-1\n逐頁插圖"]
+    F --> H["Azure TTS\n逐頁朗讀"]
+    G & H --> I["PWA Builder"]
+    I --> J["DRAFT\n待審閱"]
+    J --> K{"合作夥伴審閱"}
+    K -->|修改| E
+    K -->|退件| L["DISCARDED"]
+    K -->|核准| M["APPROVED\n簽名鎖入"]
+    M --> N["DELIVERED\nPWA 上線"]
+      </pre>
+    </div>
+
+    <!-- 2.3 RAG -->
+    <div class="section-card p-6 mb-6">
+      <h3 class="text-lg font-bold text-white mb-4">2.3 RAG 知識庫架構</h3>
+      <pre class="mermaid">
+flowchart TB
+    subgraph KB["知識庫 Knowledge Base"]
+        KB1["繪本風格指南"]
+        KB2["年齡分級語言規範"]
+        KB3["繁體中文詞庫"]
+        KB4["合作夥伴偏好設定"]
+        KB5["孩子歷史資料"]
+    end
+    subgraph PA["Prompt 組裝"]
+        P1["System Prompt\n繁中強制 + 風格鎖定"]
+        P2["Context Injection\n孩子個資 + 興趣 + 場景"]
+        P3["Few-shot Examples\n依年齡層注入範例"]
+    end
+    KB1 & KB2 & KB3 --> P1
+    KB4 & KB5 --> P2
+    KB2 --> P3
+    P1 & P2 & P3 --> LLM["GPT-4\nStory Generation"]
+    LLM --> OUT["結構化故事 JSON\n逐頁文字 + 插圖提示 + TTS 標記"]
+      </pre>
+    </div>
+
+    <!-- 2.4 Partner isolation -->
+    <div class="section-card p-6 mb-6">
+      <h3 class="text-lg font-bold text-white mb-4">2.4 合作夥伴隔離（RLS）</h3>
+      <pre class="mermaid">
+flowchart TB
+    subgraph RLS["Supabase Row Level Security"]
+        subgraph AudreyData["Audrey 的資料"]
+            A1["客戶列表"]
+            A2["繪本庫存"]
+            A3["審閱記錄"]
+        end
+        subgraph AritaData["Arita 的資料"]
+            B1["客戶列表"]
+            B2["繪本庫存"]
+            B3["審閱記錄"]
+        end
+    end
+    C["Audrey JWT"] --> A1
+    C --> A2
+    C --> A3
+    D["Arita JWT"] --> B1
+    D --> B2
+    D --> B3
+      </pre>
+      <p class="text-xs text-slate-500 mt-3 text-center">每位合作夥伴的 JWT 只能存取自己的資料。RLS policy 確保 Audrey 無法讀取 Arita 的資料，反之亦然。</p>
+    </div>
+
+    <!-- 2.5 Tech stack -->
+    <div class="section-card p-6 mb-6">
+      <h3 class="text-lg font-bold text-white mb-4">2.5 技術棧總覽</h3>
+      <table>
+        <thead><tr><th>層級</th><th>技術選型</th><th>理由</th></tr></thead>
+        <tbody>
+          <tr><td class="font-medium text-white">Frontend</td><td>Next.js 14+（App Router, TypeScript）</td><td>Supabase 最佳整合、Vercel 原生部署、PWA 支援</td></tr>
+          <tr><td class="font-medium text-white">Hosting</td><td>Vercel（免費方案）</td><td>Next.js 原生、自動 HTTPS</td></tr>
+          <tr><td class="font-medium text-white">Database</td><td>Supabase（Postgres + RLS）</td><td>RLS 直接映射合作夥伴隔離模型</td></tr>
+          <tr><td class="font-medium text-white">Auth</td><td>LINE Login v2.1 OIDC &rarr; Supabase JWT</td><td>唯一登入方式，state 攜帶 partner slug</td></tr>
+          <tr><td class="font-medium text-white">LLM</td><td>OpenAI GPT-4 class</td><td>繁體中文品質良好</td></tr>
+          <tr><td class="font-medium text-white">圖像生成</td><td>OpenAI gpt-image-1</td><td>風格鎖定 + 角色一致性</td></tr>
+          <tr><td class="font-medium text-white">TTS</td><td>Azure Neural TTS</td><td>zh-TW-HsiaoChenNeural 台灣最佳</td></tr>
+          <tr><td class="font-medium text-white">Payment</td><td>無線上金流</td><td>台灣 B2B：銀行轉帳 / LINE Pay / 現金</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <hr class="border-white/5 max-w-6xl mx-auto" />
+
+  <!-- ==================== 三、MVP Demo ==================== -->
+  <section id="mvp" class="max-w-6xl mx-auto px-4 py-12 fade-in">
+    <h2 class="text-2xl font-bold text-white mb-1 flex items-center gap-2">
+      <span class="text-cyan-400">&#128187;</span> 三、互動式產品原型 (MVP)
+    </h2>
+    <p class="text-sm text-slate-500 mb-8">透過 Vibe Coding 工具開發之可操作 Demo。</p>
+
+    <!-- Dev approach -->
+    <div class="section-card p-6 mb-6">
+      <h3 class="text-lg font-bold text-white mb-4">3.1 開發方式</h3>
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <div class="bg-white/5 rounded-xl p-4">
+          <p class="text-sm font-bold text-cyan-400 mb-1">框架</p>
+          <p class="text-sm text-white">Next.js 14+（App Router, TypeScript）</p>
+        </div>
+        <div class="bg-white/5 rounded-xl p-4">
+          <p class="text-sm font-bold text-cyan-400 mb-1">Vibe Coding 工具</p>
+          <p class="text-sm text-white">Claude Code（AI 輔助開發）</p>
+        </div>
+        <div class="bg-white/5 rounded-xl p-4">
+          <p class="text-sm font-bold text-cyan-400 mb-1">部署</p>
+          <p class="text-sm text-white">Vercel &rarr; app.markluce.ai</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Demo flow -->
+    <div class="section-card p-6 mb-6">
+      <h3 class="text-lg font-bold text-white mb-4">3.2 可互動的 Demo 流程</h3>
+      <div class="space-y-3">
+        <div class="flex items-start gap-3">
+          <div class="w-8 h-8 rounded-full bg-cyan-500/20 flex-shrink-0 flex items-center justify-center text-cyan-400 font-bold text-sm">1</div>
+          <div><p class="text-sm text-white font-medium">家長打開 app.markluce.ai/audrey</p><p class="text-xs text-slate-500">合作夥伴公開頁</p></div>
+        </div>
+        <div class="flex items-start gap-3">
+          <div class="w-8 h-8 rounded-full bg-cyan-500/20 flex-shrink-0 flex items-center justify-center text-cyan-400 font-bold text-sm">2</div>
+          <div><p class="text-sm text-white font-medium">LINE Login 登入</p><p class="text-xs text-slate-500">OIDC + state=audrey 歸屬追蹤</p></div>
+        </div>
+        <div class="flex items-start gap-3">
+          <div class="w-8 h-8 rounded-full bg-cyan-500/20 flex-shrink-0 flex items-center justify-center text-cyan-400 font-bold text-sm">3</div>
+          <div><p class="text-sm text-white font-medium">填寫家長問卷</p><p class="text-xs text-slate-500">孩子名字、年齡、興趣、語言選擇</p></div>
+        </div>
+        <div class="flex items-start gap-3">
+          <div class="w-8 h-8 rounded-full bg-orange-500/20 flex-shrink-0 flex items-center justify-center text-orange-400 font-bold text-sm">4</div>
+          <div><p class="text-sm text-white font-medium">AI 即時生成繪本</p><p class="text-xs text-slate-500">GPT-4 故事 + gpt-image-1 插圖 + Azure TTS 朗讀</p></div>
+        </div>
+        <div class="flex items-start gap-3">
+          <div class="w-8 h-8 rounded-full bg-purple-500/20 flex-shrink-0 flex items-center justify-center text-purple-400 font-bold text-sm">5</div>
+          <div><p class="text-sm text-white font-medium">Audrey 在後台審閱</p><p class="text-xs text-slate-500">逐頁檢查、編輯文字、重新生成插圖</p></div>
+        </div>
+        <div class="flex items-start gap-3">
+          <div class="w-8 h-8 rounded-full bg-green-500/20 flex-shrink-0 flex items-center justify-center text-green-400 font-bold text-sm">6</div>
+          <div><p class="text-sm text-white font-medium">Audrey 核准 &rarr; PWA 上線</p><p class="text-xs text-slate-500">簽名鎖入 meta.json &rarr; LINE 推播通知家長</p></div>
+        </div>
+        <div class="flex items-start gap-3">
+          <div class="w-8 h-8 rounded-full bg-emerald-500/20 flex-shrink-0 flex items-center justify-center text-emerald-400 font-bold text-sm">7</div>
+          <div><p class="text-sm text-white font-medium">孩子閱讀繪本</p><p class="text-xs text-slate-500">PWA 離線播放、TTS 中英雙語朗讀</p></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Demo links -->
+    <div class="section-card p-6 mb-6">
+      <h3 class="text-lg font-bold text-white mb-4">3.3 MVP Demo 連結</h3>
+      <table>
+        <thead><tr><th>項目</th><th>URL</th><th>狀態</th></tr></thead>
+        <tbody>
+          <tr><td>合作夥伴公開頁</td><td class="text-cyan-400">app.markluce.ai/audrey</td><td class="status-wip font-medium">開發中</td></tr>
+          <tr><td>合作夥伴後台</td><td class="text-cyan-400">app.markluce.ai/audrey/admin</td><td class="status-wip font-medium">開發中</td></tr>
+          <tr><td>繪本閱讀器 PWA</td><td class="text-cyan-400">app.markluce.ai/books/{id}</td><td class="status-wip font-medium">開發中</td></tr>
+          <tr><td>Group 2 專題頁</td><td class="text-cyan-400">markluce.ai/group2</td><td class="status-done font-medium">本頁</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <hr class="border-white/5 max-w-6xl mx-auto" />
+
+  <!-- ==================== 四、成果展示 ==================== -->
+  <section id="results" class="max-w-6xl mx-auto px-4 py-12 fade-in">
+    <h2 class="text-2xl font-bold text-white mb-1 flex items-center gap-2">
+      <span class="text-cyan-400">&#127942;</span> 四、專題成果展示
+    </h2>
+    <p class="text-sm text-slate-500 mb-8">解決痛點與產品商業價值說明。Live Demo 規劃。</p>
+
+    <!-- Pain points - external -->
+    <div class="section-card p-6 mb-6">
+      <h3 class="text-lg font-bold text-white mb-4">4.1 對外：客戶體驗改善</h3>
+      <table>
+        <thead><tr><th>痛點</th><th>現狀</th><th>我們的解決方案</th></tr></thead>
+        <tbody>
+          <tr><td class="font-medium text-white">繪本千篇一律</td><td>市售繪本無法反映孩子的名字、興趣、環境</td><td>AI 根據問卷即時生成個人化故事</td></tr>
+          <tr><td class="font-medium text-white">純 AI 品質堪憂</td><td>家長不信任全自動生成的兒童內容</td><td>具名合作夥伴逐頁審閱簽核</td></tr>
+          <tr><td class="font-medium text-white">多語言接觸不易</td><td>雙語繪本選擇少、價格高</td><td>繁中 + 英文 + 日文、TTS 雙語朗讀</td></tr>
+          <tr><td class="font-medium text-white">買完束之高閣</td><td>傳統繪本讀幾次就不翻</td><td>孩子是主角 &rarr; 高情感連結</td></tr>
+          <tr><td class="font-medium text-white">離線不可用</td><td>數位內容需要網路</td><td>PWA 離線快取，飛機模式也能聽</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Pain points - internal -->
+    <div class="section-card p-6 mb-6">
+      <h3 class="text-lg font-bold text-white mb-4">4.2 對內：效率提升的量化效益</h3>
+      <table>
+        <thead><tr><th>指標</th><th>傳統做法</th><th>本平台</th><th>效率提升</th></tr></thead>
+        <tbody>
+          <tr><td class="font-medium text-white">製作時間</td><td>2–4 週</td><td>2–3 天</td><td class="text-emerald-400 font-bold">~5–10x</td></tr>
+          <tr><td class="font-medium text-white">製作成本</td><td>NT$30,000–80,000</td><td>NT$15–50 / 本</td><td class="text-emerald-400 font-bold">~600–1,600x</td></tr>
+          <tr><td class="font-medium text-white">個人化程度</td><td>手動修改成本極高</td><td>自動個人化</td><td class="text-emerald-400 font-bold">不可行 &rarr; 標準功能</td></tr>
+          <tr><td class="font-medium text-white">多語言成本</td><td>翻譯 + 重新排版</td><td>自動多語生成</td><td class="text-emerald-400 font-bold">接近 0 邊際成本</td></tr>
+          <tr><td class="font-medium text-white">交付速度</td><td>印刷 + 物流 1–2 週</td><td>PWA 即時上線</td><td class="text-emerald-400 font-bold">即時交付</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Business value -->
+    <div class="section-card p-6 mb-6">
+      <h3 class="text-lg font-bold text-white mb-4">4.3 產品商業價值</h3>
+
+      <h4 class="text-sm font-bold text-cyan-400 mb-3">重複購買的長期價值</h4>
+      <div class="bg-gradient-to-r from-cyan-500/10 to-purple-500/10 border border-cyan-500/20 rounded-xl p-5 mb-4">
+        <p class="text-white font-bold text-center mb-2">一個孩子 0 &rarr; 12 歲 = 15–25 本書</p>
+        <p class="text-slate-400 text-sm text-center">不是一次性銷售，是 10+ 年的長期關係。</p>
+      </div>
+
+      <h4 class="text-sm font-bold text-cyan-400 mb-3">合作夥伴層級成長</h4>
+      <table class="mb-6">
+        <thead><tr><th>層級</th><th>終端孩子數</th><th>每孩年均</th><th>年生成量</th></tr></thead>
+        <tbody>
+          <tr><td class="font-medium text-white">Starter</td><td>10 位</td><td>1–2 本</td><td>10–20 本/年</td></tr>
+          <tr><td class="font-medium text-white">Growth</td><td>30 位</td><td>2–3 本</td><td>60–90 本/年</td></tr>
+          <tr><td class="font-medium text-white">Pro</td><td>150 位</td><td>2–3 本</td><td class="text-emerald-400 font-bold">300–450 本/年</td></tr>
+        </tbody>
+      </table>
+
+      <h4 class="text-sm font-bold text-cyan-400 mb-3">MVP 期間成本</h4>
+      <div class="grid grid-cols-2 md:grid-cols-4 gap-3">
+        <div class="bg-white/5 rounded-lg p-3 text-center">
+          <p class="text-xs text-slate-500">Vercel</p>
+          <p class="text-lg text-emerald-400 font-bold">$0</p>
+        </div>
+        <div class="bg-white/5 rounded-lg p-3 text-center">
+          <p class="text-xs text-slate-500">Supabase</p>
+          <p class="text-lg text-emerald-400 font-bold">$0</p>
+        </div>
+        <div class="bg-white/5 rounded-lg p-3 text-center">
+          <p class="text-xs text-slate-500">OpenAI API</p>
+          <p class="text-lg text-white font-bold">~$10</p>
+        </div>
+        <div class="bg-white/5 rounded-lg p-3 text-center">
+          <p class="text-xs text-slate-500">8 週總計</p>
+          <p class="text-lg text-cyan-400 font-bold">~$15</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Live demo plan -->
+    <div class="section-card p-6 mb-6">
+      <h3 class="text-lg font-bold text-white mb-4">4.4 Live Demo 規劃</h3>
+      <div class="bg-gradient-to-br from-cyan-500/5 to-purple-500/5 border border-cyan-500/15 rounded-xl p-5">
+        <p class="text-sm text-slate-300 italic leading-relaxed mb-4">
+          Audrey 上台，燈光調暗。她的 6 歲孩子拿起手機，打開一本專為他製作的 PWA 繪本。TTS 中英雙語朗讀，畫面上是孩子熟悉的房間、玩具、常去的地方。封面寫著「審閱：Audrey ｜ 共同編輯：Luce」。孩子翻到第 4 頁笑出聲 &mdash; 這是全組都看得到的真實反應。
+        </p>
+        <div class="space-y-2">
+          <div class="flex items-center gap-2 text-sm">
+            <span class="text-cyan-400 font-bold w-6">1.</span>
+            <span class="text-slate-300">Audrey 用手機開啟 app.markluce.ai/audrey</span>
+          </div>
+          <div class="flex items-center gap-2 text-sm">
+            <span class="text-cyan-400 font-bold w-6">2.</span>
+            <span class="text-slate-300">現場走一遍問卷（或使用預備的測試帳號）</span>
+          </div>
+          <div class="flex items-center gap-2 text-sm">
+            <span class="text-cyan-400 font-bold w-6">3.</span>
+            <span class="text-slate-300">投影審閱介面，逐頁檢查、做一處文字修改</span>
+          </div>
+          <div class="flex items-center gap-2 text-sm">
+            <span class="text-cyan-400 font-bold w-6">4.</span>
+            <span class="text-slate-300">Audrey 按下核准 &mdash; 觀眾看到 PENDING &rarr; APPROVED &rarr; DELIVERED</span>
+          </div>
+          <div class="flex items-center gap-2 text-sm">
+            <span class="text-cyan-400 font-bold w-6">5.</span>
+            <span class="text-slate-300">孩子拿起手機，打開 PWA，TTS 開始朗讀</span>
+          </div>
+          <div class="flex items-center gap-2 text-sm">
+            <span class="text-cyan-400 font-bold w-6">6.</span>
+            <span class="text-slate-300">開飛航模式 &mdash; 繪本仍然可以播放（離線驗證）</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <hr class="border-white/5 max-w-6xl mx-auto" />
+
+  <!-- ==================== 附錄 ==================== -->
+  <section class="max-w-6xl mx-auto px-4 py-12">
+    <h2 class="text-xl font-bold text-white mb-6">附錄</h2>
+
+    <!-- Sprint plan -->
+    <div class="section-card p-6 mb-6">
+      <h3 class="text-lg font-bold text-white mb-4">A. 8 週 Sprint 計畫</h3>
+      <table>
+        <thead><tr><th>週次</th><th>主要工作</th></tr></thead>
+        <tbody>
+          <tr><td class="font-medium text-white">W1–2</td><td>環境建置（Supabase + LINE Login + Next.js + Vercel）</td></tr>
+          <tr><td class="font-medium text-white">W3–4</td><td>AI Pipeline（故事生成 + 插圖 + TTS）</td></tr>
+          <tr><td class="font-medium text-white">W5–6</td><td>審閱工作流 + Partner CMS + PWA</td></tr>
+          <tr><td class="font-medium text-white">W7</td><td>整合測試 + Audrey 真實試用</td></tr>
+          <tr><td class="font-medium text-white">W8</td><td>Demo 彩排 + 修 bug + 簡報準備</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- AI disclosure -->
+    <div class="section-card p-6 mb-6">
+      <h3 class="text-lg font-bold text-white mb-4">B. AI 使用揭露</h3>
+      <table>
+        <thead><tr><th>內容</th><th>AI 工具</th><th>使用方式</th></tr></thead>
+        <tbody>
+          <tr><td>PRD 整理</td><td>Claude（Anthropic）</td><td>整合既有規劃文件、格式化輸出</td></tr>
+          <tr><td>Mermaid 流程圖</td><td>Claude（Anthropic）</td><td>根據人工定義的架構生成語法</td></tr>
+          <tr><td>技術架構分析</td><td>Claude（Anthropic）</td><td>彙整技術選型理由</td></tr>
+          <tr><td>繪本內容生成（產品功能）</td><td>OpenAI GPT-4</td><td>故事文字生成</td></tr>
+          <tr><td>繪本插圖（產品功能）</td><td>OpenAI gpt-image-1</td><td>插圖生成</td></tr>
+          <tr><td>語音朗讀（產品功能）</td><td>Azure Neural TTS</td><td>語音合成</td></tr>
+        </tbody>
+      </table>
+      <p class="text-xs text-slate-500 mt-3">所有 AI 生成內容均經過人工審閱與修訂。</p>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer class="border-t border-white/5 py-8 mt-8">
+    <div class="max-w-6xl mx-auto px-4 text-center">
+      <p class="text-sm text-slate-500">
+        AIA 經理人 AIPM 班 第一期 · Group 2 · 2026
+      </p>
+      <p class="text-xs text-slate-600 mt-2">
+        <a href="/" class="hover:text-cyan-400 transition">markluce.ai</a>
+      </p>
+    </div>
+  </footer>
+
+</body>
+</html>
